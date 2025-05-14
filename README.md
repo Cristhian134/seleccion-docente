@@ -36,7 +36,7 @@ http://localhost:8000/descargar-pdf/<documento_id>
 
 Cambiar en .env.local la variable POSTGRES_HOST a localhost
 ```
-POSTGRES_HOST="postgres"
+POSTGRES_HOST="localhost"
 ``` 
 
 1. Ejecutar en CMD
@@ -68,7 +68,7 @@ venv\Scripts\deactivate
 
 Cambiar en .env.local la variable POSTGRES_HOST a localhost
 ```
-POSTGRES_HOST="postgres"
+POSTGRES_HOST="localhost"
 ``` 
 
 1. Instalar pipenv
