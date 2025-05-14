@@ -1,0 +1,45 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Sistema de Selección Docente</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+  </head>
+  <body>
+    <div class="login__layout">
+      <!-- Imagen de la universidad -->
+      <picture class="login__image hide-on-mobile">
+        <img src="{% static 'public/uni.png' %}" alt="Logo de la universidad" />
+      </picture>
+
+      <section class="login__form">
+        <h1 class="login__title">
+          Bienvenido al Sistema de<br />Selección Docente 🎓
+        </h1>
+        <div class="login__body">
+          <h2>Inicia sesión en tu cuenta</h2>
+          <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Campo de usuario -->
+            <label class="input-primary" for="username">
+              Código
+              <input type="text" id="username" name="username" required />
+            </label>
+            
+            <!-- Campo de contraseña -->
+            <label class="input-primary" for="password">
+              Contraseña
+              <input type="password" id="password" name="password" required />
+            </label>
+            
+            <button class="button--primary w-full" type="submit">Entrar</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

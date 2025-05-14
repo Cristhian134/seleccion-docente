@@ -1,0 +1,26 @@
+{% load layout_tags %} {% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Inicio{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
+    {% comment %} <link
+      rel="stylesheet"
+      href="{% static 'css/ui.css' %}"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    /> {% endcomment %}
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    {% render_header %}
+    <main>{% block content %}{% endblock %}</main>
+    {% render_sidenav %}
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{% extends "base.html" %} {% block content %}
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/crear-convocatoria/">Crear convocatoria</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Convocatoria externa</a>
+    </li>
+  </ol>
+</nav>
+<h1>Crear externa</h1>
+<form method="POST">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit">Guardar</button>
+</form>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %} {% block content %}
+<h1>Página de inicio protegida</h1>
+<form action="{% url 'logout' %}" method="POST">
+  {% csrf_token %}
+  <button type="submit" class="button--primary">Cerrar sesión</button>
+</form>
+{% endblock %}

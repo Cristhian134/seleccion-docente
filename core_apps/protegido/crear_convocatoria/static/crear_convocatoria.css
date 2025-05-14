@@ -1,0 +1,58 @@
+.section__crear-convocatoria {
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+}
+
+.section__crear-convocatoria > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 1rem;
+  padding-block: 3rem;
+  height: 250px;
+  /* width: 400px; */
+  border-radius: 12px;
+  color: white;
+}
+
+.section__crear-convocatoria > div:hover {
+  opacity: 0.95;
+}
+
+.section__crear-convocatoria > div > h2 {
+  font-size: var(--t-size-xm);
+}
+
+.section__crear-convocatoria > div > a {
+  cursor: pointer;
+  padding-inline: 1rem;
+  padding-block: 0.7rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.section__crear-convocatoria > div > a:active {
+  scale: 1.04;
+  opacity: 0.8;
+}
+
+.section__interno {
+  background-color: #00CFE8;
+}
+
+.section__interno a {
+  background-color: #0fbccf;
+}
+
+.section__externo {
+  background-color: #28C76F;
+}
+
+.section__externo a {
+  background-color: #23b665;
+}

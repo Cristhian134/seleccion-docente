@@ -1,0 +1,80 @@
+{% load static %}
+
+<nav class="sidenav" id="sidenav">
+  <div class="sidenav__logo" id="toggleBtnLogo">
+    <img src="{% static 'public/uni.png' %}" alt="Logo" />
+    <h3 class="sidenav__title">Selección Docente</h3>
+  </div>
+  <ul class="sidenav__list">
+    {% for modulo in modulos %}
+    <li>
+      <a href="{{ modulo.url }}"
+        ><i class="{{ modulo.icono }}" aria-hidden="true"></i>
+        <span>{{ modulo.nombre }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  <button
+    onclick="window.location.href='{{ url_volver|default:'/home' }}'"
+    class="sidenav__back"
+    id="backBtn"
+  >
+    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+    <span>Volver</span>
+  </button>
+</nav>
+<div class="sidenav__overlay" id="sidenavOverlay"></div>
+<div class="sidenav__mobilewrapper">
+  <div class="sidenav__mobilebutton" id="toggleBtnMobile">
+    <i class="fa fa-bars" aria-hidden="true"></i>
+  </div>
+</div>
+
+<script>
+  const sidenav = document.getElementById("sidenav");
+  const backBtn = document.getElementById("backBtn");
+
+  const toggleBtns = [
+    document.getElementById("toggleBtnLogo"),
+    document.getElementById("toggleBtnMobile"),
+  ];
+
+  toggleBtns.forEach((btn) =>
+    btn.addEventListener("click", () => {
+      sidenav.classList.toggle("collapsed");
+      sidenav.classList.toggle("expanded");
+      backBtn.classList.toggle("collapsed");
+
+      if (window.innerWidth <= 768) {
+        document.body.classList.toggle("sidenav-open");
+      }
+    })
+  );
+
+  // Cierra el menú si haces clic fuera en móvil
+  document.addEventListener("click", function (e) {
+    const clickedOutside =
+      !sidenav.contains(e.target) &&
+      !e.target.closest("#toggleBtnLogo") &&
+      !e.target.closest("#toggleBtnMobile");
+
+    if (window.innerWidth <= 768 && clickedOutside) {
+      sidenav.classList.remove("expanded");
+      sidenav.classList.add("collapsed");
+      backBtn.classList.add("collapsed");
+      document.body.classList.remove("sidenav-open");
+    }
+  });
+
+  // Al cargar la página: expandido solo si es escritorio
+  window.addEventListener("DOMContentLoaded", () => {
+    if (window.innerWidth > 768) {
+      sidenav.classList.add("expanded");
+      backBtn.classList.remove("collapsed");
+    } else {
+      sidenav.classList.add("collapsed");
+      backBtn.classList.add("collapsed");
+    }
+  });
+</script>

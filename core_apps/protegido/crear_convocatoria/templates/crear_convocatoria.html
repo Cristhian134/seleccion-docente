@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<link rel="stylesheet" href="{% static 'crear_convocatoria.css' %}" />
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Crear convocatoria</a>
+    </li>
+  </ol>
+</nav>
+<section class="section__wrapper">
+  <div class="section__crear-convocatoria">
+    <div class="section__interno">
+      <h2>Convocatoria interna</h2>
+      <span></span>
+      <a href="convocatoria-interna/">Crear convocatoria</a>
+    </div>
+    <div class="section__externo">
+      <h2>Convocatoria externa</h2>
+      <span></span>
+      <a href="convocatoria-externa/">Crear convocatoria</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

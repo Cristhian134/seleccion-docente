@@ -1,0 +1,20 @@
+<header>
+  <div>
+    <span>Facultad: {{ facultad }}</span>
+    <div class="header__info">
+      <div class="">
+        {{ usuario.nombreUsuario }}
+      </div>
+      <span class="header__me dropdown">
+        <div class="dropdown-content">
+          <p><strong>Rol:</strong> {{ rol }}</p>
+          <p><strong>Facultad:</strong> {{ facultad }}</p>
+          <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="button--primary w-full">Cerrar sesión</button>
+          </form>
+        </div>
+      </span>
+    </div>
+  </div>
+</header>

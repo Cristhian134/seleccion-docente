@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  seleccion-docente:
+    build:
+      context: .
+      dockerfile: ./docker/local/django/Dockerfile
+    volumes:
+      - .:/app:z
+      - ./staticfiles:/app/staticfiles
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.envs/.env.local
+    depends_on:
+      - postgres
+      - mailpit
+    command: /start.sh
+    networks:
+      - seleccion_docente_nw
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/local/postgres/Dockerfile
+    ports:
+      - "5432:5432"
+    volumes:
+      - seleccion_docente_db:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.env.local
+    networks:
+      - seleccion_docente_nw
+
+  mailpit:
+    image: docker.io/axllent/mailpit:v1.20.3
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:
+      - seleccion_docente_mailpit_db:/data
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATA_FILE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - seleccion_docente_nw
+
+  nginx:
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./staticfiles:/app/staticfiles
+    depends_on:
+      - seleccion-docente
+    networks:
+      - seleccion_docente_nw
+
+networks:
+  seleccion_docente_nw:
+    driver: bridge
+
+volumes:
+  seleccion_docente_db:
+  seleccion_docente_mailpit_db:
