@@ -1,0 +1,63 @@
+services:
+    seleccion-docente: &seleccion-docente
+        build:
+            context: .
+            dockerfile: ./docker/production/django/Dockerfile
+        volumes:
+            - static_volume:/app/staticfiles
+            - app_logs:/app/logs
+        expose:
+            - "8000"
+        env_file:
+            - ./.envs/.env.production
+        depends_on:
+            - postgres
+        command: /start.sh
+        networks:
+            - seleccion_docente_nw
+    
+    postgres:
+        build:
+            context: .
+            dockerfile: ./docker/production/postgres/Dockerfile
+        ports:
+            - "5432:5432"
+        volumes:
+            - seleccion_docente_db:/var/lib/postgresql/data
+            - ./backups:/backups
+        env_file:
+            - ./.envs/.env.production
+        networks:
+            - seleccion_docente_nw
+    
+    nginx:
+        build:
+            context: ./docker/production/nginx
+            dockerfile: Dockerfile
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./docker/production/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+            - static_volume:/app/staticfiles
+            - logs_store:/var/log/nginx
+        depends_on:
+            - seleccion-docente
+        networks:
+            - seleccion_docente_nw
+
+networks:
+    seleccion_docente_nw:
+        driver: bridge
+
+volumes:
+    seleccion_docente_db:
+    static_volume:
+    app_logs:
+    logs_store:
+    
+    
+    
+    
