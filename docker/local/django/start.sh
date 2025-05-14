@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -o errexit
+
+set -o pipefail
+
+set -o nounset
+
 python db.py
 python manage.py makemigrations
 python manage.py migrate
