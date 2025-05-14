@@ -17,7 +17,7 @@ Ejemplo:
 
 Para acceder a un documento, es necesario estar logueado y utilizar la URL:
 ```
-http://localhost:8080/descargar-pdf/<documento_id>
+http://localhost:8000/descargar-pdf/<documento_id>
 ```
 
 # 2. Ejecución
