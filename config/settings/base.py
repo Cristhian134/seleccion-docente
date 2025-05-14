@@ -174,7 +174,7 @@ LOGIN_URL = 'login'
 # STATIC_ROOT = str(BASE_DIR / "staticfiles")
 
 STATIC_URL = '/static/'
-STATIC_ROOT = str(BASE_DIR / "staticfiles")
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 
 # Si deseas incluir archivos estáticos dentro de cada aplicación, asegúrate de tener:
 STATICFILES_DIRS = [
