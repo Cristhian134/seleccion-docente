@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  seleccion-docente:
+  seleccion-docente: &seleccion-docente
     build:
       context: .
       dockerfile: ./docker/local/django/Dockerfile
@@ -10,6 +10,8 @@ services:
       - ./staticfiles:/app/staticfiles
     ports:
       - "8000:8000"
+    # expose:
+      # - "8000"
     env_file:
       - ./.envs/.env.local
     depends_on:
@@ -56,6 +58,7 @@ services:
       - "8080:80"
     volumes:
       - ./staticfiles:/app/staticfiles
+      - logs_store:/var/log/nginx
     depends_on:
       - seleccion-docente
     networks:
@@ -68,3 +71,4 @@ networks:
 volumes:
   seleccion_docente_db:
   seleccion_docente_mailpit_db:
+  logs_store:
