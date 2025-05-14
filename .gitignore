@@ -4,6 +4,7 @@
 staticfiles/
 .envs/*
 !.envs/.env.example
+!.envs/.env.local
 tests/*
 
 !tests/.gitkeep
