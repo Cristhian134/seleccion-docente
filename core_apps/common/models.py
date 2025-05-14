@@ -66,7 +66,17 @@ class UserManager(BaseUserManager):
 
 
 class Facultad(models.TextChoices):
-  FIIS = "fiis", "FIIS"
+  FAUA = "faufa", "Facultad de Arquitectura, Urbanismo y Artes"
+  FIC = "fic", "Facultad de Ingeniería Civil"
+  FIEECS = "fieecs", "Facultad de Ingeniería Económica, Estadística y Ciencias Sociales"
+  FIGMM = "figmm", "Facultad de Ingeniería Geológica, Minera y Metalúrgica"
+  FIIS = "fiis", "Facultad de Ingeniería Industrial y de Sistemas"
+  FIEE = "fiee", "Facultad de Ingeniería Eléctrica y Electrónica"
+  FIM = "fim", "Facultad de Ingeniería Mecánica"
+  FC = "fc", "Facultad de Ciencias"
+  FIPP = "fipp", "Facultad de Ingeniería de Petróleo, Gas Natural y Petroquímica"
+  FIQT = "fiqt", "Facultad de Ingeniería Química y Textil"
+  FIA = "fia", "Facultad de Ingeniería Ambiental"
 
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
@@ -180,6 +190,8 @@ class Seccion(models.Model):
 
 class TipoPlaza(models.TextChoices):
   LABORATORIO = "laboratorio", "Laboratorio"
+  PRACTICA = "practica", "Practica"
+  TEORIA = "teoria", "Teoria"
 
 
 class EstadoPlaza(models.TextChoices):
