@@ -181,7 +181,7 @@ DEBUG = True
 
 SITE_NAME = getenv("SITE_NAME")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0", "uni-seleccion-docente.onrender.com"]
 
 ADMIN_URL = getenv("ADMIN_URL")
 
