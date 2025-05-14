@@ -30,9 +30,9 @@ Para acceder a un documento, es necesario estar logueado y utilizar la URL:
 http://localhost:8000/descargar-pdf/<documento_id>
 ```
 
-# 2. Ejecución
+# 3. Ejecución
 
-# 2.1. Virtualenv
+# 3.1. Virtualenv
 
 1. Ejecutar en CMD
 ```
@@ -59,7 +59,7 @@ python setup.py
 venv\Scripts\deactivate
 ```
 
-# 2.2. Pipenv
+# 3.2. Pipenv
 
 1. Instalar pipenv
 ```
@@ -86,7 +86,7 @@ python setup.py
 exit
 ```
 
-# 2.3. Docker
+# 3.3. Docker
 
 En ambos casos cambiar en .env.local la variable POSTGRES_HOST a postgres
 ```
