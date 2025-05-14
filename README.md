@@ -49,7 +49,12 @@ venv\Scripts\activate
 pip install -r requirements/local.txt
 ```
 
-4. Desactivar entorno virtual
+4. Ejecutar setup.py
+```
+python setup.py
+```
+
+5. Desactivar entorno virtual
 ```
 venv\Scripts\deactivate
 ```
@@ -60,20 +65,34 @@ venv\Scripts\deactivate
 ```
 pip install pipenv
 ```
+
 2. Instalar dependencias con pipenv
 ```
 pipenv install
 ```
+
 3. Activar entorno virtual de Pipenv
 ```
 pipenv Shell
 ```
-4. Salir del entorno virtual de Pipenv
+
+4. Ejecutar setup.py
+```
+python setup.py
+```
+
+5. Salir del entorno virtual de Pipenv
 ```
 exit
 ```
 
 # 2.3. Docker
+
+En ambos casos cambiar en .env.local la variable POSTGRES_HOST a postgres
+```
+POSTGRES_HOST="postgres"
+``` 
+
 1. Windows
 ```
 docker compose -f local.yml up --build -d --remove-orphans
