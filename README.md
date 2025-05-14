@@ -1,5 +1,15 @@
 # Sistema de Selección Docente
 
+Login:
+```
+http://localhost:8000/login/
+```
+
+Admin:
+```
+http://localhost:8000/admin/
+```
+
 # 1. Frontend
 
 # 1.1. Iconos
