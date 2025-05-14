@@ -119,3 +119,15 @@ docker compose -f local.yml up --build -d --remove-orphans
 ```
 make build
 ``` 
+
+# 4.4. Python
+
+1. Instalar dependencias
+```
+pip install -r requirements/local.txt
+```
+
+2. Ejecutar python setup.py
+```
+python setup.py
+```
