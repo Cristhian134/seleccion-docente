@@ -10,9 +10,17 @@ Admin:
 http://localhost:8000/admin/
 ```
 
-# 1. Frontend
+# 1. Puertos
 
-# 1.1. Iconos
+|Servicio|Puerto Host|Puerto Contenedor|
+|--------|-----------|-----------------|
+|Django|No expuesto|8000|
+|Nginx|8080|80|
+|Postgres|5432|5432|
+
+# 2. Frontend
+
+# 2.1. Iconos
 
 Usados de fontawesome https://fontawesome.com/v4/icons/
 
@@ -21,18 +29,18 @@ Ejemplo:
 <i class="fa fa-calendar" aria-hidden="true"></i>
 ```
 
-# 2. Backend
+# 3. Backend
 
-# 2.1. Acceso a pdfs
+# 3.1. Acceso a pdfs
 
 Para acceder a un documento, es necesario estar logueado y utilizar la URL:
 ```
 http://localhost:8000/descargar-pdf/<documento_id>
 ```
 
-# 3. Ejecución
+# 4. Ejecución
 
-# 3.1. Virtualenv
+# 4.1. Virtualenv
 
 Cambiar en .env.local la variable POSTGRES_HOST a localhost
 ```
@@ -64,7 +72,7 @@ python setup.py
 venv\Scripts\deactivate
 ```
 
-# 3.2. Pipenv
+# 4.2. Pipenv
 
 Cambiar en .env.local la variable POSTGRES_HOST a localhost
 ```
@@ -96,7 +104,7 @@ python setup.py
 exit
 ```
 
-# 3.3. Docker
+# 4.3. Docker
 
 En ambos casos cambiar en .env.local la variable POSTGRES_HOST a postgres
 ```
