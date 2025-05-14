@@ -47,7 +47,7 @@ Cambiar en .env.local la variable POSTGRES_HOST a localhost
 POSTGRES_HOST="localhost"
 ``` 
 
-1. Ejecutar en CMD
+1. Ejecutar en CMD (verificar, vs utiliza PS por defecto)
 ```
 python -m venv venv
 ```
