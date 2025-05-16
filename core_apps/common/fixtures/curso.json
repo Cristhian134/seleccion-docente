@@ -1,0 +1,614 @@
+[
+  {
+    "model": "common.curso",
+    "pk": 1,
+    "fields": {
+      "nombreCurso": "INTRODUCCION A LA COMPUTACION",
+      "codigoCurso": "BIC01",
+      "creditosCurso": 2
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 2,
+    "fields": {
+      "nombreCurso": "CALCULO DIFERENCIAL",
+      "codigoCurso": "BMA01",
+      "creditosCurso": 5
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 3,
+    "fields": {
+      "nombreCurso": "QUIMICA I",
+      "codigoCurso": "BQU01",
+      "creditosCurso": 5
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 4,
+    "fields": {
+      "nombreCurso": "REDACCION Y COMUNICACION",
+      "codigoCurso": "BRC01",
+      "creditosCurso": 2
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 5,
+    "fields": {
+      "nombreCurso": "GEOMETRIA ANALITICA",
+      "codigoCurso": "FB101",
+      "creditosCurso": 3
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 6,
+    "fields": {
+      "nombreCurso": "INTRODUCCION AL PENSAMIENTO Y A LA INGENIERIA DE SISTEMAS",
+      "codigoCurso": "SI101",
+      "creditosCurso": 3
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 1,
+    "fields": {
+      "curso": 1,
+      "codigoSeccion": "U",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 2,
+    "fields": {
+      "curso": 1,
+      "codigoSeccion": "V",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 3,
+    "fields": {
+      "curso": 2,
+      "codigoSeccion": "W",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 4,
+    "fields": {
+      "curso": 2,
+      "codigoSeccion": "X",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 5,
+    "fields": {
+      "curso": 2,
+      "codigoSeccion": "Y",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 6,
+    "fields": {
+      "curso": 3,
+      "codigoSeccion": "U",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 7,
+    "fields": {
+      "curso": 3,
+      "codigoSeccion": "V",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 8,
+    "fields": {
+      "curso": 4,
+      "codigoSeccion": "W",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 9,
+    "fields": {
+      "curso": 4,
+      "codigoSeccion": "X",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 10,
+    "fields": {
+      "curso": 5,
+      "codigoSeccion": "Y",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 11,
+    "fields": {
+      "curso": 5,
+      "codigoSeccion": "U",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 12,
+    "fields": {
+      "curso": 5,
+      "codigoSeccion": "V",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 13,
+    "fields": {
+      "curso": 6,
+      "codigoSeccion": "W",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.seccion",
+    "pk": 14,
+    "fields": {
+      "curso": 6,
+      "codigoSeccion": "X",
+      "estadoSeccion": "activo"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 1,
+      "dia": "lunes",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 1,
+      "dia": "miercoles",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 2,
+      "dia": "martes",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 2,
+      "dia": "jueves",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 3,
+      "dia": "lunes",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 3,
+      "dia": "miercoles",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 3,
+      "dia": "viernes",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 4,
+      "dia": "martes",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 4,
+      "dia": "jueves",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 4,
+      "dia": "sabado",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 5,
+      "dia": "lunes",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 5,
+      "dia": "miercoles",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 5,
+      "dia": "viernes",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 6,
+      "dia": "martes",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 6,
+      "dia": "jueves",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 7,
+      "dia": "lunes",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 7,
+      "dia": "miercoles",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 7,
+      "dia": "viernes",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 8,
+      "dia": "martes",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 8,
+      "dia": "jueves",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 9,
+      "dia": "lunes",
+      "horaInicio": "12:00",
+      "horaFin": "14:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 9,
+      "dia": "miercoles",
+      "horaInicio": "12:00",
+      "horaFin": "14:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 10,
+      "dia": "martes",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 10,
+      "dia": "jueves",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 10,
+      "dia": "sabado",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 11,
+      "dia": "lunes",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 11,
+      "dia": "viernes",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 12,
+      "dia": "martes",
+      "horaInicio": "12:00",
+      "horaFin": "14:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 12,
+      "dia": "jueves",
+      "horaInicio": "12:00",
+      "horaFin": "14:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 13,
+      "dia": "miercoles",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 13,
+      "dia": "viernes",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 13,
+      "dia": "sabado",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 14,
+      "dia": "lunes",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 14,
+      "dia": "miercoles",
+      "horaInicio": "16:00",
+      "horaFin": "18:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 1,
+      "dia": "viernes",
+      "horaInicio": "08:00",
+      "horaFin": "10:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 2,
+      "dia": "sabado",
+      "horaInicio": "10:00",
+      "horaFin": "12:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 3,
+      "dia": "sabado",
+      "horaInicio": "14:00",
+      "horaFin": "16:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 4,
+      "dia": "lunes",
+      "horaInicio": "18:00",
+      "horaFin": "20:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 5,
+      "dia": "martes",
+      "horaInicio": "18:00",
+      "horaFin": "20:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 6,
+      "dia": "miercoles",
+      "horaInicio": "18:00",
+      "horaFin": "20:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 7,
+      "dia": "jueves",
+      "horaInicio": "18:00",
+      "horaFin": "20:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 8,
+      "dia": "viernes",
+      "horaInicio": "18:00",
+      "horaFin": "20:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 9,
+      "dia": "sabado",
+      "horaInicio": "12:00",
+      "horaFin": "14:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 10,
+      "dia": "lunes",
+      "horaInicio": "07:00",
+      "horaFin": "09:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 11,
+      "dia": "martes",
+      "horaInicio": "07:00",
+      "horaFin": "09:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 12,
+      "dia": "miercoles",
+      "horaInicio": "07:00",
+      "horaFin": "09:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 13,
+      "dia": "jueves",
+      "horaInicio": "07:00",
+      "horaFin": "09:00"
+    }
+  },
+  {
+    "model": "common.horario",
+    "fields": {
+      "seccion": 14,
+      "dia": "viernes",
+      "horaInicio": "07:00",
+      "horaFin": "09:00"
+    }
+  }
+]

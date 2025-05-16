@@ -42,7 +42,7 @@ def crear_base_datos():
 
       # Eliminar base de datos existente
       cur.execute(sql.SQL("DROP DATABASE {}").format(sql.Identifier(POSTGRES_DB)))
-      print(f"🗑️ Base de datos '{POSTGRES_DB}' eliminada.")
+      print(f"🗑️  Base de datos '{POSTGRES_DB}' eliminada.")
 
     # Crear la nueva base de datos
     cur.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(POSTGRES_DB)))

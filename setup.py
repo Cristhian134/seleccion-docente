@@ -21,7 +21,14 @@ def run_setup():
     print(f"❌ Error al ejecutar migraciones: {e}")
     return
 
-  # 3. Llenar base de datos
+  # 3. Llenar base de datos: python manage.py loaddata curso.json
+  print("🔃 Llenando las tablas Curso, Seccion y Horario")
+  try:
+    subprocess.run(["python", "manage.py", "loaddata", "curso.json"], check=True)
+    print("✅ Llenado de Curso, Seccion y Horario")
+  except Exception as e:
+    print(f"❌ Error al llenar las tablas Curso, Seccion y Horario: {e}")
+    return
 
   # 4. Creando superuser, puede acceder al sistema y a admin
   try:

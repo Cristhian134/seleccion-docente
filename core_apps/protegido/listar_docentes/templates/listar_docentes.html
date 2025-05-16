@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'listar_docentes.css' %}" />
+
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Listar Docentes</a>
+    </li>
+  </ol>
+</nav>
+<h1>Pagina para listar docentes</h1>
+{% endblock %}

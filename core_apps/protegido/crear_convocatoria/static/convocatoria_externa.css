@@ -1,0 +1,108 @@
+.programacion_convocatoria__wrapper {
+  display: flex;
+}
+
+.programacion_convocatoria {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form__programacion {
+  max-width: 400px;
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  flex-direction: column;
+}
+
+.cursos_convocatoria {
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.cursos_convocatoria > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cursos_convocatoria__wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.cursos_convocatoria__llenar_curso {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cursos_convocatoria__requisitos_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.cursos_convocatoria__requisitos_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.cursos_convocatoria__requisitos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  padding-right: 1.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.cursos_convocatoria__tabla {
+  width: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cursos_convocatoria__tabla_wrapper {
+  /* min-width: 600px; */
+  overflow-x: auto;
+  width: 100%;
+  max-height: calc(100dvh - 300px);
+}
+
+.cursos_convocatoria__tabla_wrapper > table {
+  min-width: 800px; /* o más si hay muchas columnas */
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cursos_convocatoria__buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cursos_convocatoria__tabla_wrapper table th:last-child,
+.cursos_convocatoria__tabla_wrapper table td:last-child {
+  width: 3rem; 
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .cursos_convocatoria__wrapper {
+    flex-direction: column;
+  }
+  .cursos_convocatoria__llenar_curso {
+    width: 100%;
+  }
+  .cursos_convocatoria__tabla {
+    width: calc(100dvw - 2rem);
+  }
+}

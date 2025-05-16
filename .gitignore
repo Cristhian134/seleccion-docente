@@ -7,6 +7,7 @@ staticfiles/
 !.envs/.env.local
 tests/*
 
+backups
 !tests/.gitkeep
 core_apps/autenticacion/migrations/*
 core_apps/common/migrations/*
