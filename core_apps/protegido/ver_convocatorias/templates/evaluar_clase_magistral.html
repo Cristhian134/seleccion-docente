@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/ver_convocatoria">Ver convocatoria</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/dirigir_calificacion">Digir Calificación</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Clase</a>
+    </li>
+</ol>
+
+<div class="clase_magistral">
+  <div class="izquierda__clase">
+    <div class="mostrar__clase">VEREMOS XDDDDDDDDDDDDDDDDDDD</div>
+  </div>
+  <div class="derecha__clase">
+    <div class="horas">
+      <div class="inicio">
+        <span>Hora Inicio</span>
+        <span>{{ hora.inicio }}</span>
+      </div>
+      <div class="fin">
+        <span>Hora Fin</span>
+        <span>{{ hora.fin }}</span>
+      </div>
+    </div>
+    <div class="calificar__clase">
+      <form method="post" id="form_clase">
+        <div class="item__cuadro">
+          <h3>Claridad en la Exposición y Metodología Didáctica</h3>
+          <input type="number" id="c1">
+          <label for="c1" class="label__criterio">(0-20)</label>
+        </div>
+        <div class="item__cuadro">
+          <h3>Grado de Conocimiento</h3>
+          <input type="number" id="c2">
+          <label for="c2" class="label__criterio">(0-10)</label>
+        </div>
+        <div class="item__cuadro">
+          <h3>Aptitud para Motivar el Interés del Tema</h3>
+          <input type="number" id="c3">
+          <label for="c3" class="label__criterio">(0-10)</label>
+        </div>
+        <div class="item__cuadro">
+          <h3>Absolución de Preguntas del Jurado y del Auditorio</h3>
+          <input type="number" id="c4">
+          <label for="c4" class="label__criterio">(0-10)</label>
+        </div>
+        <input type="submit" placeholder="Guardar">
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

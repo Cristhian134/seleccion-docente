@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/ver_convocatoria">Ver convocatoria</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/dirigir_calificacion">Digir Calificación</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Informe</a>
+    </li>
+</ol>
+
+<div class="informe">
+  Aquí va el informe en pdf
+</div>
+
+<button id="boton__exportar">Exportar como PDF</button>
+
+{% endblock %}
