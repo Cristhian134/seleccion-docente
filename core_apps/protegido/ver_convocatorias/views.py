@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from core_apps.common.models import Postulante, Documento, Convocatoria, Persona, ClaseMagistral, NotaPostulante
+from core_apps.common.models import Plaza, Postulante, Documento, Convocatoria, Persona, ClaseMagistral, NotaPostulante
 from core_apps.common.models import EstadoDocumento, EstadoPostulante, EstadoClaseMagistral, EstadoNotaPostulante
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
@@ -51,8 +51,6 @@ def ver_convocatorias(request):
         primer_curso = plaza.seccion.curso
         break
     convocatoria.curso = primer_curso  # Atributo dinámico solo para esta vista
-
-  print("las convocaotiras", convocatorias[0].curso)
 
   return render(request, 'ver_convocatorias.html', {
       "convocatorias": convocatorias,
@@ -260,18 +258,18 @@ def calificar_documentos(request, postulante_id):
 
     total = c1 + c2 + c3 + c4 + c5 + c6
 
-    calificacion, created = CalificacionDocumento.objects.update_or_create(
-        postulante=postulante,
-        defaults={
-            'criterio1': c1,
-            'criterio2': c2,
-            'criterio3': c3,
-            'criterio4': c4,
-            'criterio5': c5,
-            'criterio6': c6,
-            'total': total
-        }
-    )
+    # calificacion, created = CalificacionDocumento.objects.update_or_create(
+    #     postulante=postulante,
+    #     defaults={
+    #         'criterio1': c1,
+    #         'criterio2': c2,
+    #         'criterio3': c3,
+    #         'criterio4': c4,
+    #         'criterio5': c5,
+    #         'criterio6': c6,
+    #         'total': total
+    #     }
+    # )
 
     return redirect('ver_documentos', postulante_id=postulante.id)
 
@@ -311,16 +309,16 @@ def clase_magistral(request, postulante_id):
 
     total = c1 + c2 + c3 + c4
 
-    calificacion, created = CalificacionClase.objects.update_or_create(
-        postulante=postulante,
-        defaults={
-            'criterio1': c1,
-            'criterio2': c2,
-            'criterio3': c3,
-            'criterio4': c4,
-            'total': total
-        }
-    )
+    # calificacion, created = CalificacionClase.objects.update_or_create(
+    #     postulante=postulante,
+    #     defaults={
+    #         'criterio1': c1,
+    #         'criterio2': c2,
+    #         'criterio3': c3,
+    #         'criterio4': c4,
+    #         'total': total
+    #     }
+    # )
 
     return redirect('clase_magistral', postulante_id=postulante.id)
 
