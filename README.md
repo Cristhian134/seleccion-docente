@@ -1,13 +1,42 @@
 # Sistema de Selección Docente
 
-Login:
+## Login:
 ```
 http://localhost:8000/login/
 ```
 
-Admin:
+## Admin:
 ```
 http://localhost:8000/admin/
+```
+
+# Módulos
+```
+http://localhost:8000/ver-convocatorias/
+```
+```
+http://localhost:8000/descargar-pdf/<documento-id>/
+```
+## Listar Docentes
+```
+http://localhost:8000/listar-docentes/
+```
+## Crear Convocatoria
+```
+http://localhost:8000/crear-convocatoria/
+```
+```
+http://localhost:8000/crear-convocatoria/convocatoria-externa/
+```
+```
+http://localhost:8000/crear-convocatoria/convocatoria-interna/
+```
+## Ver Convocatorias
+```
+http://localhost:8000/ver_convocatorias/
+```
+```
+http://localhost:8000/ver_convocatorias/gestionar_documentos/<convocatoria-id>/
 ```
 
 # 1. Puertos
