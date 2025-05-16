@@ -176,6 +176,10 @@ class Curso(models.Model):
   nombreCurso = models.CharField(max_length=64)
   codigoCurso = models.CharField(max_length=20)
   creditosCurso = models.IntegerField()
+  facultad = models.CharField(
+    max_length=64,
+    choices=Facultad.choices
+  )
 
 
 class EstadoSeccion(models.TextChoices):

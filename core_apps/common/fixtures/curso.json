@@ -5,7 +5,8 @@
     "fields": {
       "nombreCurso": "INTRODUCCION A LA COMPUTACION",
       "codigoCurso": "BIC01",
-      "creditosCurso": 2
+      "creditosCurso": 2,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "nombreCurso": "CALCULO DIFERENCIAL",
       "codigoCurso": "BMA01",
-      "creditosCurso": 5
+      "creditosCurso": 5,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
@@ -23,7 +25,8 @@
     "fields": {
       "nombreCurso": "QUIMICA I",
       "codigoCurso": "BQU01",
-      "creditosCurso": 5
+      "creditosCurso": 5,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
@@ -32,7 +35,8 @@
     "fields": {
       "nombreCurso": "REDACCION Y COMUNICACION",
       "codigoCurso": "BRC01",
-      "creditosCurso": 2
+      "creditosCurso": 2,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
@@ -41,7 +45,8 @@
     "fields": {
       "nombreCurso": "GEOMETRIA ANALITICA",
       "codigoCurso": "FB101",
-      "creditosCurso": 3
+      "creditosCurso": 3,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
@@ -50,7 +55,8 @@
     "fields": {
       "nombreCurso": "INTRODUCCION AL PENSAMIENTO Y A LA INGENIERIA DE SISTEMAS",
       "codigoCurso": "SI101",
-      "creditosCurso": 3
+      "creditosCurso": 3,
+      "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
   {
