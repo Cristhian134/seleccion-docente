@@ -23,9 +23,46 @@
     <span> {{ nombrecompleto.postulante}} </span>
   </div>
   
-  <div class="cuadro_criterios">
-    
-  </div>
+  <form method="post" class="contenido">
+    <div class="cuadro_criterios">
+      <div class="item__cuadro">
+        <h3>Grados Académicos y Títulos Profesionales</h3>
+        <input type="number" id="c1">
+        <label for="c1" class="label__criterio">(0-10)</label>
+      </div>
+      <div class="item__cuadro">
+        <h3>Investigación</h3>
+        <input type="number" id="c2">
+        <label for="c2" class="label__criterio">(0-10)</label>
+      </div>
+      <div class="item__cuadro">
+        <h3>Enseñanza</h3>
+        <input type="number" id="c3">
+        <label for="c3" class="label__criterio">(0-10)</label>
+      </div>
+      <div class="item__cuadro">
+        <h3>Capacitación Académica</h3>
+        <input type="number" id="c4">
+        <label for="c4" class="label__criterio">(0-5)</label>
+      </div>
+      <div class="item__cuadro">
+        <h3>Proyección Social</h3>
+        <input type="number" id="c5">
+        <label for="c5" class="label__criterio">(0-5)</label>
+      </div>
+      <div class="item__cuadro">
+        <h3>Ejercicio Profesional</h3>
+        <input type="number" id="c6">
+        <label for="c6" class="label__criterio">(0-10)</label>
+      </div>
+    </div>
+
+    <div class="derecha">
+      <h2>Puntaje Total</h2>
+      <div class="cuadro_total">{{ total_puntaje}}</div>
+      <button type="submit" id="boton_confirmar">Confirmar</button>
+    </div>
+  </form>
 
 </body>
 </html>
