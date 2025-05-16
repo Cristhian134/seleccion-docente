@@ -1,0 +1,105 @@
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+}
+.modal.active {
+  display: flex;
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: white;
+  padding: 2rem;
+  gap: 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+  min-width: 350px;
+  min-height: 380px
+}
+.modal-exito .modal-content {
+  border-top: 3px solid green;
+}
+.modal-error .modal-content {
+  border-top: 3px solid red;
+}
+
+.modal-content > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 20px;
+}
+
+.modal-content > div > span {
+  font-size: 24px;
+}
+
+.modal-error i {
+  color: red;
+  font-size: 80px;
+}
+
+.modal-error button {
+  background-color: red;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(255, 0, 0, 0.4);
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+.modal-error button:hover {
+  background-color: darkred;
+  box-shadow: 0 6px 8px rgba(139, 0, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.modal-error button:active {
+  background-color: #8B0000;
+  box-shadow: 0 4px 6px rgba(139, 0, 0, 0.6);
+  transform: scale(0.98);
+  transition: transform 0.05s ease;
+}
+
+.modal-exito i {
+  color: green;
+  font-size: 80px;
+}
+
+.modal-exito button {
+  background-color: green;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  border: none;
+  font-weight: 600;
+  box-shadow: 0 4px 6px rgba(0, 128, 0, 0.4);
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.3s ease;
+}
+
+.modal-exito button:hover {
+  background-color: darkgreen; /* Más oscuro para hover */
+  box-shadow: 0 6px 8px rgba(0, 100, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.modal-exito button:active {
+  background-color: #006400; /* Verde muy oscuro */
+  box-shadow: 0 4px 6px rgba(0, 100, 0, 0.6);
+  transform: scale(0.98);
+  transition: transform 0.05s ease;
+}

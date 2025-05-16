@@ -1,4 +1,8 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<link rel="stylesheet" href="{% static 'convocatoria_externa.css' %}" />
+<link rel="stylesheet" href="{% static 'modal.css' %}" />
+
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
     <li class="breadcrumb__item">
@@ -12,9 +16,396 @@
     </li>
   </ol>
 </nav>
-<h1>Crear externa</h1>
-<form method="POST">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Guardar</button>
-</form>
+
+{% if mensaje %}
+<div id="modal_mensaje" class="modal active
+  {% if mensaje.exito %}
+    modal-exito
+  {% else %}
+    modal-error
+  {% endif %}
+">
+  <div class="modal-content">
+    <div>
+      {% if mensaje.exito %}
+        <i class="fa fa-check" aria-hidden="true"></i>
+        <span>Éxito</span>
+      {% else %}
+        <i class="fa fa-times" aria-hidden="true"></i>
+        <span>Error</span>
+      {% endif %}
+    </div>
+    <span>{{ mensaje.descripcion }}</span>
+    <button onclick="cerrarModal()">Cerrar</button>
+  </div>
+</div>
+{% endif %}
+
+<div class="programacion_convocatoria__wrapper">
+  <section
+    class="programacion_convocatoria flex"
+    id="programacion_convocatoria"
+  >
+    <h1 class="title-base">Programar convocatoria externa</h1>
+    <form method="POST" class="form__programacion">
+      {% csrf_token %}
+      <input type="hidden" id="cursos_json" name="cursos_json" />
+      <label class="input-primary">
+        Fecha publicación
+        <input
+          type="date"
+          id="fechaPublicacion"
+          name="fechaPublicacion"
+          class="form-control"
+          disabled
+          required
+        />
+      </label>
+      <label class="input-primary">
+        Fecha límite para enviar documentos
+        <input
+          type="datetime-local"
+          id="fechaCierre"
+          name="fechaCierre"
+          required
+        />
+      </label>
+      <label class="input-primary">
+        Fecha de asignación de tema
+        <input
+          type="datetime-local"
+          id="fechaAsignacionTema"
+          name="fechaAsignacionTema"
+          required
+        />
+      </label>
+      <label class="input-primary">
+        Fecha de inicio de las clases magistrals
+        <input
+          type="datetime-local"
+          id="fechaClaseMagistral"
+          name="fechaClaseMagistral"
+          required
+        />
+      </label>
+      <label class="input-primary">
+        Descripción
+        <textarea
+          id="descripcionConvocatoria"
+          name="descripcionConvocatoria"
+          rows="4"
+          cols="50"
+          required
+        ></textarea>
+      </label>
+      <button type="button" id="boton_siguiente" class="button--primary">
+        Siguiente
+      </button> 
+      {% comment %} <button type="submit" id="" class="button--primary">
+        Siguiente
+      </button> {% endcomment %}
+    </form>
+  </section>
+  <section class="cursos_convocatoria hidden" id="cursos_convocatoria">
+    <h1 class="title-base">Cursos para la convocatoria externa</h1>
+    <div>
+      <div class="cursos_convocatoria__wrapper">
+        <div class="cursos_convocatoria__llenar_curso">
+          {% comment %}
+          <label class="input-primary">
+            Curso - Sección
+            <select id="cursos_seccion" name="categorias" required>
+              <optgroup label="SI707 - INGENIERIA DE SOFTWARE">
+                <option value="SI707-U">SI707U - INGENIERIA DE SOFTWARE</option>
+                <option value="SI707-V">SI707V - INGENIERIA DE SOFTWARE</option>
+              </optgroup>
+              <optgroup label="SI705 - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS">
+                <option value="SI705-U">
+                  SI705U - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS
+                </option>
+                <option value="SI705-V">
+                  SI705V - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS
+                </option>
+              </optgroup>
+            </select>
+          </label>
+          {% endcomment %}
+          <label class="input-primary">
+            Curso - Sección
+            <select id="cursos_seccion" name="categorias" required>
+              {% for curso in cursos %}
+              <optgroup
+                label="{{ curso.codigoCurso }} - {{ curso.nombreCurso }}"
+              >
+                {% for seccion in curso.seccion_set.all %}
+                <option
+                  value="{{ curso.codigoCurso }}-{{ seccion.codigoSeccion }}"
+                >
+                  {{ curso.codigoCurso }}{{ seccion.codigoSeccion }} - {{ curso.nombreCurso }}
+                </option>
+                {% endfor %}
+              </optgroup>
+              {% endfor %}
+            </select>
+          </label>
+          {% comment %} <label class="input-primary">
+            Tipo
+            <select required id="tipo_plaza">
+              <option value="teoria">Teoría</option>
+              <option value="practica">Práctica</option>
+              <option value="laboratorio">Laboratorio</option>
+            </select>
+          </label> {% endcomment %}
+          <label class="input-primary">
+            Tipo
+            <select required id="tipo_plaza" name="tipo_plaza">
+              {% for valor, nombre in tipo_plazas %}
+                <option value="{{ valor }}">{{ nombre }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <div class="cursos_convocatoria__requisitos_wrapper">
+            <div class="cursos_convocatoria__requisitos_header">
+              <span>Requisitos</span>
+              <button id="boton_agregar_requisito" class="button--primary">
+                Agregar
+              </button>
+            </div>
+            <div
+              class="cursos_convocatoria__requisitos"
+              id="requisitos_wrapper"
+            ></div>
+          </div>
+          <button
+            id="boton_agregar_curso"
+            type="button"
+            class="button--primary w-full"
+          >
+            Agregar curso
+          </button>
+        </div>
+        <div class="cursos_convocatoria__tabla">
+          <h2>Cursos para la convocatoria</h2>
+          <div class="cursos_convocatoria__tabla_wrapper">
+            <table border="1" id="tabla_cursos" class="table__primary">
+              <thead>
+                <tr>
+                  <th>N°</th>
+                  <th>Curso</th>
+                  <th>Requisitos</th>
+                  <th>Tipo</th>
+                  <th>Horas</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="cursos_convocatoria__buttons">
+        <button id="boton_atras" class="button--primary">Atrás</button>
+        <button id="boton_crear" type="submit" class="button--primary">
+          Crear convocatoria
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("fechaPublicacion");
+    const today = new Date().toISOString().split("T")[0];
+    input.value = today;
+
+    const seccionProgramacion = document.getElementById(
+      "programacion_convocatoria"
+    );
+    const seccionCursos = document.getElementById("cursos_convocatoria");
+
+    const boton_siguiente = document.getElementById("boton_siguiente");
+    boton_siguiente.addEventListener("click", function () {
+      seccionProgramacion.classList.add("hidden");
+      seccionProgramacion.classList.remove("flex");
+
+      seccionCursos.classList.remove("hidden");
+      seccionCursos.classList.add("flex");
+    });
+
+    const boton_atras = document.getElementById("boton_atras");
+    boton_atras.addEventListener("click", function () {
+      seccionProgramacion.classList.remove("hidden");
+      seccionProgramacion.classList.add("flex");
+
+      seccionCursos.classList.add("hidden");
+      seccionCursos.classList.add("flex");
+    });
+
+    const boton_crear = document.getElementById("boton_crear");
+    boton_crear.addEventListener("click", function () {});
+  });
+
+  const wrapper = document.getElementById("requisitos_wrapper");
+  let contador = 0;
+
+  function agregarRequisito() {
+    contador += 1;
+
+    const contenedor = document.createElement("div");
+    contenedor.style.display = "flex";
+    contenedor.style.alignItems = "center";
+
+    const label = document.createElement("label");
+    label.className = "input-primary";
+    label.style.flexGrow = "1"; // para que textarea ocupe espacio
+
+    const textarea = document.createElement("textarea");
+    textarea.id = `requisito-${contador}`;
+    textarea.name = `requisito-${contador}`;
+    textarea.rows = 2;
+    textarea.cols = 50;
+    textarea.required = true;
+
+    label.appendChild(textarea);
+
+    // Botón eliminar
+    const btnEliminar = document.createElement("button");
+    btnEliminar.type = "button";
+    btnEliminar.innerHTML =
+      '<i class="fa fa-trash delete_icon" aria-hidden="true"></i>';
+    btnEliminar.style.marginLeft = "10px";
+    btnEliminar.className = "button--danger"; // Si tienes estilos para botón de eliminar
+
+    btnEliminar.addEventListener("click", function () {
+      wrapper.removeChild(contenedor);
+    });
+
+    contenedor.appendChild(label);
+    contenedor.appendChild(btnEliminar);
+
+    wrapper.appendChild(contenedor);
+  }
+
+  // Agregar los 3 campos por defecto al cargar la página
+  for (let i = 0; i < 3; i++) {
+    agregarRequisito();
+  }
+  // Agregar uno más cuando se hace clic en el botón
+  document
+    .getElementById("boton_agregar_requisito")
+    .addEventListener("click", agregarRequisito);
+
+  function resetearRequisitos() {
+    // Limpia el contenedor
+    wrapper.innerHTML = "";
+    contador = 0;
+
+    // Agrega 3 campos por defecto
+    for (let i = 0; i < 3; i++) {
+      agregarRequisito();
+    }
+  }
+
+  let contadorCursos = 1;
+
+  function agregarFilaATabla() {
+    const cursoSeleccionado = document.getElementById("cursos_seccion").value;
+    const tipoSeleccionado = document.getElementById("tipo_plaza").value;
+    const requisitos = document.querySelectorAll(
+      "#requisitos_wrapper textarea"
+    );
+
+    const listaRequisitos = Array.from(requisitos)
+      .map((req) => req.value.trim())
+      .filter((val) => val !== "");
+
+    if (
+      !cursoSeleccionado ||
+      !tipoSeleccionado ||
+      listaRequisitos.length === 0
+    ) {
+      alert("Completa todos los campos antes de agregar el curso.");
+      return;
+    }
+
+    const tabla = document.querySelector("#tabla_cursos tbody");
+    const fila = document.createElement("tr");
+
+    fila.innerHTML = `
+      <td>${contadorCursos}</td>
+      <td>${cursoSeleccionado}</td>
+      <td><ul>${listaRequisitos.map((r) => `<li>${r}</li>`).join("")}</ul></td>
+      <td>${tipoSeleccionado}</td>
+      <td>4</td>
+      <td>
+        <button type="button" class="button--danger btn-eliminar-curso">
+          <i class="fa fa-trash delete_icon" aria-hidden="true"></i>
+        </button>
+      </td>
+    `;
+
+    tabla.appendChild(fila);
+
+    fila
+      .querySelector(".btn-eliminar-curso")
+      .addEventListener("click", function () {
+        fila.remove();
+        // Opcional: puedes recontar los números de la columna N°
+        actualizarNumeracionCursos();
+      });
+
+    contadorCursos++;
+
+    // Reinicia los requisitos a 3
+    resetearRequisitos();
+  }
+
+  function actualizarNumeracionCursos() {
+    const filas = document.querySelectorAll("#tabla_cursos tbody tr");
+    filas.forEach((fila, index) => {
+      fila.cells[0].textContent = index + 1;
+    });
+    contadorCursos = filas.length + 1;
+  }
+
+  document
+    .getElementById("boton_agregar_curso")
+    .addEventListener("click", agregarFilaATabla);
+  document.add;
+
+  document.getElementById("boton_crear").addEventListener("click", function () {
+    const filas = document.querySelectorAll("#tabla_cursos tbody tr");
+    const data = [];
+
+    filas.forEach(fila => {
+      const celdas = fila.querySelectorAll("td");
+
+      const curso = celdas[1].textContent.trim();
+      const tipo = celdas[3].textContent.trim().toLowerCase(); // Ej: "Teoría" → "teoria"
+      const horas = parseInt(celdas[4].textContent.trim());
+
+      const requisitos = Array.from(celdas[2].querySelectorAll("li")).map(li =>
+        li.textContent.trim()
+      );
+
+      data.push({
+        curso: curso,
+        requisitos: requisitos,
+        tipo: tipo,
+        horas: horas
+      });
+    });
+
+    // Aquí está el campo al que se lo asignas:
+    document.getElementById("cursos_json").value = JSON.stringify(data);
+
+    // Enviar formulario
+    document.querySelector(".form__programacion").submit();
+  });
+
+  function cerrarModal() {
+    document.getElementById("modal_mensaje").classList.remove("active");
+  }
+</script>
 {% endblock %}
