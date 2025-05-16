@@ -345,6 +345,10 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
+  persona = models.ForeignKey(
+    Persona,
+    on_delete=models.CASCADE
+  )
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
