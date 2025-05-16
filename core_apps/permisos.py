@@ -2,6 +2,7 @@ class ROLES:
   DECANO = "Decano"
   ADMINISTRADOR = "Administrador"
   ENCARGADO_CONSEJO = "Encargado Consejo"
+  EVALUADOR = "Evaluador"
 
 
 MODULOS = [
