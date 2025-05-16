@@ -61,10 +61,10 @@ class Command(BaseCommand):
     User = get_user_model()
 
     # Verificar si usuario con ese código o username ya existe
-    if User.objects.filter(codigoUser=codigo_user).exists():
+    if User.objects.filter(codigoUsuario=codigo_user).exists():
       self.stdout.write(self.style.WARNING(f'Usuario con código {codigo_user} ya existe. No se creó nuevo usuario.'))
       return
-    if User.objects.filter(nombreUser=username).exists():
+    if User.objects.filter(nombreUsuario=username).exists():
       self.stdout.write(self.style.WARNING(f'Usuario con username {username} ya existe. No se creó nuevo usuario.'))
       return
 
