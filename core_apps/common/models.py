@@ -133,6 +133,11 @@ class TipoConvocatoria(models.TextChoices):
   EXTERNA = 'externa', 'Externa'
 
 
+class EstadoConvocatoria(models.TextChoices):
+  ACTIVO = "activo", "Activo"
+  INACTIVO = "inactivo", "Inactivo"
+
+
 class Convocatoria(models.Model):
   descripcionConvocatoria = models.CharField(max_length=128)
   tipoConvocatoria = models.CharField(
@@ -143,6 +148,10 @@ class Convocatoria(models.Model):
   fechaCierre = models.DateTimeField()
   fechaAsignacionTema = models.DateTimeField()
   fechaClaseMagistral = models.DateTimeField()
+  estadoConvocatoria = models.CharField(
+    max_length=64,
+    choices=EstadoConvocatoria.choices,
+  )
 
 
 class EstadoPostulante(models.TextChoices):
