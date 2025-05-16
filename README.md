@@ -161,13 +161,25 @@ pip install -r requirements/local.txt
 python setup.py
 ```
 
-# 5. Superuser en produccion
+# 5. Usuarios en produccion
 
-Usuario
+Superuser
+
 ```
 bQi4kn_b83kJo_9SfiVDCUfKrg4
 ```
 Contraseña
 ```
 bQi4kn_b83kJo_9SfiVDCUfKrg4
+```
+
+Encargado consejo
+
+Usuario
+```
+juanp
+```
+Contraseña
+```
+juanp
 ```
