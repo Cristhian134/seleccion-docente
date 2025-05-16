@@ -16,12 +16,12 @@ MODULOS = [
     "nombre": "Crear convocatoria",
     "icono": "fa fa-bullhorn",
     "url": "/crear-convocatoria/",
-    "roles": [ROLES.ADMINISTRADOR, ROLES.ENCARGADO_CONSEJO],
+    "roles": [ROLES.ADMINISTRADOR, ROLES.DECANO, ROLES.ENCARGADO_CONSEJO],
   },
   {
     "nombre": "Ver convocatorias",
     "icono": "fa fa-external-link",
     "url": "/ver_convocatorias/",
-    "roles": [ROLES.ADMINISTRADOR],
+    "roles": [ROLES.ADMINISTRADOR, ROLES.ENCARGADO_CONSEJO],
   },
 ]

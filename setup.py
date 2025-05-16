@@ -33,6 +33,7 @@ def run_setup():
   # 4. Creando superuser, puede acceder al sistema y a admin
   try:
     subprocess.run(["python", "manage.py", "create_superuser"], check=True)
+    subprocess.run(["python", "manage.py", "create_encargado_consejo"], check=True)
   except Exception as e:
     print(f"❌ Error al crear superusuario: {e}")
     return
