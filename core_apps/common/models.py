@@ -164,7 +164,7 @@ class Postulante(models.Model):
 
 
 class Curso(models.Model):
-  nombreCurso = models.CharField(max_length=32)
+  nombreCurso = models.CharField(max_length=64)
   codigoCurso = models.CharField(max_length=20)
   creditosCurso = models.IntegerField()
 
@@ -266,7 +266,7 @@ class Horario(models.Model):
   seccion = models.ForeignKey(
     Seccion,
     on_delete=models.CASCADE,
-  ),
+  )
   dia = models.CharField(
     max_length=15,
     choices=DiaSemana.choices,
