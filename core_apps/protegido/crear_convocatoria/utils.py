@@ -1,7 +1,7 @@
 
 from django.utils.timezone import now
 
-from core_apps.common.models import Convocatoria, EstadoPlaza, EstadoSeccion, Plaza, Requisito, Seccion
+from core_apps.common.models import Convocatoria, EstadoConvocatoria, EstadoPlaza, EstadoSeccion, Plaza, Requisito, Seccion
 
 # cursos_list
 # [
@@ -23,6 +23,7 @@ def crear_modelo_convocatoria(cleaned_data):
       fechaCierre=cleaned_data["fechaCierre"],
       fechaAsignacionTema=cleaned_data["fechaAsignacionTema"],
       fechaClaseMagistral=cleaned_data["fechaClaseMagistral"],
+      estadoConvocatoria=EstadoConvocatoria.ACTIVO,
   )
 
 
