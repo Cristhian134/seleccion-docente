@@ -15,4 +15,4 @@ python manage.py migrate
 
 python manage.py loaddata curso.json
 
-python manage.py create_superuser
+python manage.py create_superuser || echo "Ya hay un superuser"
