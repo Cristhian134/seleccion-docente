@@ -23,7 +23,6 @@
   </div>
 </div>
 
-{{i=0}}
 <table>
   <thead>
     <tr>
@@ -38,15 +37,14 @@
   </thead>
   <tbody>
     {% for postulante in postulantes_convocatoria %}
-    {{i=i+1}}
     <tr>
-      <td>{{i}}</td>
+      <td>{{ forloop.counter }}</td>
       <td>{{ postulante.apellidos }}</td>
       <td>{{ postulante.nombres }}</td>
       <td>{{ postulante.temaClase }}</td>
       <td>{{ postulante.fechaClase }}</td>
       <td>{{ postulante.horaClase }}</td>
-      <td><button value={{postulante.id}}>Evaluar</button></td>
+      <td><button value="{{ postulante.id }}">Evaluar</button></td>
     </tr>
     {% empty %}
     <tr>
