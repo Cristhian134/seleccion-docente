@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from core_apps.common.models import Postulante, Documento, Convocatoria, Persona, Clasemagistral, Notapostulante
-from core_apps.common.models import EstadoDocumento, EstadoPostulante
+from core_apps.common.models import Postulante, Documento, Convocatoria, Persona, ClaseMagistral, NotaPostulante
+from core_apps.common.models import EstadoDocumento, EstadoPostulante, EstadoClaseMagistral, EstadoNotaPostulante
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 from django.urls import reverse
