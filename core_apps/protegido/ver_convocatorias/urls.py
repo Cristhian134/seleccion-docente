@@ -8,7 +8,9 @@ urlpatterns = [
     #path('ver_convocatorias/documentos/<int:postulante_id>/', views.ver_documentos_postulante, name='ver_documentos_postulante'),
     #path('ver_convocatorias/<int:convocatoria_id>/aptos/', views.postulantes_aptos, name='postulantes_aptos'),
     path('ver_convocatorias/dirigir_calificacion/<int:convocatoria_id>/', views.convocatoria_dirigir_calificacion, name='dirigir_calificacion'),
-    
+    path('ver_documento/<int:documento_id>/', views.ver_documento, name='ver_documento'),
+    path('documento/<int:documento_id>/', views.ver_documento, name='ver_documento'),
+
 ]
 
 

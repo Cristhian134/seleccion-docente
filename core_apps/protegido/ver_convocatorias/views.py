@@ -4,6 +4,12 @@ from django.utils import timezone
 from core_apps.common.models import Postulante, Documento, Convocatoria, Persona
 from core_apps.common.models import EstadoDocumento, EstadoPostulante
 from django.views.decorators.http import require_http_methods
+from django.http import HttpResponse
+from django.urls import reverse
+from django.contrib import messages
+from django.core.files.uploadedfile import UploadedFile
+import mimetypes
+
 
 @login_required
 def ver_convocatorias(request):
@@ -39,6 +45,16 @@ def ver_convocatorias(request):
         "url_volver": "/home"
     })
 
+@login_required
+def ver_documento(request, documento_id):
+    documento = get_object_or_404(Documento, id=documento_id)
+
+    tipo_mime = "application/pdf" if documento.tipoDocumento.lower().endswith("pdf") else "image/png"
+
+    response = HttpResponse(documento.archivo, content_type=tipo_mime)
+    response["Content-Disposition"] = f'inline; filename="documento_{documento_id}"'
+    return response
+
 #@login_required
 #def gestionar_documentos(request):
 #    if request.method == 'POST':
@@ -66,6 +82,16 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
     for postulante in postulantes:
         doc = postulante.documento_set.order_by("fechaRecepcion").first()
         postulante.fecha_documento_mas_antiguo = doc.fechaRecepcion if doc else None
+
+    # 🔥 Agrega esto: serialización para el frontend
+        postulante.documentos_json = [
+            {
+                "tipoDocumento": d.tipoDocumento,
+                "fechaRecepcion": d.fechaRecepcion.strftime("%Y-%m-%d"),
+                "url": reverse('ver_documento', args=[d.id])
+            }
+            for d in postulante.documento_set.all()
+        ]
 
     # Acción: Eliminar postulante
     if request.method == "POST" and "eliminar" in request.POST:
@@ -108,39 +134,58 @@ def agregar_postulante(request, convocatoria_id):
         apellido_paterno = request.POST.get("apellidoPaterno")
         apellido_materno = request.POST.get("apellidoMaterno")
         tipo_documento = request.POST.get("tipoDocumento")
-        archivo = request.FILES.get("archivo")
+        archivo: UploadedFile = request.FILES.get("archivo")
+
+        if not archivo:
+            messages.error(request, "Debe subir un archivo.")
+            return redirect(request.path)
+
+        # Validar tipo MIME (solo pdf o imagen)
+        mime_type, _ = mimetypes.guess_type(archivo.name)
+        if mime_type not in ["application/pdf", "image/png", "image/jpeg"]:
+            messages.error(request, "Formato de archivo no permitido. Solo PDF o imágenes.")
+            return redirect(request.path)
 
         # Buscar o crear Persona
-        persona, created = Persona.objects.get_or_create(
+        persona, _ = Persona.objects.get_or_create(
             nombre=nombre,
             apellidoPaterno=apellido_paterno,
             apellidoMaterno=apellido_materno,
             defaults={
-                "dni": "00000000",  # Ajustar en producción
+                "dni": "00000000",  # Ajustar o solicitar en formulario real
                 "correo": "sin@email.com",
                 "telefono": "000000000",
                 "genero": "otro",
             }
         )
 
-        # Crear postulante
-        postulante, created_postulante = Postulante.objects.get_or_create(
+        # Crear Postulante
+        postulante, _ = Postulante.objects.get_or_create(
             persona=persona,
             convocatoria=convocatoria,
             defaults={"estadoPostulante": EstadoPostulante.REGISTRADO}
         )
 
-        # Crear documento
-        if archivo:
+        # Crear Documento asociado
+        Documento.objects.create(
+            postulante=postulante,
+            tipoDocumento=tipo_documento,
+            archivo=archivo.read(),  # Guarda binario
+            fechaRecepcion=timezone.now(),
+            estadoDocumento=EstadoDocumento.REGISTRADO
+        )
+
+        archivos = request.FILES.getlist("archivos")
+        for archivo in archivos:
             Documento.objects.create(
                 postulante=postulante,
-                tipoDocumento=tipo_documento,
+                tipoDocumento=tipo_documento,  # o uno por archivo si tu HTML lo permite
                 archivo=archivo.read(),
                 fechaRecepcion=timezone.now(),
                 estadoDocumento=EstadoDocumento.REGISTRADO
             )
 
-        # Redireccionar de nuevo a la vista de gestión
+        messages.success(request, "Postulante y documento agregados correctamente.")
         return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
 
     return render(request, "agregar_postulante.html", {

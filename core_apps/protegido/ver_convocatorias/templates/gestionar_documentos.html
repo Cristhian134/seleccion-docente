@@ -34,7 +34,22 @@
         <td>{{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}</td>
         <td>{{ postulante.fecha_documento_mas_antiguo }}</td>
         <td>
-          <button formaction="{% url 'ver_documentos_postulante' postulante.id %}" formmethod="get">Visualizar Documentos</button>
+          <button type="button"
+            onclick="mostrarModalVerDocumentos({{ postulante.id }}, '{{ postulante.persona.nombre }} {{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}', JSON.parse(document.getElementById('docs-{{ postulante.id }}').textContent))">
+            Visualizar Documentos
+          </button>
+          <script type="application/json" id="docs-{{ postulante.id }}">
+            [
+              {% for doc in postulante.documento_set.all %}
+              {
+                "tipo": "{{ doc.tipoDocumento|escapejs }}",
+                "fecha": "{{ doc.fechaRecepcion }}",
+                "estado": "{{ doc.estadoDocumento }}",
+                "url": "{% url 'ver_documento' doc.id %}"
+              }{% if not forloop.last %},{% endif %}
+              {% endfor %}
+            ]
+          </script>
         </td>
         <td>
           <input type="radio" name="postulante_id" value="{{ postulante.id }}">
@@ -107,7 +122,25 @@
   </div>
 </div>
 
+<div id="modalVerDocumentos" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
+    <h3>Datos de Postulante</h3>
+    <p id="nombrePostulante" style="font-weight: bold;"></p>
+
+    <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
+      <button class="btn-agregar">Aceptar</button>
+      <button class="btn-cancelar">Rechazar</button>
+    </div>
+
+    <div id="contenedorDocumentos">
+      <!-- Aquí se cargarán los documentos con JS -->
+    </div>
+  </div>
+</div>
+
 <script>
+  // Abrir el modal de "Agregar Postulante"
   function mostrarModal() {
     document.getElementById("modalAgregar").style.display = "block";
   }
@@ -116,13 +149,83 @@
     document.getElementById("modalAgregar").style.display = "none";
   }
 
-  // Cierra el modal si se hace clic fuera de él
+  // Cerrar el modal de agregar si se hace clic fuera
   window.addEventListener("click", function (e) {
-    if (e.target === document.getElementById("modalAgregar")) {
-      document.getElementById("modalAgregar").style.display = "none";
+    const modalAgregar = document.getElementById("modalAgregar");
+    if (e.target === modalAgregar) {
+      modalAgregar.style.display = "none";
     }
   });
+
+  // ---- VISUALIZAR DOCUMENTOS ----
+  function mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos) {
+    const modal = document.getElementById("modalVerDocumentos");
+    const nombreElem = document.getElementById("nombrePostulante");
+    const contenedor = document.getElementById("contenedorDocumentos");
+
+    // Mostrar nombre del postulante
+    nombreElem.textContent = nombreCompleto;
+
+    // Limpiar documentos anteriores
+    contenedor.innerHTML = "";
+
+    // Renderizar documentos
+    documentos.forEach(doc => {
+      const docElem = document.createElement("div");
+      docElem.innerHTML = `
+        <div style="margin-bottom: 1em; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+          <p><strong>Tipo:</strong> ${doc.tipo}</p>
+          <p><strong>Fecha:</strong> ${doc.fecha}</p>
+          <p><strong>Estado:</strong> ${doc.estado}</p>
+          <iframe src="${doc.url}" width="100%" height="300px" style="border: none;"></iframe>
+        </div>
+      `;
+      contenedor.appendChild(docElem);
+    });
+
+    // Asociar eventos a botones
+    document.querySelector(".btn-agregar").onclick = function () {
+      enviarAccionDocumentos(postulanteId, "aceptar");
+    };
+    document.querySelector(".btn-cancelar").onclick = function () {
+      enviarAccionDocumentos(postulanteId, "rechazar");
+    };
+
+    // Mostrar modal
+    modal.style.display = "block";
+  }
+
+  function cerrarModalVerDocumentos() {
+    document.getElementById("modalVerDocumentos").style.display = "none";
+  }
+
+  // Cerrar si se hace clic fuera del modal
+  window.addEventListener("click", function (e) {
+    const modal = document.getElementById("modalVerDocumentos");
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+  // Enviar acción al backend
+  function enviarAccionDocumentos(postulanteId, accion) {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "";  // Acción actual
+
+    const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+    form.innerHTML = `
+      <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+      <input type="hidden" name="postulante_id" value="${postulanteId}">
+      <input type="hidden" name="accion_documentos" value="${accion}">
+    `;
+
+    document.body.appendChild(form);
+    form.submit();
+  }
 </script>
+
 
 
 {% endblock %}
