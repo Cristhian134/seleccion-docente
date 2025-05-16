@@ -17,19 +17,31 @@ def ver_convocatorias(request):
         "url_volver": "/home"
     })
 
-@login_required
-def gestionar_documentos(request):
-    if request.method == 'POST':
-        convocatoria_id = request.POST.get('convocatoria_id')
-        if convocatoria_id:
-            return redirect(f'/documentos/{convocatoria_id}/')  # O usa `reverse()`
-    return redirect('ver_convocatorias')
+#@login_required
+#def gestionar_documentos(request):
+#    if request.method == 'POST':
+#        convocatoria_id = request.POST.get('convocatoria_id')
+#        if convocatoria_id:
+#            return redirect(f'/documentos/{convocatoria_id}/')  # O usa `reverse()`
+#    return redirect('ver_convocatorias')
+
+#@login_required
+#def dirigir_calificacion(request):
+    #if request.method == 'POST':
+    #    convocatoria_id = request.POST.get('convocatoria_id')
+    #    if convocatoria_id:
+    #        return redirect(f'/calificacion/{convocatoria_id}/')
+    #return redirect('ver_convocatorias')
+# Create your views here.
 
 @login_required
-def dirigir_calificacion(request):
-    if request.method == 'POST':
-        convocatoria_id = request.POST.get('convocatoria_id')
-        if convocatoria_id:
-            return redirect(f'/calificacion/{convocatoria_id}/')
-    return redirect('ver_convocatorias')
-# Create your views here.
+def convocatoria_gestionar_documentos(request):
+  return render(request, 'gestionar_documentos.html', {
+    "url_volver": "/ver_convocatorias"
+  })
+
+@login_required
+def convocatoria_dirigir_calificacion(request):
+  return render(request, 'dirigir_calificacion.html', {
+    "url_volver": "/ver_convocatorias"
+  })

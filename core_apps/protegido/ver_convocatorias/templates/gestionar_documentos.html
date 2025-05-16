@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'ver_convocatorias.css' %}" />
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <ol class="breadcrumb__list">
+      <li class="breadcrumb__item">
+        <a href="/home">Inicio</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a href="/ver_convocatoria">Ver convocatoria</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a>Gestionar Documentos</a>
+      </li>
+  </ol>
+{% endblock %}
