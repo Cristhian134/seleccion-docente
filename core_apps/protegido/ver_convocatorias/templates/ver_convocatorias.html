@@ -46,7 +46,7 @@
         {% for conv in convocatorias %}
         <tr>
           <td>{{ conv.id }}</td>
-          <td>{{ conv.plaza.curso.nombreCurso }}</td>
+          <td>{{conv.curso.codigoCurso}}-{{ conv.curso.nombreCurso }}</td>
           <td>{{ conv.fechaPublicacion }}</td>
           <td>{{ conv.fechaCierre }}</td>
           <td>{{ conv.estadoConvocatoria }}</td>
