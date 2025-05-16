@@ -1,13 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from core_apps.common.models import Postulante, Documento, Convocatoria, Persona
+from core_apps.common.models import Postulante, Documento, Convocatoria, Persona, Clasemagistral, Notapostulante
 from core_apps.common.models import EstadoDocumento, EstadoPostulante
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
+from django.db.models import Sum, F, FloatField
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 import mimetypes
 
 
