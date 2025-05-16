@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'modal_documento.css' %}" />
+
+<div class="modal-container">
+  <h2>Postulante N° 1 Subir Documentos</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table class="table__modal">
+      <thead>
+        <tr>
+          <th>N°</th>
+          <th>Nombre</th>
+          <th>Tipo Documento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>
+            <input type="text" name="nombre" placeholder="Nombre" required><br/>
+            <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
+            <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
+          </td>
+          <td>
+            <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 1em;">
+      <label for="archivo" class="upload-label">
+        <img src="{% static 'upload_icon.png' %}" alt="Subir Documento" width="64"/>
+        <br>Subir Documento
+      </label>
+      <input type="file" name="archivo" id="archivo" style="display: none;" required>
+    </div>
+
+    <div class="modal-actions">
+      <button type="submit" class="btn btn-primary">Agregar</button>
+      <a href="{% url 'gestionar_documentos' convocatoria.id %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
