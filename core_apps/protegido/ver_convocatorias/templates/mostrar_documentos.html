@@ -1,34 +1,49 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} 
+{% block content %}
 
 <ol class="breadcrumb__list">
-    <li class="breadcrumb__item">
-      <a href="/home">Inicio</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a href="/ver_convocatoria">Ver convocatoria</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a href="/dirigir_calificacion">Digir Calificación</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a>Documentos</a>
-    </li>
+  <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+  <li class="breadcrumb__item"><a href="/ver_convocatoria">Ver convocatoria</a></li>
+  <li class="breadcrumb__item"><a href="/dirigir_calificacion">Dirigir Calificación</a></li>
+  <li class="breadcrumb__item"><a>Documentos</a></li>
 </ol>
 
 <div class="reales__documentos">
   <div class="seleccion__documento">
-    <span class="caja__documentos">Documentos</span>
-    {{% for documento in documentos %}}
-      <div class="fila__documento">
-        <span> {{ documento.nombre }}</span>
-        <input type="radio" name="nombre_doc" value="{{ documento.id }}">
-      </div>
+    <span class="caja__documentos">Documentos de {{ postulante.nombres }} {{ postulante.apellidos }}</span>
+    <form id="form__documentos">
+      {% for documento in documentos %}
+        <div class="fila__documento">
+          <label>
+            <input type="radio" name="nombre_doc" value="{{ documento.archivo.url }}">
+            {{ documento.nombre }}
+          </label>
+        </div>
+      {% empty %}
+        <p>No hay documentos subidos.</p>
+      {% endfor %}
+    </form>
   </div>
+
   <div class="mostrar__documento">
-    <div class="mostrar__documento documento_pdf">VEREMOS XDDDDDDDDDDDDDDDDDDD</div>
+    <iframe id="visor_documento" class="documento_pdf" width="100%" height="500px"></iframe>
   </div>
 </div>
 
 <button id="boton__calificar">Calificar</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const radios = document.querySelectorAll('input[name="nombre_doc"]');
+    const visor = document.getElementById('visor_documento');
+
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        visor.src = radio.value;
+      });
+    });
+  });
+</script>
 
 {% endblock %}

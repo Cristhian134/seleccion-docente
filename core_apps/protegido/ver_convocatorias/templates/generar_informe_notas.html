@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
 
 <ol class="breadcrumb__list">
     <li class="breadcrumb__item">
@@ -8,17 +10,21 @@
       <a href="/ver_convocatoria">Ver convocatoria</a>
     </li>
     <li class="breadcrumb__item">
-      <a href="/dirigir_calificacion">Digir Calificación</a>
+      <a href="/dirigir_calificacion">Dirigir Calificación</a>
     </li>
     <li class="breadcrumb__item">
       <a>Informe</a>
     </li>
 </ol>
 
-<div class="informe">
-  Aquí va el informe en pdf
+<div class="informe" style="height: 700px;">
+  <!-- Aquí cargamos el PDF generado en backend -->
+  <iframe
+    src="{% url 'generar_informe_pdf' postulante_id=postulante_id %}"
+    style="width: 100%; height: 100%; border: none;"
+  ></iframe>
 </div>
 
-<button id="boton__exportar">Exportar como PDF</button>
+<button id="boton__exportar" onclick="window.open('{% url 'generar_informe_pdf' postulante_id=postulante_id %}', '_blank')">Exportar como PDF</button>
 
 {% endblock %}

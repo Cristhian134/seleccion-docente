@@ -1,68 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>{% block title %}Inicio{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/global.css' %}" />
-    {% comment %} <link
-      rel="stylesheet"
-      href="{% static 'css/ui.css' %}"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    /> {% endcomment %}
-    <link
-      rel="stylesheet"
-      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
-      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
-      crossorigin="anonymous"
-    />
-</head>
-<body>
-  <h2>Evaluación de documentos</h2>
-  <div class="postulante">
-    <span>Postulante:</h3>
-    <span> {{ nombrecompleto.postulante}} </span>
+<form method="post" class="contenido">
+  <div class="cuadro_criterios">
+    <div class="item__cuadro">
+      <h3>Grados Académicos y Títulos Profesionales</h3>
+      <input type="number" id="c1" min="0" max="10" oninput="validarYSumar()">
+      <label for="c1" class="label__criterio">(0-10)</label>
+    </div>
+    <div class="item__cuadro">
+      <h3>Investigación</h3>
+      <input type="number" id="c2" min="0" max="10" oninput="validarYSumar()">
+      <label for="c2" class="label__criterio">(0-10)</label>
+    </div>
+    <div class="item__cuadro">
+      <h3>Enseñanza</h3>
+      <input type="number" id="c3" min="0" max="10" oninput="validarYSumar()">
+      <label for="c3" class="label__criterio">(0-10)</label>
+    </div>
+    <div class="item__cuadro">
+      <h3>Capacitación Académica</h3>
+      <input type="number" id="c4" min="0" max="5" oninput="validarYSumar()">
+      <label for="c4" class="label__criterio">(0-5)</label>
+    </div>
+    <div class="item__cuadro">
+      <h3>Proyección Social</h3>
+      <input type="number" id="c5" min="0" max="5" oninput="validarYSumar()">
+      <label for="c5" class="label__criterio">(0-5)</label>
+    </div>
+    <div class="item__cuadro">
+      <h3>Ejercicio Profesional</h3>
+      <input type="number" id="c6" min="0" max="10" oninput="validarYSumar()">
+      <label for="c6" class="label__criterio">(0-10)</label>
+    </div>
   </div>
-  
-  <form method="post" class="contenido">
-    <div class="cuadro_criterios">
-      <div class="item__cuadro">
-        <h3>Grados Académicos y Títulos Profesionales</h3>
-        <input type="number" id="c1">
-        <label for="c1" class="label__criterio">(0-10)</label>
-      </div>
-      <div class="item__cuadro">
-        <h3>Investigación</h3>
-        <input type="number" id="c2">
-        <label for="c2" class="label__criterio">(0-10)</label>
-      </div>
-      <div class="item__cuadro">
-        <h3>Enseñanza</h3>
-        <input type="number" id="c3">
-        <label for="c3" class="label__criterio">(0-10)</label>
-      </div>
-      <div class="item__cuadro">
-        <h3>Capacitación Académica</h3>
-        <input type="number" id="c4">
-        <label for="c4" class="label__criterio">(0-5)</label>
-      </div>
-      <div class="item__cuadro">
-        <h3>Proyección Social</h3>
-        <input type="number" id="c5">
-        <label for="c5" class="label__criterio">(0-5)</label>
-      </div>
-      <div class="item__cuadro">
-        <h3>Ejercicio Profesional</h3>
-        <input type="number" id="c6">
-        <label for="c6" class="label__criterio">(0-10)</label>
-      </div>
-    </div>
 
-    <div class="derecha">
-      <h2>Puntaje Total</h2>
-      <div class="cuadro_total">{{ total_puntaje}}</div>
-      <button type="submit" id="boton_confirmar">Confirmar</button>
-    </div>
-  </form>
+  <div class="derecha">
+    <h2>Puntaje Total</h2>
+    <div class="cuadro_total" id="total_puntaje">0</div>
+    <button type="submit" id="boton_confirmar">Confirmar</button>
+  </div>
+</form>
 
-</body>
-</html>
+<script>
+  function validarYSumar() {
+    const inputs = [
+      { id: 'c1', max: 10 },
+      { id: 'c2', max: 10 },
+      { id: 'c3', max: 10 },
+      { id: 'c4', max: 5 },
+      { id: 'c5', max: 5 },
+      { id: 'c6', max: 10 },
+    ];
+
+    let total = 0;
+
+    inputs.forEach(input => {
+      const el = document.getElementById(input.id);
+      let val = parseFloat(el.value);
+      
+      if (isNaN(val)) val = 0;
+
+      if (val < 0) {
+        el.value = 0;
+        val = 0;
+      } else if (val > input.max) {
+        el.value = input.max;
+        val = input.max;
+      }
+
+      total += val;
+    });
+
+    document.getElementById("total_puntaje").textContent = total;
+  }
+</script>

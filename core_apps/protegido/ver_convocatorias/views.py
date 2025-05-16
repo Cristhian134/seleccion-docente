@@ -199,3 +199,167 @@ def convocatoria_dirigir_calificacion(request, convocatoria_id):
         "convocatoria_id": convocatoria_id,
         "url_volver": "/ver_convocatorias"
     })
+
+
+
+
+
+# -------------------------- NAVHI --------------------------
+
+
+
+def ver_documentos(request, postulante_id):
+    postulante = get_object_or_404(Postulante, id=postulante_id)
+    documentos = Documento.objects.filter(postulante=postulante)
+    return render(request, 'ver_documentos.html', {'postulante': postulante, 'documentos': documentos})
+
+
+@require_http_methods(["GET", "POST"])
+def calificar_documentos(request, postulante_id):
+    postulante = get_object_or_404(Postulante, id=postulante_id)
+
+    if request.method == "POST":
+        # Aquí recibís las notas de cada criterio (suponiendo que están en POST)
+        # Validar y guardar la calificación
+        try:
+            c1 = int(request.POST.get('c1', 0))
+            c2 = int(request.POST.get('c2', 0))
+            c3 = int(request.POST.get('c3', 0))
+            c4 = int(request.POST.get('c4', 0))
+            c5 = int(request.POST.get('c5', 0))
+            c6 = int(request.POST.get('c6', 0))
+        except ValueError:
+            return render(request, 'calificar_documentos.html', {
+                'postulante': postulante,
+                'error': 'Por favor, ingrese números válidos.'
+            })
+
+        # Validar rangos
+        if not (0 <= c1 <= 10 and 0 <= c2 <= 10 and 0 <= c3 <= 10 and 0 <= c4 <= 5 and 0 <= c5 <= 5 and 0 <= c6 <= 10):
+            return render(request, 'calificar_documentos.html', {
+                'postulante': postulante,
+                'error': 'Los puntajes deben estar dentro de los rangos permitidos.'
+            })
+
+        total = c1 + c2 + c3 + c4 + c5 + c6
+
+        calificacion, created = CalificacionDocumento.objects.update_or_create(
+            postulante=postulante,
+            defaults={
+                'criterio1': c1,
+                'criterio2': c2,
+                'criterio3': c3,
+                'criterio4': c4,
+                'criterio5': c5,
+                'criterio6': c6,
+                'total': total
+            }
+        )
+
+        return redirect('ver_documentos', postulante_id=postulante.id)
+
+    # GET
+    return render(request, 'calificar_documentos.html', {'postulante': postulante})
+
+
+@require_http_methods(["GET", "POST"])
+def clase_magistral(request, postulante_id):
+    postulante = get_object_or_404(Postulante, id=postulante_id)
+
+    # Horarios fijos o sacados de BD
+    hora = {
+        'inicio': '10:00',
+        'fin': '12:00'
+    }
+
+    if request.method == "POST":
+        try:
+            c1 = int(request.POST.get('c1', 0))
+            c2 = int(request.POST.get('c2', 0))
+            c3 = int(request.POST.get('c3', 0))
+            c4 = int(request.POST.get('c4', 0))
+        except ValueError:
+            return render(request, 'clase_magistral.html', {
+                'postulante': postulante,
+                'hora': hora,
+                'error': 'Ingrese números válidos.'
+            })
+
+        if not (0 <= c1 <= 20 and 0 <= c2 <= 10 and 0 <= c3 <= 10 and 0 <= c4 <= 10):
+            return render(request, 'clase_magistral.html', {
+                'postulante': postulante,
+                'hora': hora,
+                'error': 'Los puntajes deben estar dentro de los rangos permitidos.'
+            })
+
+        total = c1 + c2 + c3 + c4
+
+        calificacion, created = CalificacionClase.objects.update_or_create(
+            postulante=postulante,
+            defaults={
+                'criterio1': c1,
+                'criterio2': c2,
+                'criterio3': c3,
+                'criterio4': c4,
+                'total': total
+            }
+        )
+
+        return redirect('clase_magistral', postulante_id=postulante.id)
+
+    return render(request, 'clase_magistral.html', {'postulante': postulante, 'hora': hora})
+
+
+def generar_informe_pdf(request):
+    # Obtener todas las calificaciones combinadas para ordenarlas
+    # Sumamos calificación documento + clase (puede ser null)
+    postulantes = Postulante.objects.all().annotate(
+        puntaje_documento=Sum('calificaciondocumento__total'),
+        puntaje_clase=Sum('calificacionclase__total'),
+    )
+
+    # Calcular total sumado de ambas calificaciones (tratando None como 0)
+    datos = []
+    for p in postulantes:
+        doc = p.puntaje_documento or 0
+        clase = p.puntaje_clase or 0
+        total = doc + clase
+        datos.append({
+            'nombre': f"{p.nombre} {p.apellido}",
+            'puntaje_documento': doc,
+            'puntaje_clase': clase,
+            'total': total
+        })
+
+    datos_ordenados = sorted(datos, key=lambda x: x['total'], reverse=True)
+
+    # Generar PDF con reportlab
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(50, 750, "Informe de Puntajes - Sistema de Selección Docente")
+
+    p.setFont("Helvetica", 12)
+    y = 720
+    p.drawString(50, y, "Nombre")
+    p.drawString(300, y, "Documento")
+    p.drawString(400, y, "Clase")
+    p.drawString(480, y, "Total")
+
+    y -= 20
+    for d in datos_ordenados:
+        if y < 50:
+            p.showPage()
+            y = 750
+        p.drawString(50, y, d['nombre'])
+        p.drawString(300, y, str(d['puntaje_documento']))
+        p.drawString(400, y, str(d['puntaje_clase']))
+        p.drawString(480, y, str(d['total']))
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type='application/pdf')
