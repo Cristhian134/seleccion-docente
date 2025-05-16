@@ -20,7 +20,7 @@ MODULOS = [
   {
     "nombre": "Ver convocatorias",
     "icono": "fa fa-external-link",
-    "url": "/ver-convocatorias/",
+    "url": "/ver_convocatorias/",
     "roles": [ROLES.ADMINISTRADOR],
   },
 ]
