@@ -6,6 +6,7 @@ staticfiles/
 !.envs/.env.example
 !.envs/.env.local
 tests/*
+db_produccion.py
 
 backups
 !tests/.gitkeep
