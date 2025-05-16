@@ -4,11 +4,21 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'ver_convocatorias.css' %}" />
 
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <ol class="breadcrumb__list">
-    <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
-    <li class="breadcrumb__item"><a>Ver convocatoria</a></li>
-  </ol>
+<div class="ver_convocatorias--parte_de_arriba" style="display: flex; flex-direction: row; justify-content: space-between;">
+  
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <ol class="breadcrumb__list">
+      <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+      <li class="breadcrumb__item"><a>Ver convocatoria</a></li>
+    </ol>
+  </div>
+
+  <!-- Botones de acción -->
+  <div style="margin-top: 1em; display: flex; gap: 1em;">
+    <button type="submit" form="form_convocatoria" name="accion" value="documentos" class="button--primary">Gestionar Documentos</button>
+    <button type="submit" form="form_convocatoria" name="accion" value="calificacion" class="button--primary">Dirigir Calificación</button>
+  </div>
+
 </div>
 
 <form method="get" class="filter-bar">
@@ -17,7 +27,7 @@
 </form>
 
 <!-- Form principal que envía los botones y el input radio -->
-<form method="post" action="{% url 'ver_convocatorias' %}">
+<form method="post" id="form_convocatoria" action="{% url 'ver_convocatorias' %}">
   {% csrf_token %}
 
   <div class="table__wrapper">
@@ -51,10 +61,6 @@
     </table>
   </div>
 
-  <!-- Botones de acción -->
-  <div style="margin-top: 1em; display: flex; gap: 1em;">
-    <button type="submit" name="accion" value="documentos" class="button--primary">Gestionar Documentos</button>
-    <button type="submit" name="accion" value="calificacion" class="button--primary">Dirigir Calificación</button>
-  </div>
 </form>
+
 {% endblock %}

@@ -1,15 +1,61 @@
 {% extends "base.html" %} {% load static %} {% block content %}
-<ol class="breadcrumb__list">
-      <li class="breadcrumb__item">
-        <a href="/home">Inicio</a>
-      </li>
-      <li class="breadcrumb__item">
-        <a href="/ver_convocatoria">Ver convocatoria</a>
-      </li>
-      <li class="breadcrumb__item">
-        <a>Digir Calificación</a>
-      </li>
-  </ol>
 
+<ol class="breadcrumb__list">
+    <li class="breadcrumb__item">
+      <a href="/home">Inicio</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a href="/ver_convocatoria">Ver convocatoria</a>
+    </li>
+    <li class="breadcrumb__item">
+      <a>Digir Calificación</a>
+    </li>
+</ol>
+
+<div class="seccion_arriba">
+  <h2> Lista de postulantes </h2>
+  <div class="seccion_arriba elementos_Derecha">
+    <input type="checkbox" id="orden_postulantes" class="boton__checkbox">
+    <label for="orden_postulantes" class="boton__ordenar">
+      <i class="fa fa-filter" aria-hidden="true"></i>
+    </label>
+    <div class="cantidad_postulantes">{{ cantidad.postulantes }}</div>
+  </div>
+</div>
+
+{{i=0}}
+<table>
+  <thead>
+    <tr>
+      <th>N°</th>
+      <th>Apellidos</th>
+      <th>Nombres</th>
+      <th>Tema de la Clase Magistral</th>
+      <th>Fecha de Evaluación</th>
+      <th>Hora de la Evaluación</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for postulante in postulantes_convocatoria %}
+    {{i=i+1}}
+    <tr>
+      <td>{{i}}</td>
+      <td>{{ postulante.apellidos }}</td>
+      <td>{{ postulante.nombres }}</td>
+      <td>{{ postulante.temaClase }}</td>
+      <td>{{ postulante.fechaClase }}</td>
+      <td>{{ postulante.horaClase }}</td>
+      <td><button value={{postulante.id}}>Evaluar</button></td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center">No hay postulantes disponibles.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<button id="boton__informe">Generar Informe</button>
 
 {% endblock %}
