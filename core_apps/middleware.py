@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
+from core_apps.autenticacion.views import logout_view
 from core_apps.common.models import (
     Decano, EncargadoConsejo, EstadoDecano, EstadoEncargadoConsejo
 )
@@ -45,7 +46,7 @@ class VerificarSesionMiddleware:
       rol = get_user_rol(request.user)
 
       if rol not in ["Administrador", "Decano", "Encargado Consejo"]:
-        logout(request)
+        logout_view(request)
         return redirect('login')  # Cierra sesión y redirige
 
       if request.path == '/':
