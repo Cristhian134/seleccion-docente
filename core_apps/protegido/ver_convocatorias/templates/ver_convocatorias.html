@@ -21,7 +21,8 @@
     </form>
     <form method="post" action="">
       {% csrf_token %}
-      <table class="table__primary">
+      {% if convocatoria %}
+      <table border="1" id="tabla_cursos" class="table__primary">
         <thead>
           <tr>
             <th>Cod</th>
@@ -57,7 +58,7 @@
           {% endfor %}
         </tbody>
       </table>
-
+      {% end if %}
 
     </form>
 
