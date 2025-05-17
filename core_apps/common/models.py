@@ -66,7 +66,7 @@ class UserManager(BaseUserManager):
 
 
 class Facultad(models.TextChoices):
-  FAUA = "faufa", "Facultad de Arquitectura, Urbanismo y Artes"
+  FAUA = "faua", "Facultad de Arquitectura, Urbanismo y Artes"
   FIC = "fic", "Facultad de Ingeniería Civil"
   FIEECS = "fieecs", "Facultad de Ingeniería Económica, Estadística y Ciencias Sociales"
   FIGMM = "figmm", "Facultad de Ingeniería Geológica, Minera y Metalúrgica"
