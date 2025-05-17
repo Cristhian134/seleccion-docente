@@ -115,13 +115,13 @@ header > div {
 
 .dropdown-content {
   display: none;
-  position: absolute;
+  position: sticky;
   top: 2.5rem;
   right: 0;
   background-color: white;
   min-width: 200px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  z-index: 10000;
   border-radius: 8px;
   padding: 0.5rem;
 }
@@ -477,6 +477,10 @@ body.sidenav-open .sidenav__overlay {
 
 .block {
   display: flex;
+}
+
+.relative {
+  position: relative;
 }
 
 .flex {
