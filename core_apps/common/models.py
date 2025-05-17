@@ -306,7 +306,7 @@ class EstadoClaseMagistral(models.TextChoices):
 
 
 class ClaseMagistral(models.Model):
-  postulante = models.ForeignKey(
+  postulante = models.OneToOneField(
     Postulante,
     on_delete=models.CASCADE
   )
@@ -332,7 +332,7 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
-  persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
+  persona = models.OneToOneField(Persona, on_delete=models.CASCADE, null=True)
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
@@ -341,15 +341,8 @@ class Evaluador(models.Model):
     max_length=64,
     choices=EstadoEvaluador.choices,
   )
-  claseMagistral = models.ForeignKey(
-    ClaseMagistral,
-    on_delete=models.CASCADE
-  )
-
   def __str__(self):
     return f"{self.persona.nombre} ({self.tipoEvaluador})"
-
-
 
 class EstadoDocumento(models.TextChoices):
   REGISTRADO = "registrado", "Registrado"
@@ -394,10 +387,10 @@ class NotaPostulante(models.Model):
     Postulante,
     on_delete=models.CASCADE
   )
-  notaClaseCriterio1 = models.IntegerField()
-  notaClaseCriterio2 = models.IntegerField()
-  notaClaseCriterio3 = models.IntegerField()
-  notaClaseCriterio4 = models.IntegerField()
+  notaClaseCriterio1 = models.IntegerField(default=0)
+  notaClaseCriterio2 = models.IntegerField(default=0)
+  notaClaseCriterio3 = models.IntegerField(default=0)
+  notaClaseCriterio4 = models.IntegerField(default=0)
   notaDocumentoCriterio1 = models.IntegerField()
   notaDocumentoCriterio2 = models.IntegerField()
   notaDocumentoCriterio3 = models.IntegerField()
@@ -407,4 +400,5 @@ class NotaPostulante(models.Model):
   estadoNotaPostulante = models.CharField(
     max_length=64,
     choices=EstadoNotaPostulante.choices,
-  )
+    default=EstadoNotaPostulante.POR_CALIFICAR
+)

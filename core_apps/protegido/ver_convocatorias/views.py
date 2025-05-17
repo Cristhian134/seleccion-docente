@@ -2,20 +2,19 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
-    Postulante, Documento, Convocatoria, Persona, ClaseMagistral,
-    NotaPostulante, EstadoDocumento, EstadoPostulante, EstadoClaseMagistral,
-    EstadoNotaPostulante, CalificacionDocumento, CalificacionClase
+    Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral,  Usuario, Evaluador, NotaPostulante
 )
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Sum, F, FloatField
 from io import BytesIO
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
 import mimetypes
+from datetime import datetime, timedelta
+from xhtml2pdf import pisa
+from django.template.loader import render_to_string
 
 
 @login_required
@@ -202,73 +201,166 @@ def agregar_postulante(request, convocatoria_id):
 
 # -------------------------- NAVHI --------------------------
 
-def ver_convocatorias(request):
-    convocatorias = Convocatoria.objects.all()
-    return render(request, 'ver_convocatorias.html', {'convocatorias': convocatorias})
+@login_required
+def dirigir_calificacion(request, convocatoria_id):
+    postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).select_related('persona', 'clasemagistral')
 
-def convocatoria_gestionar_documentos(request, convocatoria_id):
-    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
-    postulantes = convocatoria.postulante_set.all()
-    return render(request, 'gestionar_documentos.html', {'convocatoria': convocatoria, 'postulantes': postulantes})
+    cantidadPostulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).count()
 
-def agregar_postulante(request, convocatoria_id):
-    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
-    if request.method == 'POST':
-        form = PostulanteForm(request.POST)
-        if form.is_valid():
-            postulante = form.save(commit=False)
-            postulante.convocatoria = convocatoria
-            postulante.save()
-            return redirect('gestionar_documentos', convocatoria_id=convocatoria.id)
-    else:
-        form = PostulanteForm()
-    return render(request, 'agregar_postulante.html', {'form': form, 'convocatoria': convocatoria})
+    return render(request, 'dirigir_calificacion.html',{
+        'postulantes':postulantes, 
+        'convocatoria_id': convocatoria_id,
+        'cantidadPostulantes': cantidadPostulantes
+    })
 
-def convocatoria_dirigir_calificacion(request, convocatoria_id):
-    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
-    postulantes = convocatoria.postulante_set.all()
-    return render(request, 'dirigir_calificacion.html', {'convocatoria': convocatoria, 'postulantes': postulantes})
-
-def ver_documentos(request, postulante_id):
-    postulante = get_object_or_404(Postulante, id=postulante_id)
-    documentos = postulante.documento_set.all()
-    return render(request, 'ver_documentos.html', {'postulante': postulante, 'documentos': documentos})
-
-def calificar_documentos(request, postulante_id):
-    postulante = get_object_or_404(Postulante, id=postulante_id)
-    documentos = postulante.documento_set.all()
-
-    if request.method == 'POST':
-        for documento in documentos:
-            form = CalificacionDocumentoForm(request.POST, instance=documento, prefix=str(documento.id))
-            if form.is_valid():
-                form.save()
-        return redirect('mostrar_documentos', postulante_id=postulante.id)
-
-    else:
-        forms = []
-        for documento in documentos:
-            form = CalificacionDocumentoForm(instance=documento, prefix=str(documento.id))
-            forms.append((documento, form))
-        return render(request, 'calificar_documentos.html', {'postulante': postulante, 'forms': forms})
-
-def clase_magistral(request, postulante_id):
-    postulante = get_object_or_404(Postulante, id=postulante_id)
-
-    if request.method == 'POST':
-        form = ClaseMagistralForm(request.POST, instance=postulante)
-        if form.is_valid():
-            form.save()
-            return redirect('mostrar_documentos', postulante_id=postulante.id)
-    else:
-        form = ClaseMagistralForm(instance=postulante)
-
-    return render(request, 'evaluar_clase_magistral.html', {'form': form, 'postulante': postulante})
-
-def generar_informe_pdf(request):
-    # Tu lógica para generar el informe
-    return render(request, 'informe_pdf.html')
-
+@login_required
 def ver_documento(request, documento_id):
-    documento = get_object_or_404(Documento, id=documento_id)
-    return render(request, 'ver_documento.html', {'documento': documento})
+    try:
+        documento = Documento.objects.get(id=documento_id)
+        response = HttpResponse(documento.archivo, content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="documento.pdf"'
+        return response
+    except Documento.DoesNotExist:
+        raise Http404("Documento no encontrado")
+
+@login_required
+def mostrar_documentos(request, postulante_id):
+    documentos = Documento.objects.filter(
+        postulante_id=postulante_id,
+        estadoDocumento=EstadoDocumento.ACEPTADO
+    )
+
+    return render(request, 'mostrar_documentos.html',{
+        'documentos':documentos, 
+        'postulante_id': postulante_id
+    })
+
+@login_required
+def calificar_documentos(request, postulante_id):
+
+    postulante = get_object_or_404(Postulante, pk=postulante_id)
+
+    try:
+        evaluador = Evaluador.objects.get(persona=request.user.persona)
+    except Evaluador.DoesNotExist:
+        return HttpResponseForbidden("No tienes permisos para calificar documentos")
+
+    if request.method == 'POST':
+        cd1 = int(request.POST.get('cd1', 0))
+        cd2 = int(request.POST.get('cd2', 0))
+        cd3 = int(request.POST.get('cd3', 0))
+        cd4 = int(request.POST.get('cd4', 0))
+        cd5 = int(request.POST.get('cd5', 0))
+        cd6 = int(request.POST.get('cd6', 0))
+
+        NotaPostulante.objects.create(
+        evaluador = evaluador,
+        postulante= postulante,
+        notaDocumentoCriterio1 = cd1,
+        notaDocumentoCriterio2 = cd2,
+        notaDocumentoCriterio3 = cd3,
+        notaDocumentoCriterio4 = cd4,
+        notaDocumentoCriterio5 = cd5,
+        notaDocumentoCriterio6 = cd6,
+        estadoNotaPostulante = EstadoNotaPostulante.REVISADO_PARCIALMENTE
+        )
+
+        return redirect('evaluar_clase_magistral', postulante_id=postulante.id)
+
+    return render(request, 'calificar_documentos.html')
+
+@login_required
+def evaluar_clase_magistral(request, postulante_id):
+    clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
+    
+    fecha = clase_magistral.fechaProgramacion
+    hora = clase_magistral.horaProgramada
+    datetime_combinado = datetime.combine(fecha, hora)
+
+    # sumar una hora
+    datetime_mas_una_hora = datetime_combinado + timedelta(hours=1)
+
+    # si quieres la hora solamente después de sumar
+    hora_final = datetime_mas_una_hora.time()
+
+    postulante = get_object_or_404(Postulante, pk=postulante_id)
+    evaluador = Evaluador.objects.get(persona=request.user.persona)
+
+    convocatoria_id = postulante.convocatoria_id
+
+    if request.method == 'POST':
+        c1 = int(request.POST.get('c1', 0))
+        c2 = int(request.POST.get('c2', 0))
+        c3 = int(request.POST.get('c3', 0))
+        c4 = int(request.POST.get('c4', 0))
+
+        nota_postulante = NotaPostulante.objects.filter(
+            postulante=postulante,
+            evaluador=evaluador
+        ).order_by('-id').first()
+
+        nota_postulante.notaClaseCriterio1 = c1
+        nota_postulante.notaClaseCriterio2 = c2
+        nota_postulante.notaClaseCriterio3 = c3
+        nota_postulante.notaClaseCriterio4 = c4
+        nota_postulante.estadoNotaPostulante = EstadoNotaPostulante.COMPLETO
+        nota_postulante.save()
+
+        return redirect('dirigir_calificacion', convocatoria_id=convocatoria_id)
+
+    return render(request, 'evaluar_clase_magistral.html', {
+        'clase_magistral': clase_magistral,
+        'hora_final': hora_final,
+        'postulante_id': postulante_id
+    })
+
+@login_required
+def generar_informe_notas(request, convocatoria_id):
+    postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id)
+
+    datos_postulantes = []
+
+    for postulante in postulantes:
+        notas = NotaPostulante.objects.filter(postulante=postulante)
+
+        # Calculamos nota total — puedes ajustar este cálculo
+        nota_total = 0
+        for nota in notas:
+            suma_documentos = (
+                (nota.notaDocumentoCriterio1 or 0) +
+                (nota.notaDocumentoCriterio2 or 0) +
+                (nota.notaDocumentoCriterio3 or 0) +
+                (nota.notaDocumentoCriterio4 or 0) +
+                (nota.notaDocumentoCriterio5 or 0) +
+                (nota.notaDocumentoCriterio6 or 0)
+            )
+            suma_clase = (
+                (nota.notaClaseCriterio1 or 0) +
+                (nota.notaClaseCriterio2 or 0) +
+                (nota.notaClaseCriterio3 or 0) +
+                (nota.notaClaseCriterio4 or 0)
+            )
+            nota_total += suma_documentos + suma_clase
+
+        datos_postulantes.append({
+            'nombre': f"{postulante.persona.nombres} {postulante.persona.apellidos}",
+            'nota_total': nota_total
+        })
+
+    # Ordenar de mayor a menor
+    datos_postulantes = sorted(datos_postulantes, key=lambda x: x['nota_total'], reverse=True)
+
+    # Cargar plantilla
+    template_path = 'pdf_informe_notas.html'
+    context = {'postulantes': datos_postulantes, 'convocatoria_id': convocatoria_id}
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Crear el PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="informe_notas_convocatoria_{convocatoria_id}.pdf"'
+    pisa_status = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
+
+    if pisa_status.err:
+        return HttpResponse('Hubo un error generando el PDF: %s' % pisa_status.err)
+    return response

@@ -11,13 +11,13 @@
 
 <div class="reales__documentos">
   <div class="seleccion__documento">
-    <span class="caja__documentos">Documentos de {{ postulante.nombres }} {{ postulante.apellidos }}</span>
+    <span class="caja__documentos">Documentos</span>
     <form id="form__documentos">
-      {% for documento in documentos %}
+      {% for d in documentos %}
         <div class="fila__documento">
           <label>
-            <input type="radio" name="nombre_doc" value="{{ documento.archivo.url }}">
-            {{ documento.nombre }}
+            <input type="radio" name="documento" data-url="{% url 'ver_documento' d.id %}">
+            {{ d.tipoDocumento }}
           </label>
         </div>
       {% empty %}
@@ -27,23 +27,45 @@
   </div>
 
   <div class="mostrar__documento">
-    <iframe id="visor_documento" class="documento_pdf" width="100%" height="500px"></iframe>
+    Aquí mostrar el documento
   </div>
 </div>
 
-<button id="boton__calificar">Calificar</button>
+<button id="boton__calificar" data-url="{% url 'calificar_documentos' postulante_id %}">Calificar</button>
+
+<div id="modalCalificar" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="contenidoModal"></div>
+  </div>
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const radios = document.querySelectorAll('input[name="nombre_doc"]');
-    const visor = document.getElementById('visor_documento');
-
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        visor.src = radio.value;
-      });
+  document.querySelectorAll('input[name="documento"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const url = this.dataset.url;
+      document.querySelector('.mostrar__documento').innerHTML = `
+        <iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>
+      `;
     });
   });
+</script>
+
+<script>
+document.getElementById('boton__calificar').addEventListener('click', function() {
+  const url = this.dataset.url;
+
+  fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('contenidoModal').innerHTML = html;
+      document.getElementById('modalCalificar').style.display = 'block';
+    });
+});
+
+document.querySelector('.close').addEventListener('click', function() {
+  document.getElementById('modalCalificar').style.display = 'none';
+});
 </script>
 
 {% endblock %}

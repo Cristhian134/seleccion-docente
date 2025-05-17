@@ -33,11 +33,11 @@
     <div class="horas">
       <div class="inicio">
         <span>Hora Inicio</span>
-        <span>{{ hora.inicio }}</span>
+        <span>{{ clase_magistral.horaProgramada }}</span>
       </div>
       <div class="fin">
         <span>Hora Fin</span>
-        <span>{{ hora.fin }}</span>
+        <span>{{ hora_final }}</span>
       </div>
     </div>
 
@@ -47,32 +47,33 @@
         
         <div class="item__cuadro">
           <h3>Claridad en la Exposición y Metodología Didáctica</h3>
-          <input type="number" id="c1" name="claridad" min="0" max="20" required>
+          <input type="number" id="c1" name="c1" min="0" max="20" required>
           <label for="c1" class="label__criterio">(0-20)</label>
         </div>
 
         <div class="item__cuadro">
           <h3>Grado de Conocimiento</h3>
-          <input type="number" id="c2" name="conocimiento" min="0" max="10" required>
+          <input type="number" id="c2" name="c2" min="0" max="10" required>
           <label for="c2" class="label__criterio">(0-10)</label>
         </div>
 
         <div class="item__cuadro">
           <h3>Aptitud para Motivar el Interés del Tema</h3>
-          <input type="number" id="c3" name="motivacion" min="0" max="10" required>
+          <input type="number" id="c3" name="c3" min="0" max="10" required>
           <label for="c3" class="label__criterio">(0-10)</label>
         </div>
 
         <div class="item__cuadro">
           <h3>Absolución de Preguntas del Jurado y del Auditorio</h3>
-          <input type="number" id="c4" name="preguntas" min="0" max="10" required>
+          <input type="number" id="c4" name="c4" min="0" max="10" required>
           <label for="c4" class="label__criterio">(0-10)</label>
         </div>
 
-        <input type="submit" value="Guardar">
+        <button type="submit" id="boton_confirmar">Guardar</button>
       </form>
     </div>
   </div>
 </div>
 
 {% endblock %}
+

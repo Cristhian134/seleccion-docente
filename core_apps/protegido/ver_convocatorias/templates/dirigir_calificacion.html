@@ -1,4 +1,5 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} {% block content %}
 
 <ol class="breadcrumb__list">
     <li class="breadcrumb__item">
@@ -19,7 +20,7 @@
     <label for="orden_postulantes" class="boton__ordenar">
       <i class="fa fa-filter" aria-hidden="true"></i>
     </label>
-    <div class="cantidad_postulantes">{{ cantidad.postulantes }}</div>
+    <div class="cantidad_postulantes">{{ cantidadPostulantes }}</div>
   </div>
 </div>
 
@@ -36,15 +37,15 @@
     </tr>
   </thead>
   <tbody>
-    {% for postulante in postulantes_convocatoria %}
+    {% for p in postulantes %}
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}</td>
-      <td>{{ postulante.persona.nombre }}</td>
-      <td>{{ postulante.ClaseMagistral.temaAsignado }}</td>
-      <td>{{ postulante.fechaClase }}</td>
-      <td>{{ postulante.horaClase }}</td>
-      <td><button value="{{ postulante.id }}">Evaluar</button></td>
+      <td>{{ p.persona.apellidoPaterno }} {{ p.persona.apellidoMaterno }}</td>
+      <td>{{ p.persona.nombre }}</td>
+      <td>{{ p.clasemagistral.temaAsignado }}</td>
+      <td>{{ p.clasemagistral.fechaProgramacion }}</td>
+      <td>{{ p.clasemagistral.horaProgramada }}</td>
+      <td><a href="{% url 'mostrar_documentos' p.id %}">Evaluar</a></td>
     </tr>
     {% empty %}
     <tr>
@@ -54,7 +55,7 @@
   </tbody>
 </table>
 
-<button id="boton__informe">Generar Informe</button>
+<a href="{% url 'generar_informe_notas' convocatoria_id %}">Generar Informe</a>
 
 {% endblock %}
 

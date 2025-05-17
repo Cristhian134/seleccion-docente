@@ -1,34 +1,35 @@
 <form method="post" class="contenido">
+  {% csrf_token %}
   <div class="cuadro_criterios">
     <div class="item__cuadro">
       <h3>Grados Académicos y Títulos Profesionales</h3>
-      <input type="number" id="c1" min="0" max="10" oninput="validarYSumar()">
-      <label for="c1" class="label__criterio">(0-10)</label>
+      <input type="number" id="cd1" name="cd1" min="0" max="10" oninput="validarYSumar()">
+      <label for="cd1" class="label__criterio">(0-10)</label>
     </div>
     <div class="item__cuadro">
       <h3>Investigación</h3>
-      <input type="number" id="c2" min="0" max="10" oninput="validarYSumar()">
-      <label for="c2" class="label__criterio">(0-10)</label>
+      <input type="number" id="cd2" name="cd2" min="0" max="10" oninput="validarYSumar()">
+      <label for="cd2" class="label__criterio">(0-10)</label>
     </div>
     <div class="item__cuadro">
       <h3>Enseñanza</h3>
-      <input type="number" id="c3" min="0" max="10" oninput="validarYSumar()">
-      <label for="c3" class="label__criterio">(0-10)</label>
+      <input type="number" id="cd3" name="cd3" min="0" max="10" oninput="validarYSumar()">
+      <label for="cd3" class="label__criterio">(0-10)</label>
     </div>
     <div class="item__cuadro">
       <h3>Capacitación Académica</h3>
-      <input type="number" id="c4" min="0" max="5" oninput="validarYSumar()">
-      <label for="c4" class="label__criterio">(0-5)</label>
+      <input type="number" id="cd4" name="cd4" min="0" max="5" oninput="validarYSumar()">
+      <label for="cd4" class="label__criterio">(0-5)</label>
     </div>
     <div class="item__cuadro">
       <h3>Proyección Social</h3>
-      <input type="number" id="c5" min="0" max="5" oninput="validarYSumar()">
-      <label for="c5" class="label__criterio">(0-5)</label>
+      <input type="number" id="cd5" name="cd5" min="0" max="5" oninput="validarYSumar()">
+      <label for="cd5" class="label__criterio">(0-5)</label>
     </div>
     <div class="item__cuadro">
       <h3>Ejercicio Profesional</h3>
-      <input type="number" id="c6" min="0" max="10" oninput="validarYSumar()">
-      <label for="c6" class="label__criterio">(0-10)</label>
+      <input type="number" id="cd6" name="cd6" min="0" max="10" oninput="validarYSumar()">
+      <label for="cd6" class="label__criterio">(0-10)</label>
     </div>
   </div>
 
@@ -42,12 +43,12 @@
 <script>
   function validarYSumar() {
     const inputs = [
-      { id: 'c1', max: 10 },
-      { id: 'c2', max: 10 },
-      { id: 'c3', max: 10 },
-      { id: 'c4', max: 5 },
-      { id: 'c5', max: 5 },
-      { id: 'c6', max: 10 },
+      { id: 'cd1', max: 10 },
+      { id: 'cd2', max: 10 },
+      { id: 'cd3', max: 10 },
+      { id: 'cd4', max: 5 },
+      { id: 'cd5', max: 5 },
+      { id: 'cd6', max: 10 },
     ];
 
     let total = 0;
