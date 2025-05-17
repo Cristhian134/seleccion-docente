@@ -13,7 +13,7 @@
 
 <h2>Lista de Postulantes</h2>
 
-<form method="post">
+<form method="post" id="form_gestionar_documentos">
   {% csrf_token %}
   <table class="table__primary">
     <thead>
@@ -34,7 +34,7 @@
         <td>{{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}</td>
         <td>{{ postulante.fecha_documento_mas_antiguo }}</td>
         <td>
-          <button type="button"
+          <button type="button" class="button--primary"
             onclick="mostrarModalVerDocumentos({{ postulante.id }}, '{{ postulante.persona.nombre }} {{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}', JSON.parse(document.getElementById('docs-{{ postulante.id }}').textContent))">
             Visualizar Documentos
           </button>
@@ -63,8 +63,8 @@
 
   <div style="margin-top: 1em;">
     <button name="eliminar" value="1" class="button--primary">Eliminar</button>
-    <button name="accion_documentos" value="aceptar" class="button--primary">Aceptar</button>
-    <button name="accion_documentos" value="rechazar" class="button--primary">Rechazar</button>
+    <!--<button name="accion_documentos" value="aceptar" class="button--primary">Aceptar</button>
+    <button name="accion_documentos" value="rechazar" class="button--primary">Rechazar</button> -->
   </div>
 </form>
 
@@ -129,8 +129,8 @@
     <p id="nombrePostulante" style="font-weight: bold;"></p>
 
     <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
-      <button class="btn-agregar">Aceptar</button>
-      <button class="btn-cancelar">Rechazar</button>
+      <button name="accion_documentos" value="aceptar" class="button--primary" form="form_gestionar_documentos">Aceptar</button>
+      <button name="accion_documentos" value="rechazar" class="button--primary" form="form_gestionar_documentos">Rechazar</button>
     </div>
 
     <div id="contenedorDocumentos">
