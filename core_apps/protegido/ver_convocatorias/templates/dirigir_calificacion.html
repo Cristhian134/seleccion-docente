@@ -39,9 +39,9 @@
     {% for postulante in postulantes_convocatoria %}
     <tr>
       <td>{{ forloop.counter }}</td>
-      <td>{{ postulante.apellidos }}</td>
-      <td>{{ postulante.nombres }}</td>
-      <td>{{ postulante.temaClase }}</td>
+      <td>{{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}</td>
+      <td>{{ postulante.persona.nombre }}</td>
+      <td>{{ postulante.ClaseMagistral.temaAsignado }}</td>
       <td>{{ postulante.fechaClase }}</td>
       <td>{{ postulante.horaClase }}</td>
       <td><button value="{{ postulante.id }}">Evaluar</button></td>
@@ -57,3 +57,4 @@
 <button id="boton__informe">Generar Informe</button>
 
 {% endblock %}
+

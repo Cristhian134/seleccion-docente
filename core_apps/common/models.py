@@ -332,6 +332,7 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
+  persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
@@ -340,6 +341,14 @@ class Evaluador(models.Model):
     max_length=64,
     choices=EstadoEvaluador.choices,
   )
+  claseMagistral = models.ForeignKey(
+    ClaseMagistral,
+    on_delete=models.CASCADE
+  )
+
+  def __str__(self):
+    return f"{self.persona.nombre} ({self.tipoEvaluador})"
+
 
 
 class EstadoDocumento(models.TextChoices):

@@ -9,6 +9,7 @@ urlpatterns = [
     path('ver_convocatorias/gestionar_documentos/<int:convocatoria_id>/agregar/', views.agregar_postulante, name='agregar_postulante'),
 
     # Visualizar y calificar documentos por postulante (ajustado a funciones propuestas)
+    path('ver_convocatorias/dirigir_calificacion/<int:convocatoria_id>/', views.convocatoria_dirigir_calificacion, name='dirigir_calificacion'),
     path('ver_convocatorias/dirigir_calificacion/mostrar_documentos/<int:postulante_id>/', views.ver_documentos, name='mostrar_documentos'),
     path('ver_convocatorias/dirigir_calificacion/calificar_documentos/<int:postulante_id>/', views.calificar_documentos, name='calificar_documentos'),
 
