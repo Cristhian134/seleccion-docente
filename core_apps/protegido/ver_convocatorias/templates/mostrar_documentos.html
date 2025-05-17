@@ -4,8 +4,10 @@
 
 <ol class="breadcrumb__list">
   <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
-  <li class="breadcrumb__item"><a href="/ver_convocatoria">Ver convocatoria</a></li>
-  <li class="breadcrumb__item"><a href="/dirigir_calificacion">Dirigir Calificación</a></li>
+  <li class="breadcrumb__item"><a href="/ver_convocatorias/">Ver convocatoria</a></li>
+  <li class="breadcrumb__item">
+    <a href="{% url 'dirigir_calificacion' convocatoria_id %}">Dirigir Calificación</a>
+  </li>
   <li class="breadcrumb__item"><a>Documentos</a></li>
 </ol>
 
@@ -66,6 +68,40 @@ document.getElementById('boton__calificar').addEventListener('click', function()
 document.querySelector('.close').addEventListener('click', function() {
   document.getElementById('modalCalificar').style.display = 'none';
 });
+</script>
+
+<script>
+  function validarYSumar() {
+    const inputs = [
+      { id: 'cd1', max: 10 },
+      { id: 'cd2', max: 10 },
+      { id: 'cd3', max: 10 },
+      { id: 'cd4', max: 5 },
+      { id: 'cd5', max: 5 },
+      { id: 'cd6', max: 10 },
+    ];
+
+    let total = 0;
+
+    inputs.forEach(input => {
+      const el = document.getElementById(input.id);
+      let val = parseFloat(el.value);
+      
+      if (isNaN(val)) val = 0;
+
+      if (val < 0) {
+        el.value = 0;
+        val = 0;
+      } else if (val > input.max) {
+        el.value = input.max;
+        val = input.max;
+      }
+
+      total += val;
+    });
+
+    document.getElementById("total_puntaje").textContent = total;
+  }
 </script>
 
 {% endblock %}

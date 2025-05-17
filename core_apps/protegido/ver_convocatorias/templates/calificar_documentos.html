@@ -1,4 +1,4 @@
-<form method="post" class="contenido">
+<form method="post" action="{% url 'calificar_documentos' postulante_id=postulante.id %}" class="contenido">
   {% csrf_token %}
   <div class="cuadro_criterios">
     <div class="item__cuadro">
@@ -39,37 +39,3 @@
     <button type="submit" id="boton_confirmar">Confirmar</button>
   </div>
 </form>
-
-<script>
-  function validarYSumar() {
-    const inputs = [
-      { id: 'cd1', max: 10 },
-      { id: 'cd2', max: 10 },
-      { id: 'cd3', max: 10 },
-      { id: 'cd4', max: 5 },
-      { id: 'cd5', max: 5 },
-      { id: 'cd6', max: 10 },
-    ];
-
-    let total = 0;
-
-    inputs.forEach(input => {
-      const el = document.getElementById(input.id);
-      let val = parseFloat(el.value);
-      
-      if (isNaN(val)) val = 0;
-
-      if (val < 0) {
-        el.value = 0;
-        val = 0;
-      } else if (val > input.max) {
-        el.value = input.max;
-        val = input.max;
-      }
-
-      total += val;
-    });
-
-    document.getElementById("total_puntaje").textContent = total;
-  }
-</script>

@@ -1,27 +1,23 @@
 {% extends "base.html" %} 
 {% load static %} {% block content %}
 
-<ol class="breadcrumb__list">
-    <li class="breadcrumb__item">
-      <a href="/home">Inicio</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a href="/ver_convocatoria">Ver convocatoria</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a>Digir Calificación</a>
-    </li>
-</ol>
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+      <li class="breadcrumb__item">
+        <a href="/home">Inicio</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a href="/ver_convocatorias/">Ver convocatoria</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a>Digir Calificación</a>
+      </li>
+  </ol>
+</nav>
 
 <div class="seccion_arriba">
   <h2> Lista de postulantes </h2>
-  <div class="seccion_arriba elementos_Derecha">
-    <input type="checkbox" id="orden_postulantes" class="boton__checkbox">
-    <label for="orden_postulantes" class="boton__ordenar">
-      <i class="fa fa-filter" aria-hidden="true"></i>
-    </label>
-    <div class="cantidad_postulantes">{{ cantidadPostulantes }}</div>
-  </div>
+  <div class="cantidad_postulantes">{{ cantidadPostulantes }}</div>
 </div>
 
 <table>
@@ -55,7 +51,7 @@
   </tbody>
 </table>
 
-<a href="{% url 'generar_informe_notas' convocatoria_id %}">Generar Informe</a>
+<a href="{% url 'generar_informe_notas' convocatoria_id %}" target="_blank">Generar Informe</a>
 
 {% endblock %}
 
