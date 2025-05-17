@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from core_apps.common.models import (
-    Persona, Decano, EncargadoConsejo, Docente,
+    EvaluacionDocente, Persona, Decano, EncargadoConsejo, Docente,
     Facultad, EstadoDecano, EstadoEncargadoConsejo, EstadoDocente
 )
 
@@ -26,6 +26,11 @@ def generar_codigo():
   return codigo
 
 
+def generar_nota_evaluacion():
+  # 14 x 3 = 42
+  return
+
+
 class Command(BaseCommand):
   help = 'Crea personas: 1 decano, 2 encargados de consejo y 10 docentes por facultad.'
 
@@ -33,6 +38,8 @@ class Command(BaseCommand):
     fake = Faker(locale='es_ES')
     facultades = [choice[1] for choice in Facultad.choices]
     User = get_user_model()
+    CICLO_ACADEMICO = "2025-1"
+    contador_nota_evaluacion = 1
 
     for facultad in facultades:
       # Decano
@@ -107,10 +114,22 @@ class Command(BaseCommand):
             telefono=str(fake.random_number(digits=9)),  # Ajustar longitud
             genero=random.choice([g[0] for g in Persona._meta.get_field('genero').choices])
         )
-        Docente.objects.create(
+        docente = Docente.objects.create(
             persona=persona_doc,
             estadoDocente=EstadoDocente.ACTIVO
         )
+
+        if contador_nota_evaluacion < 15:
+
+          EvaluacionDocente.objects.create(
+            seccion_id=contador_nota_evaluacion,
+            docente=docente,
+            notaEvaluacion=round(random.uniform(8, 20), 2),
+            cicloAcademico=CICLO_ACADEMICO,
+            cantidadAlumnos=random.randint(25, 35),
+          )
+
+        contador_nota_evaluacion += 1
 
         self.stdout.write(self.style.SUCCESS(f'Docente {i+1} creado para {facultad}: {persona_doc}'))
 
