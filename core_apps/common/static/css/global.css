@@ -115,7 +115,7 @@ header > div {
 
 .dropdown-content {
   display: none;
-  position: sticky;
+  position: absolute;
   top: 2.5rem;
   right: 0;
   background-color: white;
