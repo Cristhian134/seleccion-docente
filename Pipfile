@@ -13,6 +13,7 @@ django = "==4.2.15"
 watchfiles = "==0.22.0"
 reportlab = "==4.0.8"
 psycopg2 = "*"
+faker = ">=18.0.0"
 
 [dev-packages]
 
