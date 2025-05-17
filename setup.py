@@ -25,6 +25,7 @@ def run_setup():
   print("🔃 Llenando las tablas Curso, Seccion y Horario")
   try:
     subprocess.run(["python", "manage.py", "loaddata", "curso.json"], check=True)
+    subprocess.run(["python", "manage.py", "populate_personas"], check=True)
     print("✅ Llenado de Curso, Seccion y Horario")
   except Exception as e:
     print(f"❌ Error al llenar las tablas Curso, Seccion y Horario: {e}")
