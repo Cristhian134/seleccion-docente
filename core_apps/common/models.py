@@ -246,6 +246,10 @@ class EstadoDocente(models.TextChoices):
 
 
 class Docente(models.Model):
+  persona = models.ForeignKey(
+    Persona,
+    on_delete=models.CASCADE,
+  )
   estadoDocente = models.CharField(
     max_length=64,
     choices=EstadoDocente.choices,
