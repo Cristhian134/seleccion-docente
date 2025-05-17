@@ -14,6 +14,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 python manage.py loaddata curso.json
+python manage.py populate_personas || echo "Error al generar las personas"
 
 python manage.py create_encargado_consejo || echo "Ya hay un encargado consejo"
 python manage.py create_superuser || echo "Ya hay un superuser"
