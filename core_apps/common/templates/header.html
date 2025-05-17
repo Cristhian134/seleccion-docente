@@ -8,6 +8,7 @@
       <span class="header__me dropdown">
         <div class="dropdown-content">
           <p><strong>Rol:</strong> {{ rol }}</p>
+          <p><strong>Código:</strong> {{ codigo }}</p>
           <p><strong>Facultad:</strong> {{ facultad }}</p>
           <form action="{% url 'logout' %}" method="POST">
             {% csrf_token %}

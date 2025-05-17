@@ -50,12 +50,14 @@ def render_sidenav(context):
 def render_header(context):
   request = context.get('request')
   user = getattr(request, 'user', AnonymousUser())
+  codigo = user.codigoUsuario
 
   if not user.is_authenticated:
     return {
         "usuario": user,
         "rol": "No autenticado",
-        "facultad": None
+        "facultad": None,
+        "codigo": codigo,
     }
 
   # Determinar rol
@@ -77,4 +79,5 @@ def render_header(context):
       "usuario": nombre_completo,
       "rol": rol,
       "facultad": getattr(user, 'facultad', 'No tiene facultad'),
+      "codigo": codigo,
   }
