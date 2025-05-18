@@ -6,6 +6,10 @@ urlpatterns = [
 
     path('ver_convocatorias/gestionar_documentos/<int:convocatoria_id>/', views.convocatoria_gestionar_documentos, name='gestionar_documentos'),
     path('ver_convocatorias/gestionar_documentos/<int:convocatoria_id>/agregar/', views.agregar_postulante, name='agregar_postulante'),
+    path('convocatoria/<int:convocatoria_id>/postulantes_aptos/', views.postulantes_aptos, name='postulantes_aptos'),
+    path("convocatoria/<int:convocatoria_id>/consolidado_pdf/", views.enviar_consolidado_pdf, name="enviar_consolidado_pdf"),
+
+    #path('convocatoria/<int:convocatoria_id>/generar-pdf/', views.generar_consolidado_pdf, name='generar_consolidado_pdf'),
 
     path('ver_convocatorias/dirigir_calificacion/<int:convocatoria_id>/', views.dirigir_calificacion, name='dirigir_calificacion'),
     path('ver_convocatorias/dirigir_calificacion/mostrar_documentos/<int:postulante_id>/', views.mostrar_documentos, name='mostrar_documentos'),

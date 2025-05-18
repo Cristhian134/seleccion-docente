@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
-    Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral,  Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante
+    Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral,  Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante, EstadoPostulante,
+    EstadoClaseMagistral,Plaza,Temas,Seccion,
 )
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, Http404
@@ -14,7 +15,11 @@ from io import BytesIO
 import mimetypes
 from datetime import datetime, timedelta
 from xhtml2pdf import pisa
+
 from django.template.loader import render_to_string, get_template
+from django.utils.timezone import make_aware
+from datetime import datetime, time, timedelta
+import random
 
 
 @login_required
@@ -197,6 +202,165 @@ def agregar_postulante(request, convocatoria_id):
     return render(request, "agregar_postulante.html", {
         "convocatoria": convocatoria
     })
+
+'''
+@login_required
+def gestionar_documentos(request, convocatoria_id):
+    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+    postulantes = Postulante.objects.filter(convocatoria=convocatoria)
+
+    if not postulante_id:
+        messages.error(request, "Debe seleccionar un postulante.")
+        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
+
+    if request.method == "POST":
+        postulante_id = request.POST.get("postulante_id")
+        accion = request.POST.get("accion_documentos")
+
+        if postulante_id and accion in ["aceptar", "rechazar"]:
+            postulante = get_object_or_404(Postulante, id=postulante_id)
+
+            if accion == "aceptar":
+                postulante.estadoPostulante = EstadoPostulante.ACEPTADO
+                postulante.save()
+
+                # Verificar si ya tiene clase magistral
+                if not hasattr(postulante, 'clasemagistral'):
+
+                    # Calcular la siguiente hora disponible
+                    clases_existentes = ClaseMagistral.objects.filter(
+                        postulante__convocatoria=convocatoria
+                    ).order_by('horaProgramada')
+
+                    hora_base = time(11, 0)
+                    hora_maxima = time(20, 0)
+                    horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
+
+                    hora_actual = hora_base
+                    while hora_actual <= hora_maxima and hora_actual in horas_ocupadas:
+                        hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
+
+                    if hora_actual > hora_maxima:
+                        # No hay más horas disponibles
+                        messages.error(request, "No hay más horarios disponibles para clase magistral.")
+                    else:
+                        # Seleccionar un tema aleatorio asociado a la convocatoria
+                        plazas = Plaza.objects.filter(convocatoria=convocatoria)
+                        temas_disponibles = Temas.objects.filter(
+                            silabus__curso__seccion__in=[plaza.seccion for plaza in plazas]
+                        )
+
+                        if temas_disponibles.exists():
+                            tema_asignado = random.choice(list(temas_disponibles))
+                        else:
+                            tema_asignado = None
+
+                        ClaseMagistral.objects.create(
+                            postulante=postulante,
+                            fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
+                            horaProgramada=hora_actual,
+                            temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
+                            estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
+                        )
+
+            elif accion == "rechazar":
+                postulante.estadoPostulante = EstadoPostulante.RECHAZADO
+                postulante.save()
+
+                # Eliminar clase magistral si existía
+                ClaseMagistral.objects.filter(postulante=postulante).delete()
+
+            return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
+
+    return render(request, "gestion_documentos.html", {
+        "convocatoria": convocatoria,
+        "postulantes": postulantes
+    })'''
+
+@login_required
+def postulantes_aptos(request, convocatoria_id):
+    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+    postulantes_aceptados = Postulante.objects.filter(
+        convocatoria=convocatoria,
+        estadoPostulante=EstadoPostulante.ACEPTADO
+    )
+
+    clases_existentes = ClaseMagistral.objects.filter(
+        postulante__in=postulantes_aceptados
+    ).select_related("postulante")
+
+    clases_por_postulante = {
+        clase.postulante_id: clase for clase in clases_existentes
+    }
+
+    hora_base = time(11, 0)
+    hora_maxima = time(20, 0)
+    horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
+
+    hora_actual = hora_base
+    for postulante in postulantes_aceptados:
+        if postulante.id not in clases_por_postulante:
+            # Calcular siguiente hora libre
+            while hora_actual in horas_ocupadas and hora_actual <= hora_maxima:
+                hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
+
+            if hora_actual > hora_maxima:
+                messages.warning(request, f"No hay más horarios disponibles para asignar a {postulante}.")
+                continue
+
+            # Buscar temas relacionados
+            plazas = Plaza.objects.filter(convocatoria=convocatoria)
+            secciones = [plaza.seccion for plaza in plazas]
+            temas_disponibles = Temas.objects.filter(silabus__curso__seccion__in=secciones)
+
+            tema_asignado = random.choice(list(temas_disponibles)) if temas_disponibles.exists() else None
+
+            ClaseMagistral.objects.create(
+                postulante=postulante,
+                fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
+                horaProgramada=hora_actual,
+                temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
+                estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
+            )
+
+            horas_ocupadas.add(hora_actual)  # Reservar esa hora
+
+    # Recargar clases con los nuevos
+    clases_actualizadas = ClaseMagistral.objects.filter(
+        postulante__in=postulantes_aceptados
+    ).select_related("postulante")
+
+    return render(request, "postulantes_aptos.html", {
+        "convocatoria": convocatoria,
+        "clases_magistrales": clases_actualizadas
+    })
+
+@login_required
+def enviar_consolidado_pdf(request, convocatoria_id):
+    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+
+    clases = ClaseMagistral.objects.filter(
+        postulante__convocatoria=convocatoria,
+        postulante__estadoPostulante=EstadoPostulante.ACEPTADO
+    ).select_related("postulante__persona")
+
+    template_path = 'consolidado_pdf.html'
+    context = {
+        'convocatoria': convocatoria,
+        'clases': clases,
+    }
+
+    html = render_to_string(template_path, context)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="consolidado_convocatoria_{convocatoria.id}.pdf"'
+
+    pisa_status = pisa.CreatePDF(
+        html, dest=response, encoding='UTF-8'
+    )
+
+    if pisa_status.err:
+        return HttpResponse('Error al generar el PDF', status=500)
+    return response
 
 
 # -------------------------- NAVHI --------------------------
