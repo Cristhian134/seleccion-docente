@@ -27,7 +27,8 @@ def listar_docentes_view(request):
   )
 
   if codigo_curso:
-    evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso=codigo_curso)
+    evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso=codigo_curso) \
+      .order_by('-notaEvaluacion')[:5]
     docentes = formatear_docentes(evaluaciones)
 
     return render(request, 'listar_docentes.html', {
