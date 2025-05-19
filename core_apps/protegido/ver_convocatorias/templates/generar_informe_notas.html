@@ -18,13 +18,14 @@
 </ol>
 
 <div class="informe" style="height: 700px;">
-  <!-- Aquí cargamos el PDF generado en backend -->
-  <iframe
-    src="{% url 'generar_informe_pdf' postulante_id=postulante_id %}"
-    style="width: 100%; height: 100%; border: none;"
-  ></iframe>
+  <iframe src="{% url 'generar_informe_notas' convocatoria_id=convocatoria_id %}" width="100%" height="100%"></iframe>
 </div>
 
-<button id="boton__exportar" onclick="window.open('{% url 'generar_informe_pdf' postulante_id=postulante_id %}', '_blank')">Exportar como PDF</button>
+
+<a href="{% url 'generar_informe_notas' convocatoria_id=convocatoria_id %}" target="_blank">
+  <button>Exportar como PDF</button>
+</a>
+
+
 
 {% endblock %}

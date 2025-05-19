@@ -1,18 +1,25 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from core_apps.common.models import Plaza, Postulante, Documento, Convocatoria, Persona, ClaseMagistral, NotaPostulante
-from core_apps.common.models import EstadoDocumento, EstadoPostulante, EstadoClaseMagistral, EstadoNotaPostulante
+from core_apps.common.models import (
+    Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral, Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante, EstadoPostulante,
+    EstadoClaseMagistral, Plaza, Temas, Seccion,
+)
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Sum, F, FloatField
 from io import BytesIO
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
 import mimetypes
+from datetime import datetime, timedelta
+from xhtml2pdf import pisa
+
+from django.template.loader import render_to_string, get_template
+from django.utils.timezone import make_aware
+from datetime import datetime, time, timedelta
+import random
 
 
 @login_required
@@ -212,169 +219,367 @@ def agregar_postulante(request, convocatoria_id):
   })
 
 
+'''
 @login_required
-def convocatoria_dirigir_calificacion(request, convocatoria_id):
-  return render(request, 'dirigir_calificacion.html', {
-      "convocatoria_id": convocatoria_id,
-      "url_volver": "/ver_convocatorias"
+def gestionar_documentos(request, convocatoria_id):
+    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+    postulantes = Postulante.objects.filter(convocatoria=convocatoria)
+
+    if not postulante_id:
+        messages.error(request, "Debe seleccionar un postulante.")
+        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
+
+    if request.method == "POST":
+        postulante_id = request.POST.get("postulante_id")
+        accion = request.POST.get("accion_documentos")
+
+        if postulante_id and accion in ["aceptar", "rechazar"]:
+            postulante = get_object_or_404(Postulante, id=postulante_id)
+
+            if accion == "aceptar":
+                postulante.estadoPostulante = EstadoPostulante.ACEPTADO
+                postulante.save()
+
+                # Verificar si ya tiene clase magistral
+                if not hasattr(postulante, 'clasemagistral'):
+
+                    # Calcular la siguiente hora disponible
+                    clases_existentes = ClaseMagistral.objects.filter(
+                        postulante__convocatoria=convocatoria
+                    ).order_by('horaProgramada')
+
+                    hora_base = time(11, 0)
+                    hora_maxima = time(20, 0)
+                    horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
+
+                    hora_actual = hora_base
+                    while hora_actual <= hora_maxima and hora_actual in horas_ocupadas:
+                        hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
+
+                    if hora_actual > hora_maxima:
+                        # No hay más horas disponibles
+                        messages.error(request, "No hay más horarios disponibles para clase magistral.")
+                    else:
+                        # Seleccionar un tema aleatorio asociado a la convocatoria
+                        plazas = Plaza.objects.filter(convocatoria=convocatoria)
+                        temas_disponibles = Temas.objects.filter(
+                            silabus__curso__seccion__in=[plaza.seccion for plaza in plazas]
+                        )
+
+                        if temas_disponibles.exists():
+                            tema_asignado = random.choice(list(temas_disponibles))
+                        else:
+                            tema_asignado = None
+
+                        ClaseMagistral.objects.create(
+                            postulante=postulante,
+                            fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
+                            horaProgramada=hora_actual,
+                            temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
+                            estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
+                        )
+
+            elif accion == "rechazar":
+                postulante.estadoPostulante = EstadoPostulante.RECHAZADO
+                postulante.save()
+
+                # Eliminar clase magistral si existía
+                ClaseMagistral.objects.filter(postulante=postulante).delete()
+
+            return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
+
+    return render(request, "gestion_documentos.html", {
+        "convocatoria": convocatoria,
+        "postulantes": postulantes
+    })'''
+
+
+@login_required
+def postulantes_aptos(request, convocatoria_id):
+  convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+  postulantes_aceptados = Postulante.objects.filter(
+      convocatoria=convocatoria,
+      estadoPostulante=EstadoPostulante.ACEPTADO
+  )
+
+  clases_existentes = ClaseMagistral.objects.filter(
+      postulante__in=postulantes_aceptados
+  ).select_related("postulante")
+
+  clases_por_postulante = {
+      clase.postulante_id: clase for clase in clases_existentes
+  }
+
+  hora_base = time(11, 0)
+  hora_maxima = time(20, 0)
+  horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
+
+  hora_actual = hora_base
+  for postulante in postulantes_aceptados:
+    if postulante.id not in clases_por_postulante:
+      # Calcular siguiente hora libre
+      while hora_actual in horas_ocupadas and hora_actual <= hora_maxima:
+        hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
+
+      if hora_actual > hora_maxima:
+        messages.warning(request, f"No hay más horarios disponibles para asignar a {postulante}.")
+        continue
+
+      # Buscar temas relacionados
+      plazas = Plaza.objects.filter(convocatoria=convocatoria)
+      secciones = [plaza.seccion for plaza in plazas]
+      temas_disponibles = Temas.objects.filter(silabus__curso__seccion__in=secciones)
+
+      tema_asignado = random.choice(list(temas_disponibles)) if temas_disponibles.exists() else None
+
+      ClaseMagistral.objects.create(
+          postulante=postulante,
+          fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
+          horaProgramada=hora_actual,
+          temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
+          estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
+      )
+
+      horas_ocupadas.add(hora_actual)  # Reservar esa hora
+
+  # Recargar clases con los nuevos
+  clases_actualizadas = ClaseMagistral.objects.filter(
+      postulante__in=postulantes_aceptados
+  ).select_related("postulante")
+
+  return render(request, "postulantes_aptos.html", {
+      "convocatoria": convocatoria,
+      "clases_magistrales": clases_actualizadas
   })
+
+
+@login_required
+def enviar_consolidado_pdf(request, convocatoria_id):
+  convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+
+  clases = ClaseMagistral.objects.filter(
+      postulante__convocatoria=convocatoria,
+      postulante__estadoPostulante=EstadoPostulante.ACEPTADO
+  ).select_related("postulante__persona")
+
+  template_path = 'consolidado_pdf.html'
+  context = {
+      'convocatoria': convocatoria,
+      'clases': clases,
+  }
+
+  html = render_to_string(template_path, context)
+  response = HttpResponse(content_type='application/pdf')
+  response['Content-Disposition'] = f'attachment; filename="consolidado_convocatoria_{convocatoria.id}.pdf"'
+
+  pisa_status = pisa.CreatePDF(
+      html, dest=response, encoding='UTF-8'
+  )
+
+  if pisa_status.err:
+    return HttpResponse('Error al generar el PDF', status=500)
+  return response
 
 
 # -------------------------- NAVHI --------------------------
 
+@login_required
+def dirigir_calificacion(request, convocatoria_id):
 
-def ver_documentos(request, postulante_id):
-  postulante = get_object_or_404(Postulante, id=postulante_id)
-  documentos = Documento.objects.filter(postulante=postulante)
-  return render(request, 'ver_documentos.html', {'postulante': postulante, 'documentos': documentos})
+  ordenar = request.GET.get('ordenar', '0')
 
+  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).select_related('persona', 'clasemagistral')
 
-@require_http_methods(["GET", "POST"])
-def calificar_documentos(request, postulante_id):
-  postulante = get_object_or_404(Postulante, id=postulante_id)
+  if ordenar == '1':
+    postulantes = postulantes.order_by('persona.apellidoPaterno', 'persona.apellidoMaterno', 'persona.nombre')
 
-  if request.method == "POST":
-      # Aquí recibís las notas de cada criterio (suponiendo que están en POST)
-      # Validar y guardar la calificación
-    try:
-      c1 = int(request.POST.get('c1', 0))
-      c2 = int(request.POST.get('c2', 0))
-      c3 = int(request.POST.get('c3', 0))
-      c4 = int(request.POST.get('c4', 0))
-      c5 = int(request.POST.get('c5', 0))
-      c6 = int(request.POST.get('c6', 0))
-    except ValueError:
-      return render(request, 'calificar_documentos.html', {
-          'postulante': postulante,
-          'error': 'Por favor, ingrese números válidos.'
-      })
+  cantidadPostulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).count()
 
-    # Validar rangos
-    if not (0 <= c1 <= 10 and 0 <= c2 <= 10 and 0 <= c3 <= 10 and 0 <= c4 <= 5 and 0 <= c5 <= 5 and 0 <= c6 <= 10):
-      return render(request, 'calificar_documentos.html', {
-          'postulante': postulante,
-          'error': 'Los puntajes deben estar dentro de los rangos permitidos.'
-      })
-
-    total = c1 + c2 + c3 + c4 + c5 + c6
-
-    # calificacion, created = CalificacionDocumento.objects.update_or_create(
-    #     postulante=postulante,
-    #     defaults={
-    #         'criterio1': c1,
-    #         'criterio2': c2,
-    #         'criterio3': c3,
-    #         'criterio4': c4,
-    #         'criterio5': c5,
-    #         'criterio6': c6,
-    #         'total': total
-    #     }
-    # )
-
-    return redirect('ver_documentos', postulante_id=postulante.id)
-
-  # GET
-  return render(request, 'calificar_documentos.html', {'postulante': postulante})
+  return render(request, 'dirigir_calificacion.html', {
+      'postulantes': postulantes,
+      'convocatoria_id': convocatoria_id,
+      'cantidadPostulantes': cantidadPostulantes,
+      'ordenar': ordenar
+  })
 
 
-@require_http_methods(["GET", "POST"])
-def clase_magistral(request, postulante_id):
-  postulante = get_object_or_404(Postulante, id=postulante_id)
-
-  # Horarios fijos o sacados de BD
-  hora = {
-      'inicio': '10:00',
-      'fin': '12:00'
-  }
-
-  if request.method == "POST":
-    try:
-      c1 = int(request.POST.get('c1', 0))
-      c2 = int(request.POST.get('c2', 0))
-      c3 = int(request.POST.get('c3', 0))
-      c4 = int(request.POST.get('c4', 0))
-    except ValueError:
-      return render(request, 'clase_magistral.html', {
-          'postulante': postulante,
-          'hora': hora,
-          'error': 'Ingrese números válidos.'
-      })
-
-    if not (0 <= c1 <= 20 and 0 <= c2 <= 10 and 0 <= c3 <= 10 and 0 <= c4 <= 10):
-      return render(request, 'clase_magistral.html', {
-          'postulante': postulante,
-          'hora': hora,
-          'error': 'Los puntajes deben estar dentro de los rangos permitidos.'
-      })
-
-    total = c1 + c2 + c3 + c4
-
-    # calificacion, created = CalificacionClase.objects.update_or_create(
-    #     postulante=postulante,
-    #     defaults={
-    #         'criterio1': c1,
-    #         'criterio2': c2,
-    #         'criterio3': c3,
-    #         'criterio4': c4,
-    #         'total': total
-    #     }
-    # )
-
-    return redirect('clase_magistral', postulante_id=postulante.id)
-
-  return render(request, 'clase_magistral.html', {'postulante': postulante, 'hora': hora})
+@login_required
+def ver_documento(request, documento_id):
+  try:
+    documento = Documento.objects.get(id=documento_id)
+    if not documento.archivo:
+      return HttpResponse("Documento vacío.", content_type='text/plain')
+    response = HttpResponse(documento.archivo, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="documento.pdf"'
+    return response
+  except Documento.DoesNotExist:
+    raise Http404("Documento no encontrado")
 
 
-def generar_informe_pdf(request):
-  # Obtener todas las calificaciones combinadas para ordenarlas
-  # Sumamos calificación documento + clase (puede ser null)
-  postulantes = Postulante.objects.all().annotate(
-      puntaje_documento=Sum('calificaciondocumento__total'),
-      puntaje_clase=Sum('calificacionclase__total'),
+@login_required
+def mostrar_documentos(request, postulante_id):
+  documentos = Documento.objects.filter(
+      postulante_id=postulante_id,
+      estadoDocumento=EstadoDocumento.ACEPTADO
   )
+  postulante = get_object_or_404(Postulante, pk=postulante_id)
+  convocatoria_id = postulante.convocatoria_id
 
-  # Calcular total sumado de ambas calificaciones (tratando None como 0)
-  datos = []
-  for p in postulantes:
-    doc = p.puntaje_documento or 0
-    clase = p.puntaje_clase or 0
-    total = doc + clase
-    datos.append({
-        'nombre': f"{p.nombre} {p.apellido}",
-        'puntaje_documento': doc,
-        'puntaje_clase': clase,
-        'total': total
+  return render(request, 'mostrar_documentos.html', {
+      'documentos': documentos,
+      'postulante_id': postulante_id,
+      'convocatoria_id': convocatoria_id
+  })
+
+
+@login_required
+def calificar_documentos(request, postulante_id):
+
+  print(request.method)
+
+  postulante = get_object_or_404(Postulante, pk=postulante_id)
+  convocatoria_id = postulante.convocatoria_id
+
+  try:
+    evaluador = Evaluador.objects.get(persona=request.user.persona)
+  except Evaluador.DoesNotExist:
+    return HttpResponseForbidden("No tienes permisos para calificar documentos")
+
+  if request.method == 'POST':
+
+    cd1 = int(request.POST.get('cd1', 0))
+    cd2 = int(request.POST.get('cd2', 0))
+    cd3 = int(request.POST.get('cd3', 0))
+    cd4 = int(request.POST.get('cd4', 0))
+    cd5 = int(request.POST.get('cd5', 0))
+    cd6 = int(request.POST.get('cd6', 0))
+
+    if NotaPostulante.objects.filter(postulante_id=postulante_id):
+
+      nota_postulante = nota_postulante = NotaPostulante.objects.filter(postulante=postulante, evaluador=evaluador).order_by('-id').first()
+      nota_postulante.notaDocumentoCriterio1 = cd1
+      nota_postulante.notaDocumentoCriterio2 = cd2
+      nota_postulante.notaDocumentoCriterio3 = cd3
+      nota_postulante.notaDocumentoCriterio4 = cd4
+      nota_postulante.notaDocumentoCriterio5 = cd5
+      nota_postulante.notaDocumentoCriterio6 = cd6
+      nota_postulante.save()
+
+    else:
+
+      NotaPostulante.objects.create(
+          evaluador=evaluador,
+          postulante=postulante,
+          notaDocumentoCriterio1=cd1,
+          notaDocumentoCriterio2=cd2,
+          notaDocumentoCriterio3=cd3,
+          notaDocumentoCriterio4=cd4,
+          notaDocumentoCriterio5=cd5,
+          notaDocumentoCriterio6=cd6,
+          estadoNotaPostulante=EstadoNotaPostulante.REVISADO_PARCIALMENTE
+      )
+
+    return redirect('evaluar_clase_magistral', postulante_id=postulante.id)
+
+  return render(request, 'calificar_documentos.html', {
+      'postulante': postulante
+  })
+
+
+@login_required
+def evaluar_clase_magistral(request, postulante_id):
+  clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
+
+  fecha = clase_magistral.fechaProgramacion
+  hora = clase_magistral.horaProgramada
+  datetime_combinado = datetime.combine(fecha, hora)
+
+  # sumar una hora
+  datetime_mas_una_hora = datetime_combinado + timedelta(hours=1)
+
+  # si quieres la hora solamente después de sumar
+  hora_final = datetime_mas_una_hora.time()
+
+  postulante = get_object_or_404(Postulante, pk=postulante_id)
+  evaluador = Evaluador.objects.get(persona=request.user.persona)
+
+  convocatoria_id = postulante.convocatoria_id
+
+  if request.method == 'POST':
+    c1 = int(request.POST.get('c1', 0))
+    c2 = int(request.POST.get('c2', 0))
+    c3 = int(request.POST.get('c3', 0))
+    c4 = int(request.POST.get('c4', 0))
+
+    nota_postulante = NotaPostulante.objects.filter(
+        postulante=postulante,
+        evaluador=evaluador
+    ).order_by('-id').first()
+
+    nota_postulante.notaClaseCriterio1 = c1
+    nota_postulante.notaClaseCriterio2 = c2
+    nota_postulante.notaClaseCriterio3 = c3
+    nota_postulante.notaClaseCriterio4 = c4
+    nota_postulante.estadoNotaPostulante = EstadoNotaPostulante.COMPLETO
+    nota_postulante.save()
+
+    return redirect('dirigir_calificacion', convocatoria_id=convocatoria_id)
+
+  return render(request, 'evaluar_clase_magistral.html', {
+      'clase_magistral': clase_magistral,
+      'hora_final': hora_final,
+      'postulante_id': postulante_id,
+      'convocatoria_id': convocatoria_id
+
+  })
+
+
+@login_required
+def generar_informe_notas(request, convocatoria_id):
+  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id)
+
+  datos_postulantes = []
+
+  for postulante in postulantes:
+    notas = NotaPostulante.objects.filter(postulante=postulante)
+
+    # Calculamos nota total — puedes ajustar este cálculo
+    nota_total = 0
+    for nota in notas:
+      suma_documentos = (
+          (nota.notaDocumentoCriterio1 or 0) +
+          (nota.notaDocumentoCriterio2 or 0) +
+          (nota.notaDocumentoCriterio3 or 0) +
+          (nota.notaDocumentoCriterio4 or 0) +
+          (nota.notaDocumentoCriterio5 or 0) +
+          (nota.notaDocumentoCriterio6 or 0)
+      )
+      suma_clase = (
+          (nota.notaClaseCriterio1 or 0) +
+          (nota.notaClaseCriterio2 or 0) +
+          (nota.notaClaseCriterio3 or 0) +
+          (nota.notaClaseCriterio4 or 0)
+      )
+      nota_total += suma_documentos + suma_clase
+
+    datos_postulantes.append({
+        'nombre': f"{postulante.persona.nombre} {postulante.persona.apellidoPaterno} {postulante.persona.apellidoMaterno} ",
+        'nota_total': nota_total
     })
 
-  datos_ordenados = sorted(datos, key=lambda x: x['total'], reverse=True)
+  # Ordenar de mayor a menor
+  datos_postulantes = sorted(datos_postulantes, key=lambda x: x['nota_total'], reverse=True)
 
-  # Generar PDF con reportlab
-  buffer = BytesIO()
-  p = canvas.Canvas(buffer, pagesize=letter)
+  # Cargar plantilla
+  context = {'postulantes': datos_postulantes, 'convocatoria_id': convocatoria_id}
+  template = get_template('pdf_informe_notas.html')
+  html = template.render(context)
 
-  p.setFont("Helvetica-Bold", 16)
-  p.drawString(50, 750, "Informe de Puntajes - Sistema de Selección Docente")
+  # Crear el PDF
+  response = HttpResponse(content_type='application/pdf')
+  response['Content-Disposition'] = f'inline; filename="informe_notas_convocatoria_{convocatoria_id}.pdf"'
+  pisa_status = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')
 
-  p.setFont("Helvetica", 12)
-  y = 720
-  p.drawString(50, y, "Nombre")
-  p.drawString(300, y, "Documento")
-  p.drawString(400, y, "Clase")
-  p.drawString(480, y, "Total")
-
-  y -= 20
-  for d in datos_ordenados:
-    if y < 50:
-      p.showPage()
-      y = 750
-    p.drawString(50, y, d['nombre'])
-    p.drawString(300, y, str(d['puntaje_documento']))
-    p.drawString(400, y, str(d['puntaje_clase']))
-    p.drawString(480, y, str(d['total']))
-    y -= 20
-
-  p.showPage()
-  p.save()
-
-  buffer.seek(0)
-  return HttpResponse(buffer, content_type='application/pdf')
+  if pisa_status.err:
+    return HttpResponse('Hubo un error generando el PDF: %s' % pisa_status.err)
+  return response

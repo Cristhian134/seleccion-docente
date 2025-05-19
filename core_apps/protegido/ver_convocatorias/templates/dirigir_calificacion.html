@@ -1,59 +1,92 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} {% block content %}
 
-<ol class="breadcrumb__list">
-    <li class="breadcrumb__item">
-      <a href="/home">Inicio</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a href="/ver_convocatoria">Ver convocatoria</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a>Digir Calificación</a>
-    </li>
-</ol>
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+      <li class="breadcrumb__item">
+        <a href="/home">Inicio</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a href="/ver_convocatorias/">Ver convocatoria</a>
+      </li>
+      <li class="breadcrumb__item">
+        <a>Digir Calificación</a>
+      </li>
+  </ol>
+</nav>
 
-<div class="seccion_arriba">
-  <h2> Lista de postulantes </h2>
-  <div class="seccion_arriba elementos_Derecha">
-    <input type="checkbox" id="orden_postulantes" class="boton__checkbox">
-    <label for="orden_postulantes" class="boton__ordenar">
-      <i class="fa fa-filter" aria-hidden="true"></i>
-    </label>
-    <div class="cantidad_postulantes">{{ cantidad.postulantes }}</div>
-  </div>
+<div class="seccion_arriba"
+style="display: flex; align-items: center; justify-content: space-between;"
+>
+  <h2 style="font-size: 25px; font-weight: 300;"> Lista de postulantes </h2>
+  <div class="cantidad_postulantes" style="
+    background-color: #711610; 
+    color: #fff;
+    height: 35px; 
+    width: 35px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 35px;
+    border-radius: 12px;
+    "
+  >{{ cantidadPostulantes }}</div>
 </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>N°</th>
-      <th>Apellidos</th>
-      <th>Nombres</th>
-      <th>Tema de la Clase Magistral</th>
-      <th>Fecha de Evaluación</th>
-      <th>Hora de la Evaluación</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for postulante in postulantes_convocatoria %}
-    <tr>
-      <td>{{ forloop.counter }}</td>
-      <td>{{ postulante.apellidos }}</td>
-      <td>{{ postulante.nombres }}</td>
-      <td>{{ postulante.temaClase }}</td>
-      <td>{{ postulante.fechaClase }}</td>
-      <td>{{ postulante.horaClase }}</td>
-      <td><button value="{{ postulante.id }}">Evaluar</button></td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="7" class="text-center">No hay postulantes disponibles.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="table__wrapper">
+  <table class="table__primary">
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th>Apellidos</th>
+        <th>Nombres</th>
+        <th>Tema de la Clase Magistral</th>
+        <th>Fecha de Evaluación</th>
+        <th>Hora de la Evaluación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in postulantes %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ p.persona.apellidoPaterno }} {{ p.persona.apellidoMaterno }}</td>
+        <td>{{ p.persona.nombre }}</td>
+        <td>{{ p.clasemagistral.temaAsignado }}</td>
+        <td>{{ p.clasemagistral.fechaProgramacion }}</td>
+        <td>{{ p.clasemagistral.horaProgramada }}</td>
+        <td><a href="{% url 'mostrar_documentos' p.id %}" style="
+                background-color: #711610; 
+                color: #fff;
+                text-align: center;
+                font-size: 12px;
+                font-weight: 100;
+                line-height: 20px;
+                border-radius: 12px;
+                padding: 8px 12px;
+                ">Evaluar</a></td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">No hay postulantes disponibles.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-<button id="boton__informe">Generar Informe</button>
+<a href="{% url 'generar_informe_notas' convocatoria_id %}" target="_blank" style="
+    background-color: #711610; 
+    color: #fff;
+    width: 200px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 35px;
+    border-radius: 12px;
+    padding: 5px 0px;
+    align-self: self-end;
+    ">Generar Informe</a>
 
 {% endblock %}
+

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Lista de Postulantes Aptos</h1>
+
+<div style="display: flex; align-items: center; justify-content: space-between;">
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+    <li class="breadcrumb__item"><a href="/ver_convocatorias">Ver convocatorias</a></li>
+    <li class="breadcrumb__item">
+      <a href="{% url 'gestionar_documentos' convocatoria.id %}">Gestionar Documentos</a>
+    </li>
+    <li class="breadcrumb__item"><a>Postulantes Aptos</a></li>
+  </ol>
+</div>
+
+<h2>Postulantes Aptos - {{ convocatoria.nombre }}</h1>
+
+<table class="table__primary">
+  <thead>
+    <tr>
+      <th>N°</th>
+      <th>Nombre</th>
+      <th>Clase Magistral</th>
+      <th>Tema Asignado</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for clase in clases_magistrales %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ clase.postulante.persona.nombre }} {{ clase.postulante.persona.apellidoPaterno }} {{ clase.postulante.persona.apellidoMaterno }}</td>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ clase.temaAsignado }}</td>
+      <td>{{ clase.estadoClaseMagistral }}</td>
+      
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="alert {{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<a href="{% url 'enviar_consolidado_pdf' convocatoria.id %}" class="button--primary">
+  Enviar Consolidado (PDF)
+</a>
+{% endblock %}

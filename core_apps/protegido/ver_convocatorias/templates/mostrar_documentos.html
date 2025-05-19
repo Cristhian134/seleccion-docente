@@ -4,46 +4,163 @@
 
 <ol class="breadcrumb__list">
   <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
-  <li class="breadcrumb__item"><a href="/ver_convocatoria">Ver convocatoria</a></li>
-  <li class="breadcrumb__item"><a href="/dirigir_calificacion">Dirigir Calificación</a></li>
+  <li class="breadcrumb__item"><a href="/ver_convocatorias/">Ver convocatoria</a></li>
+  <li class="breadcrumb__item">
+    <a href="{% url 'dirigir_calificacion' convocatoria_id %}">Dirigir Calificación</a>
+  </li>
   <li class="breadcrumb__item"><a>Documentos</a></li>
 </ol>
 
-<div class="reales__documentos">
-  <div class="seleccion__documento">
-    <span class="caja__documentos">Documentos de {{ postulante.nombres }} {{ postulante.apellidos }}</span>
-    <form id="form__documentos">
-      {% for documento in documentos %}
-        <div class="fila__documento">
-          <label>
-            <input type="radio" name="nombre_doc" value="{{ documento.archivo.url }}">
-            {{ documento.nombre }}
-          </label>
-        </div>
-      {% empty %}
-        <p>No hay documentos subidos.</p>
-      {% endfor %}
-    </form>
+<div class="reales__documentos"  style="
+  display: flex;
+  flex-direction: row;
+  align-content: space-evenly;
+  margin: 30px auto 10px auto;
+  position: relative;
+">
+  <div class="seleccion__documento" style="
+    height: 60vh;
+    margin: auto 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0px 30px 0px 0px;
+  ">
+    <div class="caja__documentos" style="
+    background-color: #711610; 
+    color: #fff;
+    height: 40px; 
+    width: 180px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 40px;
+    border-radius: 2px;
+    ">Documentos</div>
+
+    <div  style="
+    border: 4px solid #711610;
+    margin-top: 10px;
+    width: 180px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 200;
+    line-height: 40px;
+    border-radius: 2px;
+    ">
+      <form id="form__documentos">
+        {% for d in documentos %}
+          <div class="fila__documento">
+            <label style="display: flex; flex-direction: row; align-content: space-between;">
+              <div class="elemento" style="
+                  width: 150px;
+                ">{{ d.tipoDocumento }}</div>
+              <div class="elemento" style="
+                  width: 30px;
+                "><input type="radio" name="documento" data-url="{% url 'ver_documento' d.id %}"></div>
+            </label>
+          </div>
+        {% empty %}
+          <p>No hay documentos subidos.</p>
+        {% endfor %}
+      </form>
+
+    </div>
   </div>
 
-  <div class="mostrar__documento">
-    <iframe id="visor_documento" class="documento_pdf" width="100%" height="500px"></iframe>
+  <div class="mostrar__documento" style="
+    border: 10px solid #711610;
+    height: 60vh;
+    margin: auto 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0px 60px;
+    width: 50vw;
+    border-radius: 14px;
+    text-align: center;
+  font-size: 25px;
+  ">
+    Aquí se mostrará el documento
   </div>
 </div>
 
-<button id="boton__calificar">Calificar</button>
+<button id="boton__calificar" data-url="{% url 'calificar_documentos' postulante_id %}"  style="
+    background-color: #711610; 
+    color: #fff;
+    width: 200px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 35px;
+    border-radius: 12px;
+    padding: 5px 0px;
+    align-self: self-end;
+    ">Calificar</button>
+
+<div id="modalCalificar" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div id="contenidoModal"></div>
+  </div>
+</div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const radios = document.querySelectorAll('input[name="nombre_doc"]');
-    const visor = document.getElementById('visor_documento');
-
-    radios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        visor.src = radio.value;
-      });
+  document.querySelectorAll('input[name="documento"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const url = this.dataset.url;
+      document.querySelector('.mostrar__documento').innerHTML = `
+        <iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>
+      `;
     });
   });
+</script>
+
+<script>
+document.getElementById('boton__calificar').addEventListener('click', function() {
+  const url = this.dataset.url;
+
+  fetch(url)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('contenidoModal').innerHTML = html;
+      document.getElementById('modalCalificar').style.display = 'block';
+    });
+});
+
+</script>
+
+<script>
+  function validarYSumar() {
+    const inputs = [
+      { id: 'cd1', max: 10 },
+      { id: 'cd2', max: 10 },
+      { id: 'cd3', max: 10 },
+      { id: 'cd4', max: 5 },
+      { id: 'cd5', max: 5 },
+      { id: 'cd6', max: 10 },
+    ];
+
+    let total = 0;
+
+    inputs.forEach(input => {
+      const el = document.getElementById(input.id);
+      let val = parseFloat(el.value);
+      
+      if (isNaN(val)) val = 0;
+
+      if (val < 0) {
+        el.value = 0;
+        val = 0;
+      } else if (val > input.max) {
+        el.value = input.max;
+        val = input.max;
+      }
+
+      total += val;
+    });
+
+    document.getElementById("total_puntaje").textContent = total;
+  }
 </script>
 
 {% endblock %}
