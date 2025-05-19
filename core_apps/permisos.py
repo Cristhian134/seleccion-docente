@@ -22,6 +22,6 @@ MODULOS = [
     "nombre": "Ver convocatorias",
     "icono": "fa fa-external-link",
     "url": "/ver_convocatorias/",
-    "roles": [ROLES.ADMINISTRADOR, ROLES.ENCARGADO_CONSEJO],
+    "roles": [ROLES.ADMINISTRADOR, ROLES.ENCARGADO_CONSEJO, ROLES.EVALUADOR],
   },
 ]
