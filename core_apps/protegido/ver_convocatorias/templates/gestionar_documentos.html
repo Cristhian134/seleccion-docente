@@ -17,7 +17,17 @@
   justify-content: center;
 }
 
+.modal > div {
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .modal-content {
+  position: relative;
+  margin: 0 auto;
   background-color: #fff;
   border-radius: 1rem;
   padding: 2rem;
@@ -221,70 +231,77 @@
 
 <!-- Modal para agregar postulante y cargar documentos -->
 <div id="modalAgregar" class="modal" style="display: none;" >
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModal()">&times;</span>
-    <form method="post" enctype="multipart/form-data" action="{% url 'agregar_postulante' convocatoria.id %}">
-      {% csrf_token %}
-      <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
+  <div>
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <form method="post" enctype="multipart/form-data" action="{% url 'agregar_postulante' convocatoria.id %}">
+        {% csrf_token %}
+        <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
 
-      <table class="table__modal">
-        <thead>
-          <tr>
-            <th>N°</th>
-            <th>Nombre</th>
-            <th>Tipo Documento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>
-              <input type="text" name="nombre" placeholder="Nombre" required><br/>
-              <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
-              <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
-            </td>
-            <td>
-              <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="table__modal">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Nombre</th>
+              <th>Tipo Documento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>
+                <input type="text" name="nombre" placeholder="Nombre" required><br/>
+                <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
+                <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
+              </td>
+              <td>
+                <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <div style="text-align: center; margin-top: 1em;">
-        <label for="archivo" class="upload-label" style="cursor: pointer;">
-          <img src="{% static 'upload_icon.png' %}" alt="Subir Documento" width="64">
-          <br>Subir Documento
-        </label>
-        <input type="file" name="archivo" id="archivo" style="display: none;" required>
-      </div>
+        <div style="text-align: center; margin-top: 1em;">
+          <label for="archivo" class="upload-label" style="cursor: pointer;">
+            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+            <br>Subir Documento
+          </label>
+          <input type="file" name="archivo" id="archivo" style="display: none;" required>
+        </div>
 
-      <div style="text-align: center; margin-top: 2em;">
-        <button type="submit" class="btn-agregar">Agregar</button>
-        <button type="button" onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
-      </div>
-    </form>
+        <div style="text-align: center; margin-top: 2em;">
+          <button type="submit" class="btn-agregar">Agregar</button>
+          <button type="button" onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
 <div id="modalVerDocumentos" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
-    <h3>Datos de Postulante</h3>
-    <p id="nombrePostulante" style="font-weight: bold;"></p>
+  <div>
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
+        <h3>Datos de Postulante</h3>
+        <p id="nombrePostulante" style="font-weight: bold;"></p>
 
-    <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
-      <button name="accion_documentos" value="aceptar" class="button--primary" form="form_gestionar_documentos">Aceptar</button>
-      <button name="accion_documentos" value="rechazar" class="button--primary" form="form_gestionar_documentos">Rechazar</button>
-    </div>
+        <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
+          <button name="accion_documentos" value="aceptar" class="button--primary" form="form_gestionar_documentos">Aceptar</button>
+          <button name="accion_documentos" value="rechazar" class="button--primary" form="form_gestionar_documentos">Rechazar</button>
+        </div>
 
-    <div id="contenedorDocumentos">
-      <!-- Aquí se cargarán los documentos con JS -->
-    </div>
+        <div id="contenedorDocumentos">
+          <!-- Aquí se cargarán los documentos con JS -->
+        </div>
+      </div>
   </div>
 </div>
 
 <a href="{% url 'postulantes_aptos' convocatoria.id %}" class="button--primary">Postulantes Aptos</a>
+<script> 
+  {% comment %} http://localhost:8000/descargar-pdf/1/ {% endcomment %}
 
+</script>
 
 <script>
   // Abrir el modal de "Agregar Postulante"
@@ -316,15 +333,26 @@
     // Limpiar documentos anteriores
     contenedor.innerHTML = "";
 
+    // Almacenar temporalmente en el buscador el pdf desde un endpoint
+
+    // Función para obtener el blob y devolver la URL temporal
+    async function obtenerBlobUrl(docId) {
+      const response = await fetch(`/descargar-pdf/${docId}/`);
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+
     // Renderizar documentos
-    documentos.forEach(doc => {
+    documentos.forEach(async (doc) => {
+      const blobUrl = await obtenerBlobUrl(postulanteId); // Asumimos que cada doc tiene un "id"
+
       const docElem = document.createElement("div");
       docElem.innerHTML = `
         <div style="margin-bottom: 1em; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
           <p><strong>Tipo:</strong> ${doc.tipo}</p>
           <p><strong>Fecha:</strong> ${doc.fecha}</p>
           <p><strong>Estado:</strong> ${doc.estado}</p>
-          <iframe src="${doc.url}" width="100%" height="300px" style="border: none;"></iframe>
+          <iframe src="${blobUrl}" width="100%" height="300px" style="border: none;"></iframe>
         </div>
       `;
       contenedor.appendChild(docElem);

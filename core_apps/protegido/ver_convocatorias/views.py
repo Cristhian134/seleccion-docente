@@ -64,11 +64,6 @@ def ver_convocatorias(request):
       "url_volver": "/home",
   })
 
-  return render(request, 'ver_convocatorias.html', {
-      "convocatorias": convocatorias,
-      "url_volver": "/home"
-  })
-
 
 @login_required
 def ver_documento(request, documento_id):
