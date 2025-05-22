@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
+from django.http import JsonResponse
 
-from core_apps.protegido.crear_convocatoria.utils import crear_convocatoria
-from core_apps.common.models import Curso, TipoPlaza
+from core_apps.protegido.crear_convocatoria.utils import convocatoria_externa_obtener_datos_profesor, crear_convocatoria
+from core_apps.common.models import Curso, Docente, TipoPlaza
 from .forms import ConvocatoriaExternaForm
 
 import json
@@ -17,6 +19,37 @@ def crear_convocatoria_view(request):
 
 @login_required
 def crear_convocatoria_interna_view(request):
+  context = {
+    "url_volver": "/crear-convocatoria/"
+  }
+
+  if request.method == 'GET':
+    dni = request.GET.get('cod_profesor', '').strip()
+
+    if dni.isdigit() and int(dni) > 0:
+      pass
+    else:
+      context["error_busqueda"] = "El codigo debe ser un numero entero mayor o igual a 1"
+      return render(request, 'crear_convocatoria_interna.html', context)
+
+    if not dni:
+      context["error_busqueda"] = "Codigo no proporcionado"
+    else:
+      profesor = Docente.objects.get(id=dni)
+      print(profesor.id, "ssssssss")
+      if profesor:
+        data = convocatoria_externa_obtener_datos_profesor(dni)
+        context["data"] = data
+      else:
+        context["error_db"] = f"No se encontró un docente con el Codigo {dni}"
+
+    return render(request, 'crear_convocatoria_interna.html', context)
+
+  if request.method == 'POST':
+    return render(request, 'crear_convocatoria_interna.html', {
+      "url_volver": "/crear-convocatoria/"
+    })
+
   return render(request, 'crear_convocatoria_interna.html', {
     "url_volver": "/crear-convocatoria/"
   })
@@ -24,7 +57,12 @@ def crear_convocatoria_interna_view(request):
 
 @login_required
 def crear_convocatoria_externa_view(request):
-  cursos = Curso.objects.prefetch_related('seccion_set').all()
+  user = getattr(request, 'user', AnonymousUser())
+  facultad = getattr(user, "facultad", None)
+
+  cursos = Curso.objects.prefetch_related('seccion_set').all().filter(facultad=facultad).prefetch_related(
+    'seccion_set__horario_set'
+  )
   tipo_plazas = TipoPlaza.choices
 
   if request.method == 'POST':

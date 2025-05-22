@@ -7,3 +7,4 @@ dotenv
 reportlab==4.0.8
 Faker>=18.0.0
 openpyxl==3.1.5
+xhtml2pdf==0.2.15

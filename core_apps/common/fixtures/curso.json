@@ -59,6 +59,76 @@
       "facultad": "Facultad de Ingeniería Industrial y de Sistemas"
     }
   },
+    {
+    "model": "common.curso",
+    "pk": 7,
+    "fields": {
+      "nombreCurso": "CREATIVIDAD 1",
+      "codigoCurso": "EPA101",
+      "creditosCurso": 5,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 8,
+    "fields": {
+      "nombreCurso": "GEOGRAFIA TERRITORIAL",
+      "codigoCurso": "EPA201",
+      "creditosCurso": 3,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 9,
+    "fields": {
+      "nombreCurso": "CULTURA CONTEMPORANEA",
+      "codigoCurso": "EPA701",
+      "creditosCurso": 3,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 10,
+    "fields": {
+      "nombreCurso": "COMUNICACION",
+      "codigoCurso": "EPA702",
+      "creditosCurso": 3,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 11,
+    "fields": {
+      "nombreCurso": "ALGEBRA LINEAL",
+      "codigoCurso": "BMA03",
+      "creditosCurso": 4,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 12,
+    "fields": {
+      "nombreCurso": "CALCULO DIFERENCIAL",
+      "codigoCurso": "BMA01",
+      "creditosCurso": 5,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
+  {
+    "model": "common.curso",
+    "pk": 13,
+    "fields": {
+      "nombreCurso": "REALIDAD NACIONAL, CONSTITUCION Y DERECHOS HUMANOS",
+      "codigoCurso": "BRN01",
+      "creditosCurso": 3,
+      "facultad": "Facultad de Arquitectura, Urbanismo y Artes"
+    }
+  },
   {
     "model": "common.seccion",
     "pk": 1,
@@ -82,7 +152,7 @@
     "pk": 3,
     "fields": {
       "curso": 2,
-      "codigoSeccion": "W",
+      "codigoSeccion": "U",
       "estadoSeccion": "activo"
     }
   },
@@ -91,7 +161,7 @@
     "pk": 4,
     "fields": {
       "curso": 2,
-      "codigoSeccion": "X",
+      "codigoSeccion": "V",
       "estadoSeccion": "activo"
     }
   },
@@ -100,7 +170,7 @@
     "pk": 5,
     "fields": {
       "curso": 2,
-      "codigoSeccion": "Y",
+      "codigoSeccion": "W",
       "estadoSeccion": "activo"
     }
   },
@@ -127,7 +197,7 @@
     "pk": 8,
     "fields": {
       "curso": 4,
-      "codigoSeccion": "W",
+      "codigoSeccion": "U",
       "estadoSeccion": "activo"
     }
   },
@@ -136,7 +206,7 @@
     "pk": 9,
     "fields": {
       "curso": 4,
-      "codigoSeccion": "X",
+      "codigoSeccion": "V",
       "estadoSeccion": "activo"
     }
   },
@@ -145,7 +215,7 @@
     "pk": 10,
     "fields": {
       "curso": 5,
-      "codigoSeccion": "Y",
+      "codigoSeccion": "U",
       "estadoSeccion": "activo"
     }
   },
@@ -154,7 +224,7 @@
     "pk": 11,
     "fields": {
       "curso": 5,
-      "codigoSeccion": "U",
+      "codigoSeccion": "V",
       "estadoSeccion": "activo"
     }
   },
@@ -163,7 +233,7 @@
     "pk": 12,
     "fields": {
       "curso": 5,
-      "codigoSeccion": "V",
+      "codigoSeccion": "W",
       "estadoSeccion": "activo"
     }
   },
@@ -172,7 +242,7 @@
     "pk": 13,
     "fields": {
       "curso": 6,
-      "codigoSeccion": "W",
+      "codigoSeccion": "U",
       "estadoSeccion": "activo"
     }
   },
@@ -181,440 +251,134 @@
     "pk": 14,
     "fields": {
       "curso": 6,
-      "codigoSeccion": "X",
+      "codigoSeccion": "V",
       "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 15,
     "fields": {
-      "seccion": 1,
-      "dia": "lunes",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
+      "curso": 7,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 16,
     "fields": {
-      "seccion": 1,
-      "dia": "miercoles",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
+      "curso": 7,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 17,
     "fields": {
-      "seccion": 2,
-      "dia": "martes",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
+      "curso": 8,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 18,
     "fields": {
-      "seccion": 2,
-      "dia": "jueves",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
+      "curso": 8,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 19,
     "fields": {
-      "seccion": 3,
-      "dia": "lunes",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
+      "curso": 9,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 20,
     "fields": {
-      "seccion": 3,
-      "dia": "miercoles",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
+      "curso": 9,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 21,
     "fields": {
-      "seccion": 3,
-      "dia": "viernes",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
+      "curso": 10,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 22,
     "fields": {
-      "seccion": 4,
-      "dia": "martes",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
+      "curso": 10,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 23,
     "fields": {
-      "seccion": 4,
-      "dia": "jueves",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
+      "curso": 11,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 24,
     "fields": {
-      "seccion": 4,
-      "dia": "sabado",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
+      "curso": 11,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 25,
     "fields": {
-      "seccion": 5,
-      "dia": "lunes",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
+      "curso": 12,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 26,
     "fields": {
-      "seccion": 5,
-      "dia": "miercoles",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
+      "curso": 12,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 27,
     "fields": {
-      "seccion": 5,
-      "dia": "viernes",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
+      "curso": 13,
+      "codigoSeccion": "A",
+      "estadoSeccion": "activo"
     }
   },
   {
-    "model": "common.horario",
+    "model": "common.seccion",
+    "pk": 28,
     "fields": {
-      "seccion": 6,
-      "dia": "martes",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 6,
-      "dia": "jueves",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 7,
-      "dia": "lunes",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 7,
-      "dia": "miercoles",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 7,
-      "dia": "viernes",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 8,
-      "dia": "martes",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 8,
-      "dia": "jueves",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 9,
-      "dia": "lunes",
-      "horaInicio": "12:00",
-      "horaFin": "14:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 9,
-      "dia": "miercoles",
-      "horaInicio": "12:00",
-      "horaFin": "14:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 10,
-      "dia": "martes",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 10,
-      "dia": "jueves",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 10,
-      "dia": "sabado",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 11,
-      "dia": "lunes",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 11,
-      "dia": "viernes",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 12,
-      "dia": "martes",
-      "horaInicio": "12:00",
-      "horaFin": "14:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 12,
-      "dia": "jueves",
-      "horaInicio": "12:00",
-      "horaFin": "14:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 13,
-      "dia": "miercoles",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 13,
-      "dia": "viernes",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 13,
-      "dia": "sabado",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 14,
-      "dia": "lunes",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 14,
-      "dia": "miercoles",
-      "horaInicio": "16:00",
-      "horaFin": "18:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 1,
-      "dia": "viernes",
-      "horaInicio": "08:00",
-      "horaFin": "10:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 2,
-      "dia": "sabado",
-      "horaInicio": "10:00",
-      "horaFin": "12:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 3,
-      "dia": "sabado",
-      "horaInicio": "14:00",
-      "horaFin": "16:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 4,
-      "dia": "lunes",
-      "horaInicio": "18:00",
-      "horaFin": "20:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 5,
-      "dia": "martes",
-      "horaInicio": "18:00",
-      "horaFin": "20:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 6,
-      "dia": "miercoles",
-      "horaInicio": "18:00",
-      "horaFin": "20:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 7,
-      "dia": "jueves",
-      "horaInicio": "18:00",
-      "horaFin": "20:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 8,
-      "dia": "viernes",
-      "horaInicio": "18:00",
-      "horaFin": "20:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 9,
-      "dia": "sabado",
-      "horaInicio": "12:00",
-      "horaFin": "14:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 10,
-      "dia": "lunes",
-      "horaInicio": "07:00",
-      "horaFin": "09:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 11,
-      "dia": "martes",
-      "horaInicio": "07:00",
-      "horaFin": "09:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 12,
-      "dia": "miercoles",
-      "horaInicio": "07:00",
-      "horaFin": "09:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 13,
-      "dia": "jueves",
-      "horaInicio": "07:00",
-      "horaFin": "09:00"
-    }
-  },
-  {
-    "model": "common.horario",
-    "fields": {
-      "seccion": 14,
-      "dia": "viernes",
-      "horaInicio": "07:00",
-      "horaFin": "09:00"
+      "curso": 13,
+      "codigoSeccion": "B",
+      "estadoSeccion": "activo"
     }
   }
 ]

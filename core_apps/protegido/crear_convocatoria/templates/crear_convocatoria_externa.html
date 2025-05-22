@@ -101,9 +101,6 @@
       <button type="button" id="boton_siguiente" class="button--primary">
         Siguiente
       </button> 
-      {% comment %} <button type="submit" id="" class="button--primary">
-        Siguiente
-      </button> {% endcomment %}
     </form>
   </section>
   <section class="cursos_convocatoria hidden" id="cursos_convocatoria">
@@ -111,25 +108,6 @@
     <div>
       <div class="cursos_convocatoria__wrapper">
         <div class="cursos_convocatoria__llenar_curso">
-          {% comment %}
-          <label class="input-primary">
-            Curso - Sección
-            <select id="cursos_seccion" name="categorias" required>
-              <optgroup label="SI707 - INGENIERIA DE SOFTWARE">
-                <option value="SI707-U">SI707U - INGENIERIA DE SOFTWARE</option>
-                <option value="SI707-V">SI707V - INGENIERIA DE SOFTWARE</option>
-              </optgroup>
-              <optgroup label="SI705 - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS">
-                <option value="SI705-U">
-                  SI705U - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS
-                </option>
-                <option value="SI705-V">
-                  SI705V - ESTÁNDARES DE LA INGENIERÍA DE SISTEMAS
-                </option>
-              </optgroup>
-            </select>
-          </label>
-          {% endcomment %}
           <label class="input-primary">
             Curso - Sección
             <select id="cursos_seccion" name="categorias" required>
@@ -140,6 +118,7 @@
                 {% for seccion in curso.seccion_set.all %}
                 <option
                   value="{{ curso.codigoCurso }}-{{ seccion.codigoSeccion }}"
+                  data-total-horas="{{seccion.total_horas}}"
                 >
                   {{ curso.codigoCurso }}{{ seccion.codigoSeccion }} - {{ curso.nombreCurso }}
                 </option>
@@ -148,14 +127,6 @@
               {% endfor %}
             </select>
           </label>
-          {% comment %} <label class="input-primary">
-            Tipo
-            <select required id="tipo_plaza">
-              <option value="teoria">Teoría</option>
-              <option value="practica">Práctica</option>
-              <option value="laboratorio">Laboratorio</option>
-            </select>
-          </label> {% endcomment %}
           <label class="input-primary">
             Tipo
             <select required id="tipo_plaza" name="tipo_plaza">
@@ -239,7 +210,7 @@
       seccionProgramacion.classList.add("flex");
 
       seccionCursos.classList.add("hidden");
-      seccionCursos.classList.add("flex");
+      seccionCursos.classList.remove("flex");
     });
 
     const boton_crear = document.getElementById("boton_crear");
@@ -315,6 +286,10 @@
     const requisitos = document.querySelectorAll(
       "#requisitos_wrapper textarea"
     );
+    
+    const selectCurso = document.getElementById("cursos_seccion");
+    const opcionSeleccionada = selectCurso.options[selectCurso.selectedIndex];
+    const horas = opcionSeleccionada.getAttribute("data-total-horas") || "0";
 
     const listaRequisitos = Array.from(requisitos)
       .map((req) => req.value.trim())
@@ -337,7 +312,7 @@
       <td>${cursoSeleccionado}</td>
       <td><ul>${listaRequisitos.map((r) => `<li>${r}</li>`).join("")}</ul></td>
       <td>${tipoSeleccionado}</td>
-      <td>4</td>
+      <td>${horas}</td>
       <td>
         <button type="button" class="button--danger btn-eliminar-curso">
           <i class="fa fa-trash delete_icon" aria-hidden="true"></i>

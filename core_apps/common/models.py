@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.urls import reverse
 
+from datetime import datetime, timedelta
+
 
 class GeneroPersona(models.TextChoices):
   MASCULINO = "masculino", "Masculino"
@@ -198,6 +200,15 @@ class Seccion(models.Model):
     choices=EstadoSeccion.choices,
   )
 
+  @property
+  def total_horas(self):
+    total = timedelta()
+    for horario in self.horario_set.all():
+      inicio = datetime.combine(datetime.min, horario.horaInicio)
+      fin = datetime.combine(datetime.min, horario.horaFin)
+      duracion = fin - inicio
+      total += duracion
+    return round(total.total_seconds() / 3600, 0)
 # Actualizar
 
 
@@ -323,7 +334,7 @@ class EstadoClaseMagistral(models.TextChoices):
 
 
 class ClaseMagistral(models.Model):
-  postulante = models.ForeignKey(
+  postulante = models.OneToOneField(
     Postulante,
     on_delete=models.CASCADE
   )
@@ -349,10 +360,7 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
-  persona = models.ForeignKey(
-    Persona,
-    on_delete=models.CASCADE
-  )
+  persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True)
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
@@ -361,6 +369,9 @@ class Evaluador(models.Model):
     max_length=64,
     choices=EstadoEvaluador.choices,
   )
+
+  def __str__(self):
+    return f"{self.persona.nombre} ({self.tipoEvaluador})"
 
 
 class EstadoDocumento(models.TextChoices):
@@ -406,10 +417,10 @@ class NotaPostulante(models.Model):
     Postulante,
     on_delete=models.CASCADE
   )
-  notaClaseCriterio1 = models.IntegerField()
-  notaClaseCriterio2 = models.IntegerField()
-  notaClaseCriterio3 = models.IntegerField()
-  notaClaseCriterio4 = models.IntegerField()
+  notaClaseCriterio1 = models.IntegerField(default=0)
+  notaClaseCriterio2 = models.IntegerField(default=0)
+  notaClaseCriterio3 = models.IntegerField(default=0)
+  notaClaseCriterio4 = models.IntegerField(default=0)
   notaDocumentoCriterio1 = models.IntegerField()
   notaDocumentoCriterio2 = models.IntegerField()
   notaDocumentoCriterio3 = models.IntegerField()
@@ -419,4 +430,5 @@ class NotaPostulante(models.Model):
   estadoNotaPostulante = models.CharField(
     max_length=64,
     choices=EstadoNotaPostulante.choices,
-  )
+    default=EstadoNotaPostulante.POR_CALIFICAR
+      )

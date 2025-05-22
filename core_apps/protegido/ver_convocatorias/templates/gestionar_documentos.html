@@ -1,14 +1,172 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'ver_convocatorias.css' %}" />
+<style>
+    /* --- Modal general --- */
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-<div style="display: flex; align-items: center; justify-content: space-between;">
-  <ol class="breadcrumb__list">
-    <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
-    <li class="breadcrumb__item"><a href="/ver_convocatorias">Ver convocatorias</a></li>
-    <li class="breadcrumb__item"><a>Gestionar_Documentos</a></li>
-  </ol>
+.modal > div {
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  position: relative;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 600px;
+  max-width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: aparecer 0.3s ease;
+}
+
+/* --- Botón cerrar --- */
+.modal-content .close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+}
+
+/* --- Tabla adaptada a .table__primary --- */
+.table__modal {
+  width: 100%;
+  overflow-x: auto;
+  font-size: 14px;
+  background-color: var(--c-white);
+}
+
+.table__modal thead tr {
+  height: 3rem;
+  width: 100%;
+  color: var(--c-white);
+  font-size: var(--t-size-xm);
+  background-color: var(--c-gray-dark-3);
+  text-align: center;
+}
+
+.table__modal th,
+.table__modal td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+/* --- Input adaptado a .input-primary --- */
+.table__modal input[type="text"],
+.table__modal input[type="file"] {
+  width: 100%;
+  border-radius: var(--b-radius-base);
+  padding-block: 8px;
+  padding-inline: 8px;
+  border: 1px solid var(--c-gray-light-4);
+  font-family: var(--t-size-base);
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.table__modal input[type="text"]:focus,
+.table__modal input[type="file"]:focus {
+  border-color: var(--c-primary);
+  outline: none;
+}
+
+/* --- Botones adaptados a .button--primary --- */
+.btn-agregar,
+.btn-cancelar {
+  background-color: var(--c-primary);
+  width: max-content;
+  padding-inline: 24px;
+  padding-block: 12px;
+  font-size: var(--t-size-base);
+  cursor: pointer;
+  border: none;
+  color: var(--c-white);
+  border-radius: var(--b-radius-base);
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-agregar:hover,
+.btn-cancelar:hover {
+  opacity: 0.95;
+}
+
+.btn-agregar:active,
+.btn-cancelar:active {
+  transform: scale(0.98);
+}
+
+/* Estilo diferente para botón Cancelar si quieres variarlo */
+.btn-cancelar {
+  background-color: var(--c-gray-dark-3);
+}
+
+/* --- Etiqueta de carga de archivo --- */
+.upload-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 2px dashed #999;
+  border-radius: 0.5rem;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upload-label:hover {
+  background-color: #f0f0f0;
+}
+
+/* --- Animación de aparición --- */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+</style>
+
+
+<link rel="stylesheet" href="{% static 'static/ver_convocatorias.css' %}" />
+
+<h1>Revisión de Documentos</h1>
+<div class="gestionar_documentos--parte_de_arriba" style="display: flex; flex-direction: row; justify-content: space-between;">
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <ol class="breadcrumb__list">
+      <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+      <li class="breadcrumb__item"><a href="/ver_convocatorias">Ver convocatorias</a></li>
+      <li class="breadcrumb__item"><a>Gestionar_Documentos</a></li>
+    </ol>
+  </div>
+
+  <div style="margin-top: 1em; display: flex; flex-direction: column; gap: 0.5em;">
+    <button onclick="mostrarModal()" class="button--primary">Agregar Postulante</button>
+    <button name="eliminar" value="1" class="button--primary" form="form_gestionar_documentos">Eliminar</button>
+  </div>
 </div>
 
 <h2>Lista de Postulantes</h2>
@@ -62,7 +220,6 @@
   </table>
 
   <div style="margin-top: 1em;">
-    <button name="eliminar" value="1" class="button--primary">Eliminar</button>
     <!--<button name="accion_documentos" value="aceptar" class="button--primary">Aceptar</button>
     <button name="accion_documentos" value="rechazar" class="button--primary">Rechazar</button> -->
   </div>
@@ -70,74 +227,81 @@
 
 
 
-<!-- Botón para abrir el modal -->
-<button onclick="mostrarModal()" class="button--primary">Agregar Postulante</button>
-
 
 
 <!-- Modal para agregar postulante y cargar documentos -->
-<div id="modalAgregar" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModal()">&times;</span>
-    <form method="post" enctype="multipart/form-data" action="{% url 'agregar_postulante' convocatoria.id %}">
-      {% csrf_token %}
-      <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
+<div id="modalAgregar" class="modal" style="display: none;" >
+  <div>
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <form method="post" enctype="multipart/form-data" action="{% url 'agregar_postulante' convocatoria.id %}">
+        {% csrf_token %}
+        <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
 
-      <table class="table__modal">
-        <thead>
-          <tr>
-            <th>N°</th>
-            <th>Nombre</th>
-            <th>Tipo Documento</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>
-              <input type="text" name="nombre" placeholder="Nombre" required><br/>
-              <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
-              <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
-            </td>
-            <td>
-              <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="table__modal">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Nombre</th>
+              <th>Tipo Documento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" name="nombre" placeholder="Nombre" required>
+                <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required>
+                <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
+              </td>
+              <td>
+                <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <div style="text-align: center; margin-top: 1em;">
-        <label for="archivo" class="upload-label" style="cursor: pointer;">
-          <img src="{% static 'upload_icon.png' %}" alt="Subir Documento" width="64">
-          <br>Subir Documento
-        </label>
-        <input type="file" name="archivo" id="archivo" style="display: none;" required>
-      </div>
+        <div style="text-align: center; margin-top: 1em;">
+          <label for="archivo" class="upload-label" style="cursor: pointer;">
+            <i class="fa fa-cloud-upload" aria-hidden="true"></i>
+            <br>Subir Documento
+          </label>
+          <input type="file" name="archivo" id="archivo" style="display: none;" required>
+        </div>
 
-      <div style="text-align: center; margin-top: 2em;">
-        <button type="submit" class="btn-agregar">Agregar</button>
-        <button type="button" onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
-      </div>
-    </form>
+        <div style="text-align: center; margin-top: 2em;">
+          <button type="submit" class="btn-agregar">Agregar</button>
+          <button type="button" onclick="cerrarModal()" class="btn-cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
 <div id="modalVerDocumentos" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
-    <h3>Datos de Postulante</h3>
-    <p id="nombrePostulante" style="font-weight: bold;"></p>
+  <div>
+      <div class="modal-content">
+        <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
+        <h3 style="margin-bottom: 8px;">Datos de Postulante</h3>
+        <p id="nombrePostulante" style="font-weight: bold; margin-bottom: 10px;"></p>
 
-    <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
-      <button name="accion_documentos" value="aceptar" class="button--primary" form="form_gestionar_documentos">Aceptar</button>
-      <button name="accion_documentos" value="rechazar" class="button--primary" form="form_gestionar_documentos">Rechazar</button>
-    </div>
+        <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
+          <button type="button" class="button--primary" onclick="enviarAccionDocumentos(actualPostulanteId, 'aceptar')">Aceptar</button>
+          <button type="button" class="button--primary" onclick="enviarAccionDocumentos(actualPostulanteId, 'rechazar')">Rechazar</button>
+        </div>
 
-    <div id="contenedorDocumentos">
-      <!-- Aquí se cargarán los documentos con JS -->
-    </div>
+        <div id="contenedorDocumentos">
+          <!-- Aquí se cargarán los documentos con JS -->
+        </div>
+      </div>
   </div>
 </div>
+
+<a href="{% url 'postulantes_aptos' convocatoria.id %}" class="button--primary">Postulantes Aptos</a>
+<script> 
+  {% comment %} http://localhost:8000/descargar-pdf/1/ {% endcomment %}
+
+</script>
 
 <script>
   // Abrir el modal de "Agregar Postulante"
@@ -157,8 +321,10 @@
     }
   });
 
+  let actualPostulanteId = null;
   // ---- VISUALIZAR DOCUMENTOS ----
   function mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos) {
+    actualPostulanteId = postulanteId;
     const modal = document.getElementById("modalVerDocumentos");
     const nombreElem = document.getElementById("nombrePostulante");
     const contenedor = document.getElementById("contenedorDocumentos");
@@ -169,15 +335,26 @@
     // Limpiar documentos anteriores
     contenedor.innerHTML = "";
 
+    // Almacenar temporalmente en el buscador el pdf desde un endpoint
+
+    // Función para obtener el blob y devolver la URL temporal
+    async function obtenerBlobUrl(docId) {
+      const response = await fetch(`/descargar-pdf/${docId}/`);
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+
     // Renderizar documentos
-    documentos.forEach(doc => {
+    documentos.forEach(async (doc) => {
+      const blobUrl = await obtenerBlobUrl(postulanteId); // Asumimos que cada doc tiene un "id"
+
       const docElem = document.createElement("div");
       docElem.innerHTML = `
         <div style="margin-bottom: 1em; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
           <p><strong>Tipo:</strong> ${doc.tipo}</p>
           <p><strong>Fecha:</strong> ${doc.fecha}</p>
-          <p><strong>Estado:</strong> ${doc.estado}</p>
-          <iframe src="${doc.url}" width="100%" height="300px" style="border: none;"></iframe>
+          <p style="margin-bottom: 8px;"><strong>Estado:</strong> ${doc.estado}</p>
+          <iframe src="${blobUrl}" width="100%" height="300px" style="border: none;"></iframe>
         </div>
       `;
       contenedor.appendChild(docElem);

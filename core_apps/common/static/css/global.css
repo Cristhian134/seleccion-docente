@@ -62,7 +62,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: calc(100dvw - 250px);
+  /* max-width: calc(100dvw - 250px); */
 }
 
 header {
@@ -588,3 +588,5 @@ body.sidenav-open .sidenav__overlay {
     max-width: 100dvw;
   }
 }
+
+

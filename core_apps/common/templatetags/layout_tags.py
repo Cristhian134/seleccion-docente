@@ -1,6 +1,6 @@
 from django import template
 from django.contrib.auth.models import AnonymousUser, User
-from core_apps.common.models import Decano, Persona, EncargadoConsejo, EstadoDecano, EstadoEncargadoConsejo
+from core_apps.common.models import Decano, EstadoEvaluador, Evaluador, Persona, EncargadoConsejo, EstadoDecano, EstadoEncargadoConsejo
 from core_apps.permisos import ROLES, MODULOS
 
 register = template.Library()
@@ -18,6 +18,8 @@ def get_user_rol(user):
     return ROLES.DECANO
   elif EncargadoConsejo.objects.filter(persona=persona, estadoEncargadoConsejo=EstadoEncargadoConsejo.ACTIVO).exists():
     return ROLES.ENCARGADO_CONSEJO
+  elif Evaluador.objects.filter(persona=persona).exists():
+    return ROLES.EVALUADOR
 
   if user.is_superuser:
     return ROLES.ADMINISTRADOR
@@ -61,16 +63,8 @@ def render_header(context):
     }
 
   # Determinar rol
-  rol = "Usuario"
+  rol = get_user_rol(user)
   persona = getattr(user, "persona", None)
-  if user.is_superuser:
-    rol = ROLES.ADMINISTRADOR
-  else:
-    if persona:
-      if Decano.objects.filter(persona=persona, estadoDecano=EstadoDecano.ACTIVO).exists():
-        rol = ROLES.DECANO
-      elif EncargadoConsejo.objects.filter(persona=persona, estadoEncargadoConsejo=EstadoEncargadoConsejo.ACTIVO).exists():
-        rol = ROLES.ENCARGADO_CONSEJO
 
   nombre_completo = f'{persona.nombre} {persona.apellidoPaterno} {persona.apellidoMaterno}'
   print(persona.nombre, "nombre")
