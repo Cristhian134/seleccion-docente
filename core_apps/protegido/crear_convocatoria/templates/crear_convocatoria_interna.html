@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'convocatoria_interna.css' %}" />
+
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
     <li class="breadcrumb__item">
@@ -12,5 +14,118 @@
     </li>
   </ol>
 </nav>
-<h1>Crear interna</h1>
+<div class="programacion_convocatoria__wrapper">
+  <form method="GET" action="">
+    <label for="cod_profesor" class="input-primary"
+      >Buscar profesor por código:
+      <input id="cod_profesor" name="cod_profesor" required min="1" step="1" type="number"  />
+    </label>
+    <button type="submit" class="button--primary">Buscar</button>
+  </form>
+
+  {% if error_busqueda %}
+  <p>{{ error_busqueda }}</p>
+  {% endif %} {% if error_db %}
+  <p>{{ error_db }}</p>
+  {% endif %} {% if data %}
+  <section>
+    <h2>Datos del profesor</h2>
+    <div>
+      <label class="input-primary"
+        >Nombres:
+        <input type="text" value="{{ data.nombre }}" disabled />
+      </label>
+
+      <label class="input-primary"
+        >Apellido paterno:
+        <input type="text" value="{{ data.apellido_paterno }}" disabled />
+      </label>
+
+      <label class="input-primary"
+        >Apellido materno:
+        <input type="text" value="{{ data.apellido_materno }}" disabled />
+      </label>
+
+      <label class="input-primary"
+        >DNI:
+        <input type="text" value="{{ data.dni }}" disabled />
+      </label>
+      
+      <label class="input-primary"
+        >Código:
+        <input type="text" value="{{ data.codigo }}" disabled />
+      </label>
+
+      <label class="input-primary"
+        >Email UNI:
+        <input type="text" value="{{ data.email_uni }}" disabled />
+      </label>
+    </div>
+
+    <h3>Cursos que enseña</h3>
+    <table class="table__primary">
+      <thead>
+        <tr>
+          <th>Facultad</th>
+          <th>Curso</th>
+          <th><i class="fa fa-asterisk" aria-hidden="true"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for facultad in data.cursos %} {% for curso in facultad.cursos %}
+        <tr>
+          <td>{{ facultad.facultad }}</td>
+          <td>{{ curso.codigo }} - {{ curso.nombre }}</td>
+          <td>
+            <input
+              type="checkbox"
+              class="curso-checkbox"
+              data-curso="{{ curso.codigo }} - {{ curso.nombre }}"
+              name="curso_unico"
+            />
+          </td>
+        </tr>
+        {% endfor %} {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <label class="input-primary">
+      Curso:
+      <input
+        type="text"
+        id="curso-seleccionado-input"
+        value="Ningún curso seleccionado"
+        disabled
+      />
+    </label>
+  </section>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll(".curso-checkbox");
+    const cursoSeleccionadoInput = document.getElementById(
+      "curso-seleccionado-input"
+    );
+
+    checkboxes.forEach((cb) => {
+      cb.addEventListener("change", () => {
+        if (cb.checked) {
+          // Desmarca todos menos este
+          checkboxes.forEach((otherCb) => {
+            if (otherCb !== cb) otherCb.checked = false;
+          });
+          // Actualiza el input con el curso seleccionado
+          cursoSeleccionadoInput.value = cb.dataset.curso;
+        } else {
+          // Si se desmarca, vacía el input
+          cursoSeleccionadoInput.value = "Ningún curso seleccionado";
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
