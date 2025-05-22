@@ -6,10 +6,12 @@ from openpyxl.utils import get_column_letter
 import openpyxl
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
 from django.http import HttpResponse
 from reportlab.lib import colors
 from django.shortcuts import redirect
+from django.db.models import Q
 from reportlab.platypus import Table, TableStyle
 
 from core_apps.common.models import Curso, Docente, EvaluacionDocente
@@ -27,8 +29,10 @@ def listar_docentes_view(request):
   )
 
   if codigo_curso:
-    evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso=codigo_curso) \
-      .order_by('-notaEvaluacion')[:5]
+    evaluaciones = evaluaciones.filter(
+      Q(seccion__curso__codigoCurso__icontains=codigo_curso) |
+      Q(seccion__curso__nombreCurso__icontains=codigo_curso)
+    ).order_by('-notaEvaluacion')[:5]
     docentes = formatear_docentes(evaluaciones)
 
     return render(request, 'listar_docentes.html', {
@@ -51,11 +55,12 @@ def exportar_docentes_pdf(request):
   evaluaciones = EvaluacionDocente.objects.select_related(
       'docente__persona', 'seccion__curso'
   )
+
   if not codigo_curso:
     return redirect('listar-docentes')
 
-  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso=codigo_curso) \
-      .order_by('-notaEvaluacion')[:5]
+  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso__icontains=codigo_curso)\
+                             .order_by('-notaEvaluacion')[:5]
 
   docentes = formatear_docentes(evaluaciones)
 
@@ -64,21 +69,30 @@ def exportar_docentes_pdf(request):
 
   p = canvas.Canvas(response, pagesize=landscape(A4))
   width, height = landscape(A4)
-  p.setFont("Helvetica-Bold", 16)
-  p.drawString(50, height - 50, "Lista de Docentes")
 
-  data = [["Cod", "Apellido", "Nombres", "Facultad", "Curso", "Nota"]]
+  # Título
+  p.setFont("Helvetica-Bold", 16)
+  p.drawString(30, height - 40, "Lista de Docentes")  # Menor espacio con tabla
+
+  # Datos
+  data = [["Cod", "Apellidos", "Nombres", "Facultad", "Curso", "Nota"]]
   for d in docentes:
     data.append([
         d["id"], d["apellidos"], d["nombres"],
         d["facultad"], d["curso"], d["notaEvaluacion"]
     ])
 
-  table = Table(data, colWidths=[60, 100, 100, 100, 100, 60])
+  # Definir proporciones más amplias para Nombres, Facultad y Curso
+  colWidths = [50, 90, 90, 250, 250, 50]  # Suma aprox: 600 (ancho A4 horizontal útil)
+
+  table = Table(data, colWidths=colWidths)
   style = TableStyle([
-      ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#003366")),
-      ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-      ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+      ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#CCCCCC")),
+      ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+      ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+      ('ALIGN', (2, 1), (4, -1), 'LEFT'),
+      ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+      ('WORDWRAP', (0, 0), (-1, -1), 'CJK'),
       ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
       ('FONTSIZE', (0, 0), (-1, -1), 9),
       ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
@@ -86,8 +100,9 @@ def exportar_docentes_pdf(request):
   ])
   table.setStyle(style)
 
+  # Posición de la tabla (más arriba)
   table_width, table_height = table.wrapOn(p, width, height)
-  table.drawOn(p, 30, height - 100 - table_height)
+  table.drawOn(p, 30, height - 50 - table_height)  # espacio reducido
 
   p.showPage()
   p.save()
@@ -103,7 +118,7 @@ def exportar_docentes_excel(request):
   if not codigo_curso:
     return redirect('listar-docentes')
 
-  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso=codigo_curso) \
+  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso__icontains=codigo_curso) \
       .order_by('-notaEvaluacion')[:5]
 
   docentes = formatear_docentes(evaluaciones)
@@ -112,7 +127,7 @@ def exportar_docentes_excel(request):
   ws = wb.active
   ws.title = "Docentes"
 
-  headers = ["Cod", "Apellido", "Nombres", "Facultad", "Curso", "Nota"]
+  headers = ["Cod", "Apellidos", "Nombres", "Facultad", "Curso", "Nota"]
   ws.append(headers)
 
   for docente in docentes:
