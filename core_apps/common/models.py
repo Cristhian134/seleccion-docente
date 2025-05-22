@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.urls import reverse
 
+from datetime import datetime, timedelta
+
 
 class GeneroPersona(models.TextChoices):
   MASCULINO = "masculino", "Masculino"
@@ -198,6 +200,15 @@ class Seccion(models.Model):
     choices=EstadoSeccion.choices,
   )
 
+  @property
+  def total_horas(self):
+    total = timedelta()
+    for horario in self.horario_set.all():
+      inicio = datetime.combine(datetime.min, horario.horaInicio)
+      fin = datetime.combine(datetime.min, horario.horaFin)
+      duracion = fin - inicio
+      total += duracion
+    return round(total.total_seconds() / 3600, 0)
 # Actualizar
 
 
@@ -349,7 +360,7 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
-  persona = models.OneToOneField(Persona, on_delete=models.CASCADE, null=True)
+  persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True)
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
