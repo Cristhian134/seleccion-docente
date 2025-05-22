@@ -6,7 +6,7 @@ from core_apps.common.models import (
     EstadoClaseMagistral,Plaza,Temas,Seccion,
 )
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
@@ -20,6 +20,8 @@ from django.template.loader import render_to_string, get_template
 from django.utils.timezone import make_aware
 from datetime import datetime, time, timedelta
 import random
+
+
 
 
 @login_required
@@ -242,7 +244,7 @@ def agregar_postulante(request, convocatoria_id):
             }
         )
 
-        
+
 
         # Si la persona existe pero no está asociada a este postulante
         postulante, _ = Postulante.objects.get_or_create(
@@ -277,6 +279,24 @@ def agregar_postulante(request, convocatoria_id):
     return render(request, "agregar_postulante.html", {
         "convocatoria": convocatoria
     })
+
+@login_required
+def buscar_persona_por_dni(request):
+    dni = request.GET.get("dni")
+    try:
+        persona = Persona.objects.get(dni=dni)
+        data = {
+            "nombre": persona.nombre,
+            "apellidoPaterno": persona.apellidoPaterno,
+            "apellidoMaterno": persona.apellidoMaterno,
+            "correo": persona.correo,
+            "telefono": persona.telefono,
+            "genero": persona.genero,
+        }
+        return JsonResponse({"existe": True, "persona": data})
+    except Persona.DoesNotExist:
+        return JsonResponse({"existe": False})
+
 
 
 @login_required

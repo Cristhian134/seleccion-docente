@@ -395,8 +395,28 @@
     const documentos = JSON.parse(docsScript.textContent);
     mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos);
   }
-  
+
 }
+
+  document.querySelector('input[name="dni"]').addEventListener('blur', function () {
+    const dni = this.value.trim();
+    if (dni.length !== 8) return; // DNI peruano típico
+
+    fetch(`/buscar_persona_por_dni/?dni=${dni}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.existe) {
+          const p = data.persona;
+          document.querySelector('input[name="nombre"]').value = p.nombre;
+          document.querySelector('input[name="apellidoPaterno"]').value = p.apellidoPaterno;
+          document.querySelector('input[name="apellidoMaterno"]').value = p.apellidoMaterno;
+          document.querySelector('input[name="correo"]').value = p.correo;
+          document.querySelector('input[name="telefono"]').value = p.telefono;
+          document.querySelector('select[name="genero"]').value = p.genero;
+        }
+      })
+      .catch(err => console.error("Error buscando persona:", err));
+  });
 
 </script>
 
