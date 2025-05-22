@@ -14,21 +14,20 @@
 <section class="listar_docentes__wrapper relative">
   <div class="relative">
     <h1 class="title-base">Lista de docentes total</h1>
-    <form method="get" action="" class="listar_docentes__curso">
-      <button type="submit" class="button--primary">Seleccionar Docentes</button>
-      <label for="listar_docentes_cursos" class="input-primary">
-        <select id="listar_docentes_cursos" name="cod_curso">
-          <option value="" disabled {% if not request.GET.cod_curso %}selected{% endif %}>
-            Seleccionar curso
-          </option>
-          {% for curso in cursos %}
-            <option value="{{ curso.codigoCurso }}" {% if request.GET.cod_curso == curso.codigoCurso %}selected{% endif %}>
-              {{ curso.codigoCurso }} - {{ curso.nombreCurso }}
-            </option>
-          {% endfor %}
-        </select>
-      </label>
-    </form>
+  <form method="get" action="" class="listar_docentes__curso">
+    <button type="submit" class="button--primary">Buscar</button>
+    <label for="curso-input" class="input-primary">
+      <input list="cursos-list" id="curso-input" name="cod_curso_display" placeholder="Seleccionar curso" autocomplete="off" />
+      <datalist id="cursos-list">
+        {% for curso in cursos %}
+          <option data-codigo="{{ curso.codigoCurso }}" value="{{ curso.nombreCurso }}"></option>
+        {% endfor %}
+      </datalist>
+      <!-- input oculto que se enviará realmente -->
+      <input type="hidden" id="cod_curso_real" name="cod_curso" />
+    </label>
+  </form>
+  
   </div>
   <div class="tabla_docentes_container">
     <table border="1" id="tabla_docentes" class="table__primary">
@@ -72,4 +71,36 @@
     </form>
   </div>
 </section>
+
+<script>
+  const inputVisible = document.getElementById("curso-input");
+  const inputHidden = document.getElementById("cod_curso_real");
+  const opciones = document.getElementById("cursos-list").options;
+
+  inputVisible.addEventListener("input", () => {
+    // Buscar si lo escrito está en la lista
+    let encontrado = false;
+
+    for (let i = 0; i < opciones.length; i++) {
+      if (opciones[i].value === inputVisible.value) {
+        inputHidden.value = opciones[i].dataset.codigo;
+        encontrado = true;
+        break;
+      }
+    }
+
+    // Si no está en la lista, usar lo que el usuario escribió
+    if (!encontrado) {
+      inputHidden.value = inputVisible.value;
+    }
+  });
+
+  // También actualizar el valor oculto al enviar
+  document.querySelector("form").addEventListener("submit", () => {
+    if (!inputHidden.value) {
+      inputHidden.value = inputVisible.value;
+    }
+  });
+</script>
 {% endblock %}
+
