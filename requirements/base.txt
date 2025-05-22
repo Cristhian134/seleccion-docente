@@ -1,8 +1,10 @@
 django==4.2.15
-psycopg2
+psycopg2==2.9.10
 argon2-cffi==23.1.0 
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 dotenv
 reportlab==4.0.8
+Faker>=18.0.0
+openpyxl==3.1.5
 xhtml2pdf==0.2.15

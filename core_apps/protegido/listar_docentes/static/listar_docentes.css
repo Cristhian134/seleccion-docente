@@ -1,0 +1,53 @@
+/* .tabla_docentes_container {
+  overflow: auto;
+  max-height: 70dvh;
+  display: block;
+  position: relative;
+}
+
+.tabla_docentes_container thead {
+  width: 100%;
+} */
+
+.listar_docentes__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.tabla_docentes_container {
+  overflow-y: auto;
+  max-height: 65dvh;
+  display: block;
+  position: relative;
+}
+
+.tabla_docentes_container > table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla_docentes_container > table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--c-gray-dark-3); /* Asegúrate de un fondo visible */
+  z-index: 2; /* Para que se quede encima del contenido */
+}
+
+.listar_docentes__botones {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10rem;
+}
+
+.listar_docentes__curso {
+  position: absolute;
+  top: -2.5rem;
+  max-width: 600px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 8px;
+}

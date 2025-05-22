@@ -75,7 +75,9 @@ class Command(BaseCommand):
           nombreUser=username,
           claveUser=password,
           persona=persona,
-          facultad=facultad
+          facultad=facultad,
+          is_staff=True,     # Puede iniciar sesión
+          is_superuser=True  # No es superusuario
       )
       self.stdout.write(self.style.SUCCESS(f'Superusuario creado: {user}'))
     except Exception as e:

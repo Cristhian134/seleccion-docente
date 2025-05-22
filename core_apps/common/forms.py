@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from core_apps.common.models import Postulante, Usuario, Documento
+from core_apps.common.models import Decano, EncargadoConsejo, EstadoDecano, Evaluador, Facultad, Persona, Postulante, Usuario, Documento
 
 
 class UsuarioCreationForm(forms.ModelForm):
@@ -57,3 +57,63 @@ class DocumentoAdminForm(forms.ModelForm):
     if commit:
       instance.save()
     return instance
+
+
+class DecanoCreationForm(forms.ModelForm):
+  # Datos de la persona
+  nombre = forms.CharField(max_length=128)
+  apellidoPaterno = forms.CharField(max_length=128)
+  apellidoMaterno = forms.CharField(max_length=128)
+  dni = forms.CharField(max_length=8)
+  correo = forms.EmailField()
+  telefono = forms.CharField(max_length=9)
+  genero = forms.ChoiceField(choices=Persona._meta.get_field('genero').choices)
+
+  codigoUsuario = forms.CharField(max_length=64)
+  nombreUsuario = forms.CharField(max_length=64)
+  password = forms.CharField(widget=forms.PasswordInput)
+  facultad = forms.ChoiceField(choices=Usuario._meta.get_field('facultad').choices)
+
+  class Meta:
+    model = Decano
+    fields = ['estadoDecano']
+
+
+class EncargadoConsejoCreationForm(forms.ModelForm):
+  # Datos de la persona
+  nombre = forms.CharField(max_length=128)
+  apellidoPaterno = forms.CharField(max_length=128)
+  apellidoMaterno = forms.CharField(max_length=128)
+  dni = forms.CharField(max_length=8)
+  correo = forms.EmailField()
+  telefono = forms.CharField(max_length=9)
+  genero = forms.ChoiceField(choices=Persona._meta.get_field('genero').choices)
+
+  codigoUsuario = forms.CharField(max_length=64)
+  nombreUsuario = forms.CharField(max_length=64)
+  password = forms.CharField(widget=forms.PasswordInput)
+  facultad = forms.ChoiceField(choices=Usuario._meta.get_field('facultad').choices)
+
+  class Meta:
+    model = EncargadoConsejo
+    fields = ['estadoEncargadoConsejo']
+
+
+class EvaluadorCreationForm(forms.ModelForm):
+  # Datos de la persona
+  nombre = forms.CharField(max_length=128)
+  apellidoPaterno = forms.CharField(max_length=128)
+  apellidoMaterno = forms.CharField(max_length=128)
+  dni = forms.CharField(max_length=8)
+  correo = forms.EmailField()
+  telefono = forms.CharField(max_length=9)
+  genero = forms.ChoiceField(choices=Persona._meta.get_field('genero').choices)
+
+  codigoUsuario = forms.CharField(max_length=64)
+  nombreUsuario = forms.CharField(max_length=64)
+  password = forms.CharField(widget=forms.PasswordInput)
+  facultad = forms.ChoiceField(choices=Usuario._meta.get_field('facultad').choices)
+
+  class Meta:
+    model = Evaluador
+    fields = ['estadoEvaluador', 'tipoEvaluador']

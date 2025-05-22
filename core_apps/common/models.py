@@ -4,6 +4,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.urls import reverse
 
+from datetime import datetime, timedelta
+
 
 class GeneroPersona(models.TextChoices):
   MASCULINO = "masculino", "Masculino"
@@ -66,7 +68,7 @@ class UserManager(BaseUserManager):
 
 
 class Facultad(models.TextChoices):
-  FAUA = "faufa", "Facultad de Arquitectura, Urbanismo y Artes"
+  FAUA = "faua", "Facultad de Arquitectura, Urbanismo y Artes"
   FIC = "fic", "Facultad de Ingeniería Civil"
   FIEECS = "fieecs", "Facultad de Ingeniería Económica, Estadística y Ciencias Sociales"
   FIGMM = "figmm", "Facultad de Ingeniería Geológica, Minera y Metalúrgica"
@@ -133,6 +135,11 @@ class TipoConvocatoria(models.TextChoices):
   EXTERNA = 'externa', 'Externa'
 
 
+class EstadoConvocatoria(models.TextChoices):
+  ACTIVO = "activo", "Activo"
+  INACTIVO = "inactivo", "Inactivo"
+
+
 class Convocatoria(models.Model):
   descripcionConvocatoria = models.CharField(max_length=128)
   tipoConvocatoria = models.CharField(
@@ -143,6 +150,10 @@ class Convocatoria(models.Model):
   fechaCierre = models.DateTimeField()
   fechaAsignacionTema = models.DateTimeField()
   fechaClaseMagistral = models.DateTimeField()
+  estadoConvocatoria = models.CharField(
+    max_length=64,
+    choices=EstadoConvocatoria.choices,
+  )
 
 
 class EstadoPostulante(models.TextChoices):
@@ -167,6 +178,10 @@ class Curso(models.Model):
   nombreCurso = models.CharField(max_length=64)
   codigoCurso = models.CharField(max_length=20)
   creditosCurso = models.IntegerField()
+  facultad = models.CharField(
+    max_length=64,
+    choices=Facultad.choices
+  )
 
 
 class EstadoSeccion(models.TextChoices):
@@ -185,6 +200,15 @@ class Seccion(models.Model):
     choices=EstadoSeccion.choices,
   )
 
+  @property
+  def total_horas(self):
+    total = timedelta()
+    for horario in self.horario_set.all():
+      inicio = datetime.combine(datetime.min, horario.horaInicio)
+      fin = datetime.combine(datetime.min, horario.horaFin)
+      duracion = fin - inicio
+      total += duracion
+    return round(total.total_seconds() / 3600, 0)
 # Actualizar
 
 
@@ -233,6 +257,10 @@ class EstadoDocente(models.TextChoices):
 
 
 class Docente(models.Model):
+  persona = models.ForeignKey(
+    Persona,
+    on_delete=models.CASCADE,
+  )
   estadoDocente = models.CharField(
     max_length=64,
     choices=EstadoDocente.choices,
@@ -332,7 +360,7 @@ class EstadoEvaluador(models.TextChoices):
 
 
 class Evaluador(models.Model):
-  persona = models.OneToOneField(Persona, on_delete=models.CASCADE, null=True)
+  persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True)
   tipoEvaluador = models.CharField(
     max_length=64,
     choices=TipoEvaluador.choices,
@@ -341,8 +369,10 @@ class Evaluador(models.Model):
     max_length=64,
     choices=EstadoEvaluador.choices,
   )
+
   def __str__(self):
     return f"{self.persona.nombre} ({self.tipoEvaluador})"
+
 
 class EstadoDocumento(models.TextChoices):
   REGISTRADO = "registrado", "Registrado"
@@ -401,4 +431,4 @@ class NotaPostulante(models.Model):
     max_length=64,
     choices=EstadoNotaPostulante.choices,
     default=EstadoNotaPostulante.POR_CALIFICAR
-)
+      )

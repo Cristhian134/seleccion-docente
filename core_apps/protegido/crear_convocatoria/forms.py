@@ -6,4 +6,4 @@ class ConvocatoriaExternaForm(forms.ModelForm):
   class Meta:
     model = Convocatoria
     fields = '__all__'
-    exclude = ['tipoConvocatoria', 'fechaPublicacion']
+    exclude = ['tipoConvocatoria', 'fechaPublicacion', 'estadoConvocatoria']

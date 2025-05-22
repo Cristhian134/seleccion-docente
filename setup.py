@@ -13,6 +13,24 @@ def run_setup():
   # 1. Crear o reiniciar la base de datos
   crear_base_datos()
 
+  # Eliminar migracion
+  try:
+    ruta_migracion = "core_apps/common/migrations/0001_initial.py"
+    ruta_migracion_pyc = "core_apps/common/migrations/__pycache__/0001_initial.cpython-*.pyc"
+    if os.path.exists(ruta_migracion):
+      os.remove(ruta_migracion)
+      print("✅ Migración 0001_initial.py eliminada")
+
+    # También puedes eliminar el archivo .pyc si existe (opcional)
+    import glob
+    archivos_pyc = glob.glob(ruta_migracion_pyc)
+    for archivo in archivos_pyc:
+      os.remove(archivo)
+      print(f"🧹 Archivo bytecode eliminado: {archivo}")
+  except Exception as e:
+    print(f"❌ Error al borrar la migracion: {e}")
+    return
+
   # 2. Ejecutar migraciones después de crear la base de datos
   try:
     subprocess.run(["python", "manage.py", "makemigrations"], check=True)
@@ -25,6 +43,7 @@ def run_setup():
   print("🔃 Llenando las tablas Curso, Seccion y Horario")
   try:
     subprocess.run(["python", "manage.py", "loaddata", "curso.json"], check=True)
+    subprocess.run(["python", "manage.py", "populate_personas"], check=True)
     print("✅ Llenado de Curso, Seccion y Horario")
   except Exception as e:
     print(f"❌ Error al llenar las tablas Curso, Seccion y Horario: {e}")
@@ -33,6 +52,7 @@ def run_setup():
   # 4. Creando superuser, puede acceder al sistema y a admin
   try:
     subprocess.run(["python", "manage.py", "create_superuser"], check=True)
+    subprocess.run(["python", "manage.py", "create_encargado_consejo"], check=True)
   except Exception as e:
     print(f"❌ Error al crear superusuario: {e}")
     return

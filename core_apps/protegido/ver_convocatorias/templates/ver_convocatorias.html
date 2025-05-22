@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'ver_convocatorias.css' %}" />
+<link rel="stylesheet" href="{% static 'ver_convocatoria.css' %}" />
 
 <div class="ver_convocatorias--parte_de_arriba" style="display: flex; flex-direction: row; justify-content: space-between;">
   
@@ -21,9 +21,9 @@
 
 </div>
 
-<form method="get" class="filter-bar">
+<form method="get" class="filter-bar relative">
   <input type="text" name="q" class="search-box" placeholder="Buscar curso..." value="{{ request.GET.q }}">
-  <button class="btn">🔍</button>
+  <button class="btn"><i class="fa fa-search" aria-hidden="true"></i></button>
 </form>
 
 <!-- Form principal que envía los botones y el input radio -->
@@ -46,7 +46,7 @@
         {% for conv in convocatorias %}
         <tr>
           <td>{{ conv.id }}</td>
-          <td>{{ conv.plaza.curso.nombreCurso }}</td>
+          <td>{{conv.curso.codigoCurso}}-{{ conv.curso.nombreCurso }}</td>
           <td>{{ conv.fechaPublicacion }}</td>
           <td>{{ conv.fechaCierre }}</td>
           <td>{{ conv.estadoConvocatoria }}</td>
