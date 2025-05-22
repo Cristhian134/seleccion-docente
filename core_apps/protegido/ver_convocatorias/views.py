@@ -378,13 +378,11 @@ def enviar_consolidado_pdf(request, convocatoria_id):
 
 @login_required
 def dirigir_calificacion(request, convocatoria_id):
+  
 
   ordenar = request.GET.get('ordenar', '0')
 
-    postulantes = Postulante.objects.filter(
-        convocatoria_id=convocatoria_id,
-        estadoPostulante=EstadoPostulante.ACEPTADO
-    ).select_related('persona', 'clasemagistral')
+  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,estadoPostulante=EstadoPostulante.ACEPTADO).select_related('persona', 'clasemagistral')
 
   if ordenar == '1':
     postulantes = postulantes.order_by('persona.apellidoPaterno', 'persona.apellidoMaterno', 'persona.nombre')
