@@ -135,7 +135,7 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
         "url_volver": "/ver_convocatorias"
     })
 
-
+'''
 @login_required
 def agregar_postulante(request, convocatoria_id):
     convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
@@ -201,81 +201,83 @@ def agregar_postulante(request, convocatoria_id):
 
     return render(request, "agregar_postulante.html", {
         "convocatoria": convocatoria
-    })
+    })'''
 
-'''
+
 @login_required
-def gestionar_documentos(request, convocatoria_id):
+def agregar_postulante(request, convocatoria_id):
     convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
-    postulantes = Postulante.objects.filter(convocatoria=convocatoria)
-
-    if not postulante_id:
-        messages.error(request, "Debe seleccionar un postulante.")
-        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
 
     if request.method == "POST":
-        postulante_id = request.POST.get("postulante_id")
-        accion = request.POST.get("accion_documentos")
+        nombre = request.POST.get("nombre")
+        apellido_paterno = request.POST.get("apellidoPaterno")
+        apellido_materno = request.POST.get("apellidoMaterno")
+        tipo_documento = request.POST.get("tipoDocumento")
+        dni = request.POST.get("dni")
+        correo = request.POST.get("correo")
+        telefono = request.POST.get("telefono")
+        genero = request.POST.get("genero")
 
-        if postulante_id and accion in ["aceptar", "rechazar"]:
-            postulante = get_object_or_404(Postulante, id=postulante_id)
+        archivo: UploadedFile = request.FILES.get("archivo")
 
-            if accion == "aceptar":
-                postulante.estadoPostulante = EstadoPostulante.ACEPTADO
-                postulante.save()
+        if not archivo:
+            messages.error(request, "Debe subir un archivo.")
+            return redirect(request.path)
 
-                # Verificar si ya tiene clase magistral
-                if not hasattr(postulante, 'clasemagistral'):
+        mime_type, _ = mimetypes.guess_type(archivo.name)
+        if mime_type not in ["application/pdf", "image/png", "image/jpeg"]:
+            messages.error(request, "Formato de archivo no permitido. Solo PDF o imágenes.")
+            return redirect(request.path)
 
-                    # Calcular la siguiente hora disponible
-                    clases_existentes = ClaseMagistral.objects.filter(
-                        postulante__convocatoria=convocatoria
-                    ).order_by('horaProgramada')
+        # Buscar o crear Persona por DNI
+        persona, creada = Persona.objects.get_or_create(
+            dni=dni,
+            defaults={
+                "nombre": nombre,
+                "apellidoPaterno": apellido_paterno,
+                "apellidoMaterno": apellido_materno,
+                "correo": correo,
+                "telefono": telefono,
+                "genero": genero,
+            }
+        )
 
-                    hora_base = time(11, 0)
-                    hora_maxima = time(20, 0)
-                    horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
+        
 
-                    hora_actual = hora_base
-                    while hora_actual <= hora_maxima and hora_actual in horas_ocupadas:
-                        hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
+        # Si la persona existe pero no está asociada a este postulante
+        postulante, _ = Postulante.objects.get_or_create(
+            persona=persona,
+            convocatoria=convocatoria,
+            defaults={"estadoPostulante": EstadoPostulante.REGISTRADO}
+        )
 
-                    if hora_actual > hora_maxima:
-                        # No hay más horas disponibles
-                        messages.error(request, "No hay más horarios disponibles para clase magistral.")
-                    else:
-                        # Seleccionar un tema aleatorio asociado a la convocatoria
-                        plazas = Plaza.objects.filter(convocatoria=convocatoria)
-                        temas_disponibles = Temas.objects.filter(
-                            silabus__curso__seccion__in=[plaza.seccion for plaza in plazas]
-                        )
+        # Documento principal
+        Documento.objects.create(
+            postulante=postulante,
+            tipoDocumento=tipo_documento,
+            archivo=archivo.read(),
+            fechaRecepcion=timezone.now(),
+            estadoDocumento=EstadoDocumento.REGISTRADO
+        )
 
-                        if temas_disponibles.exists():
-                            tema_asignado = random.choice(list(temas_disponibles))
-                        else:
-                            tema_asignado = None
+        # Múltiples archivos si los hay
+        archivos = request.FILES.getlist("archivos")
+        for archivo in archivos:
+            Documento.objects.create(
+                postulante=postulante,
+                tipoDocumento=tipo_documento,
+                archivo=archivo.read(),
+                fechaRecepcion=timezone.now(),
+                estadoDocumento=EstadoDocumento.REGISTRADO
+            )
 
-                        ClaseMagistral.objects.create(
-                            postulante=postulante,
-                            fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
-                            horaProgramada=hora_actual,
-                            temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
-                            estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
-                        )
+        messages.success(request, "Postulante y documento agregados correctamente.")
+        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
 
-            elif accion == "rechazar":
-                postulante.estadoPostulante = EstadoPostulante.RECHAZADO
-                postulante.save()
+    return render(request, "agregar_postulante.html", {
+        "convocatoria": convocatoria
+    })
 
-                # Eliminar clase magistral si existía
-                ClaseMagistral.objects.filter(postulante=postulante).delete()
-
-            return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
-
-    return render(request, "gestion_documentos.html", {
-        "convocatoria": convocatoria,
-        "postulantes": postulantes
-    })'''
 
 @login_required
 def postulantes_aptos(request, convocatoria_id):
