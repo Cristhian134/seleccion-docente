@@ -13,6 +13,45 @@
   justify-content: center;
 }
 
+.filter-bar  {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: start;
+  width: fit-content;
+}
+
+.search-box {
+  border-radius: var(--b-radius-base);
+  padding-block: 8px;
+  font-family: var(--t-size-base);
+  padding-inline: 8px;
+  border: 1px solid var(--c-gray-light-4);
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+  resize: none;
+  padding-right: 1.5rem;
+}
+
+.btn {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0.4rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.btn .fa {
+  font-weight: 500 !important;
+}
+
+.search-box:focus {
+  border: 1px solid var(--c-primary);
+  outline: none;
+}
+
 /* Contenido del modal */
 .modal-content {
   background-color: #fff;

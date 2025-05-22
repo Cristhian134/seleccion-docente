@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
@@ -24,6 +25,9 @@ import random
 
 @login_required
 def ver_convocatorias(request):
+  user = getattr(request, 'user', AnonymousUser())
+  facultad = getattr(user, "facultad", None)
+
   if request.method == "POST":
     convocatoria_id = request.POST.get("convocatoria_id")
     accion = request.POST.get("accion")
@@ -44,7 +48,9 @@ def ver_convocatorias(request):
 
   # GET con posible búsqueda
   query = request.GET.get('q')
-  convocatorias = Convocatoria.objects.all()
+  convocatorias = Convocatoria.objects.filter(
+      plaza__seccion__curso__facultad=facultad
+  ).distinct()
 
   if query:
     convocatorias = convocatorias.filter(
@@ -63,34 +69,6 @@ def ver_convocatorias(request):
       "convocatorias": convocatorias,
       "url_volver": "/home",
   })
-
-
-@login_required
-def ver_documento(request, documento_id):
-  documento = get_object_or_404(Documento, id=documento_id)
-
-  tipo_mime = "application/pdf" if documento.tipoDocumento.lower().endswith("pdf") else "image/png"
-
-  response = HttpResponse(documento.archivo, content_type=tipo_mime)
-  response["Content-Disposition"] = f'inline; filename="documento_{documento_id}"'
-  return response
-
-# @login_required
-# def gestionar_documentos(request):
-#    if request.method == 'POST':
-#        convocatoria_id = request.POST.get('convocatoria_id')
-#        if convocatoria_id:
-#            return redirect(f'/documentos/{convocatoria_id}/')  # O usa `reverse()`
-#    return redirect('ver_convocatorias')
-
-# @login_required
-# def dirigir_calificacion(request):
-  # if request.method == 'POST':
-  #    convocatoria_id = request.POST.get('convocatoria_id')
-  #    if convocatoria_id:
-  #        return redirect(f'/calificacion/{convocatoria_id}/')
-  # return redirect('ver_convocatorias')
-# Create your views here.
 
 
 @login_required
@@ -119,7 +97,7 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
     postulante_id = request.POST.get("postulante_id")
     postulante = get_object_or_404(Postulante, id=postulante_id)
     postulante.delete()
-    return redirect('gestionar_documentos', convocatoria_id=convocatoria_id)
+    return redirect('gestionar_documentos/', convocatoria_id=convocatoria_id)
 
   # Acción: Aceptar / Rechazar documentos
   if request.method == "POST" and "accion_documentos" in request.POST:
@@ -212,81 +190,6 @@ def agregar_postulante(request, convocatoria_id):
   return render(request, "agregar_postulante.html", {
       "convocatoria": convocatoria
   })
-
-
-'''
-@login_required
-def gestionar_documentos(request, convocatoria_id):
-    convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
-    postulantes = Postulante.objects.filter(convocatoria=convocatoria)
-
-    if not postulante_id:
-        messages.error(request, "Debe seleccionar un postulante.")
-        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
-
-    if request.method == "POST":
-        postulante_id = request.POST.get("postulante_id")
-        accion = request.POST.get("accion_documentos")
-
-        if postulante_id and accion in ["aceptar", "rechazar"]:
-            postulante = get_object_or_404(Postulante, id=postulante_id)
-
-            if accion == "aceptar":
-                postulante.estadoPostulante = EstadoPostulante.ACEPTADO
-                postulante.save()
-
-                # Verificar si ya tiene clase magistral
-                if not hasattr(postulante, 'clasemagistral'):
-
-                    # Calcular la siguiente hora disponible
-                    clases_existentes = ClaseMagistral.objects.filter(
-                        postulante__convocatoria=convocatoria
-                    ).order_by('horaProgramada')
-
-                    hora_base = time(11, 0)
-                    hora_maxima = time(20, 0)
-                    horas_ocupadas = {cm.horaProgramada for cm in clases_existentes}
-
-                    hora_actual = hora_base
-                    while hora_actual <= hora_maxima and hora_actual in horas_ocupadas:
-                        hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
-
-                    if hora_actual > hora_maxima:
-                        # No hay más horas disponibles
-                        messages.error(request, "No hay más horarios disponibles para clase magistral.")
-                    else:
-                        # Seleccionar un tema aleatorio asociado a la convocatoria
-                        plazas = Plaza.objects.filter(convocatoria=convocatoria)
-                        temas_disponibles = Temas.objects.filter(
-                            silabus__curso__seccion__in=[plaza.seccion for plaza in plazas]
-                        )
-
-                        if temas_disponibles.exists():
-                            tema_asignado = random.choice(list(temas_disponibles))
-                        else:
-                            tema_asignado = None
-
-                        ClaseMagistral.objects.create(
-                            postulante=postulante,
-                            fechaProgramacion=convocatoria.fechaClaseMagistral.date(),
-                            horaProgramada=hora_actual,
-                            temaAsignado=tema_asignado.nombreTema if tema_asignado else "Tema pendiente",
-                            estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
-                        )
-
-            elif accion == "rechazar":
-                postulante.estadoPostulante = EstadoPostulante.RECHAZADO
-                postulante.save()
-
-                # Eliminar clase magistral si existía
-                ClaseMagistral.objects.filter(postulante=postulante).delete()
-
-            return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
-
-    return render(request, "gestion_documentos.html", {
-        "convocatoria": convocatoria,
-        "postulantes": postulantes
-    })'''
 
 
 @login_required

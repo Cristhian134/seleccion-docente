@@ -57,7 +57,7 @@
                 ">{{ d.tipoDocumento }}</div>
               <div class="elemento" style="
                   width: 30px;
-                "><input type="radio" name="documento" data-url="{% url 'ver_documento' d.id %}"></div>
+                "><input type="radio" name="documento" data-url="{% url 'ver_documento' d.id %}" value="{{ d.id }}"></div>
             </label>
           </div>
         {% empty %}
@@ -105,14 +105,22 @@
 </div>
 
 <script>
+  async function obtenerBlobUrl(docId) {
+    const response = await fetch(`/descargar-pdf/${docId}/`);
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  }
+
   document.querySelectorAll('input[name="documento"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-      const url = this.dataset.url;
+    radio.addEventListener('change', async function () {
+      const docId = this.value; // o this.dataset.id si lo tienes como data-id
+      const blobUrl = await obtenerBlobUrl(docId);
+
       document.querySelector('.mostrar__documento').innerHTML = `
-        <iframe src="${url}" width="100%" height="600px" frameborder="0"></iframe>
+        <iframe src="${blobUrl}" width="100%" height="600px" frameborder="0"></iframe>
       `;
     });
-  });
+  })
 </script>
 
 <script>

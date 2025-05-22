@@ -249,9 +249,9 @@
           <tbody>
             <tr>
               <td>1</td>
-              <td>
-                <input type="text" name="nombre" placeholder="Nombre" required><br/>
-                <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
+              <td style="display: flex; flex-direction: column; gap: 8px;">
+                <input type="text" name="nombre" placeholder="Nombre" required>
+                <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required>
                 <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
               </td>
               <td>
@@ -282,12 +282,12 @@
   <div>
       <div class="modal-content">
         <span class="close" onclick="cerrarModalVerDocumentos()">&times;</span>
-        <h3>Datos de Postulante</h3>
-        <p id="nombrePostulante" style="font-weight: bold;"></p>
+        <h3 style="margin-bottom: 8px;">Datos de Postulante</h3>
+        <p id="nombrePostulante" style="font-weight: bold; margin-bottom: 10px;"></p>
 
         <div style="display: flex; gap: 1em; justify-content: center; margin-bottom: 1em;">
-          <button name="accion_documentos" value="aceptar" class="button--primary" form="form_gestionar_documentos">Aceptar</button>
-          <button name="accion_documentos" value="rechazar" class="button--primary" form="form_gestionar_documentos">Rechazar</button>
+          <button type="button" class="button--primary" onclick="enviarAccionDocumentos(actualPostulanteId, 'aceptar')">Aceptar</button>
+          <button type="button" class="button--primary" onclick="enviarAccionDocumentos(actualPostulanteId, 'rechazar')">Rechazar</button>
         </div>
 
         <div id="contenedorDocumentos">
@@ -321,8 +321,10 @@
     }
   });
 
+  let actualPostulanteId = null;
   // ---- VISUALIZAR DOCUMENTOS ----
   function mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos) {
+    actualPostulanteId = postulanteId;
     const modal = document.getElementById("modalVerDocumentos");
     const nombreElem = document.getElementById("nombrePostulante");
     const contenedor = document.getElementById("contenedorDocumentos");
@@ -351,7 +353,7 @@
         <div style="margin-bottom: 1em; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
           <p><strong>Tipo:</strong> ${doc.tipo}</p>
           <p><strong>Fecha:</strong> ${doc.fecha}</p>
-          <p><strong>Estado:</strong> ${doc.estado}</p>
+          <p style="margin-bottom: 8px;"><strong>Estado:</strong> ${doc.estado}</p>
           <iframe src="${blobUrl}" width="100%" height="300px" style="border: none;"></iframe>
         </div>
       `;
