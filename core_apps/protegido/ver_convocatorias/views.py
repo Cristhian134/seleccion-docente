@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
     Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral,  Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante, EstadoPostulante,
-    EstadoClaseMagistral,Plaza,Temas,Seccion,
+    EstadoClaseMagistral,Plaza,Temas,Seccion,EstadoPostulante
 )
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, Http404
@@ -370,7 +370,10 @@ def dirigir_calificacion(request, convocatoria_id):
 
     ordenar = request.GET.get('ordenar', '0')
 
-    postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).select_related('persona', 'clasemagistral')
+    postulantes = Postulante.objects.filter(
+        convocatoria_id=convocatoria_id,
+        estadoPostulante=EstadoPostulante.ACEPTADO
+    ).select_related('persona', 'clasemagistral')
 
     if ordenar == '1':
         postulantes = postulantes.order_by('persona.apellidoPaterno', 'persona.apellidoMaterno', 'persona.nombre')
