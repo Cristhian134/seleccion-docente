@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% load static %} {% block content %}
 <link rel="stylesheet" href="{% static 'convocatoria_interna.css' %}" />
+<link rel="stylesheet" href="{% static 'modal.css' %}" />
 
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
@@ -18,127 +19,166 @@
   <form method="GET" action="">
     <label for="cod_profesor" class="input-primary"
       >Buscar profesor por código:
-      <input id="cod_profesor" name="cod_profesor" required min="1" step="1" type="number"  />
+      <input value={{ cod_profesor }} id="cod_profesor" name="cod_profesor" required min="1" step="1" type="number"  />
     </label>
-    <button type="submit" class="button--primary">Buscar</button>
+    <button type="submit" class="button--primary"><i class="fa fa-search" aria-hidden="true"></i>Buscar</button>
   </form>
 
+  {% if data %}
+  <div>
+    <section class="seccion__datos_profesor">
+      <div>
+        <h2>Datos del profesor</h2>
+        <div class="seccion__datos_profesor_personales">
+          <label class="input-primary"
+            >Nombres:
+            <input type="text" value="{{ data.nombre }}" disabled />
+          </label>
+          <label class="input-primary"
+            >Apellido paterno:
+            <input type="text" value="{{ data.apellido_paterno }}" disabled />
+          </label>
+          <label class="input-primary"
+            >Apellido materno:
+            <input type="text" value="{{ data.apellido_materno }}" disabled />
+          </label>
+          <label class="input-primary"
+            >DNI:
+            <input type="text" value="{{ data.dni }}" disabled />
+          </label>
+          <label class="input-primary"
+            >Código:
+            <input type="text" value="{{ data.codigo }}" disabled />
+          </label>
+          <label class="input-primary"
+            >Email UNI:
+            <input type="text" value="{{ data.email_uni }}" disabled />
+          </label>
+        </div>
+      </div>
+      
+      <div>
+        <h3>Cursos que enseña</h3>
+        <table class="table__primary">
+          <thead>
+            <tr>
+              <th>Facultad</th>
+              <th>Curso</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for facultad in data.cursos %} {% for curso in facultad.cursos %}
+            <tr>
+              <td>{{ facultad.facultad }}</td>
+              <td>{{ curso.codigo }} - {{ curso.nombre }}</td>
+            </tr>
+            {% endfor %} {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="seccion__curso_convocatoria">
+      <label class="input-primary">
+        Curso:
+        <input list="cursos-list" id="curso-input" name="cod_curso_display" placeholder="Seleccionar curso" autocomplete="off" />
+        <datalist id="cursos-list">
+          {% for curso in cursos %}
+            {% for seccion in curso.seccion_set.all %}
+            <option data-seccion="{{ seccion.id }}" value="{{ curso.codigoCurso }}{{ seccion.codigoSeccion }} - {{ curso.nombreCurso }}"></option>
+            {% endfor %}
+          {% endfor %}
+        </datalist>
+      </label>
+      <label class="input-primary">
+        Tipo
+        <select required id="tipo_plaza" name="tipo_plaza">
+          {% for valor, nombre in tipo_plazas %}
+            <option value="{{ valor }}">{{ nombre }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </section>
+
+    <form method="get" action="" class="seccion__curso_convocatoria">
+      <input type="hidden" id="curso-seleccionado-hidden" name="curso_seleccionado" value="">
+      <input type="hidden" name="cod_profesor" value="{{ cod_profesor }}" />
+      <input type="hidden" id="plaza-seleccionada-hidden" name="tipo_plaza" value="{{ tipo_plaza }}" />
+      <label class="input-primary">
+        Tema sorteado:
+        <input type="text" id="cursoSorteado" value="{{ curso_sorteado }}" disabled />
+      </label>
+      <button type="submit" name="sortear_tema" value="true" class="button--primary w-full">Sortear tema</button>
+    </form>
+    
+    <section class="seccion__programacion_convocatoria">
+      <label class="input-primary">
+        Fecha de inicio de las clase magistral
+        <input
+          type="datetime-local"
+          id="fechaClaseMagistral"
+          name="fechaClaseMagistral"
+          required
+        />
+      </label>
+    </section>
+
+    <div id="toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #e74c3c; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1000;">
+      <span id="toast-message"></span>
+    </div>
+  
+    <button type="submit" id="crearClaseMagistral" class="button--primary">Crear clase magistral</button>
+  <div>
+
   {% if error_busqueda %}
-  <p>{{ error_busqueda }}</p>
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const messageBox = document.getElementById("toast-message");
+
+      messageBox.textContent = message;
+      toast.style.display = "block";
+
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+      showToast("{{ error_busqueda }}");
+  </script>
   {% endif %}
   
   {% if error_db %}
-  <p>{{ error_db }}</p>
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const messageBox = document.getElementById("toast-message");
+
+      messageBox.textContent = message;
+      toast.style.display = "block";
+
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+    showToast("{{ error_db }}");
+  </script>
   {% endif %} 
-  
-  {% if data %}
-  <section>
-    <h2>Datos del profesor</h2>
-    <div>
-      <label class="input-primary"
-        >Nombres:
-        <input type="text" value="{{ data.nombre }}" disabled />
-      </label>
 
-      <label class="input-primary"
-        >Apellido paterno:
-        <input type="text" value="{{ data.apellido_paterno }}" disabled />
-      </label>
-
-      <label class="input-primary"
-        >Apellido materno:
-        <input type="text" value="{{ data.apellido_materno }}" disabled />
-      </label>
-
-      <label class="input-primary"
-        >DNI:
-        <input type="text" value="{{ data.dni }}" disabled />
-      </label>
-      
-      <label class="input-primary"
-        >Código:
-        <input type="text" value="{{ data.codigo }}" disabled />
-      </label>
-
-      <label class="input-primary"
-        >Email UNI:
-        <input type="text" value="{{ data.email_uni }}" disabled />
-      </label>
+  <div id="modal_mensaje" class="modal">
+    <div class="modal-content">
+      <div>
+        <i class="fa"></i>
+        <span></span>
+      </div>
+      <span id="modal_descripcion"></span>
+      <button onclick="cerrarModal()">Cerrar</button>
     </div>
-
-    <h3>Cursos que enseña</h3>
-    <table class="table__primary">
-      <thead>
-        <tr>
-          <th>Facultad</th>
-          <th>Curso</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for facultad in data.cursos %} {% for curso in facultad.cursos %}
-        <tr>
-          <td>{{ facultad.facultad }}</td>
-          <td>{{ curso.codigo }} - {{ curso.nombre }}</td>
-        </tr>
-        {% endfor %} {% endfor %}
-      </tbody>
-    </table>
-  </section>
-
-  <section>
-    <label class="input-primary">
-      Curso:
-      <input list="cursos-list" id="curso-input" name="cod_curso_display" placeholder="Seleccionar curso" autocomplete="off" />
-      <datalist id="cursos-list">
-        {% for curso in cursos %}
-          {% for seccion in curso.seccion_set.all %}
-          <option data-seccion="{{ seccion.id }}" value="{{ curso.codigoCurso }}{{ seccion.codigoSeccion }} - {{ curso.nombreCurso }}"></option>
-          {% endfor %}
-        {% endfor %}
-      </datalist>
-    </label>
-    <label class="input-primary">
-      Tipo
-      <select required id="tipo_plaza" name="tipo_plaza">
-        {% for valor, nombre in tipo_plazas %}
-          <option value="{{ valor }}">{{ nombre }}</option>
-        {% endfor %}
-      </select>
-    </label>
-  </section>
-
-  <form method="get" action="">
-    <input type="hidden" id="curso-seleccionado-hidden" name="curso_seleccionado" value="">
-    <input type="hidden" name="cod_profesor" value="{{ cod_profesor }}" />
-    <label class="input-primary">
-      Tema sorteado:
-      <input type="text" id="cursoSorteado" value="{{ curso_sorteado }}" disabled />
-    </label>
-    <button type="submit" name="sortear_tema" value="true" class="button--primary">Sortear tema</button>
-  </form>
-  
-  <section>
-    <label class="input-primary">
-      Fecha de inicio de las clase magistral
-      <input
-        type="datetime-local"
-        id="fechaClaseMagistral"
-        name="fechaClaseMagistral"
-        required
-      />
-    </label>
-  </section>
-
-  <div id="toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #e74c3c; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1000;">
-    <span id="toast-message"></span>
   </div>
-  <button type="submit" id="crearClaseMagistral" class="button--primary">Crear clase magistral</button>
-  {% endif %}
+
 </div>
-{% if data %}
+
 
 <script>
-  {% if data %}
   function showToast(message) {
     const toast = document.getElementById("toast");
     const messageBox = document.getElementById("toast-message");
@@ -172,8 +212,46 @@
     }
   }
 
+  function actualizarTipoPlaza() {
+    const inputPlaza = document.getElementById("tipo_plaza");
+    const hiddenInput = document.getElementById("plaza-seleccionada-hidden");
+
+    // Buscar la opción cuyo valor coincide con el input
+    const tipoPlaza = inputPlaza.value
+
+    if (tipoPlaza) {
+      // Obtener el data-seccion y asignar al hidden input
+      hiddenInput.value = tipoPlaza;
+    } else {
+      hiddenInput.value = ""; // Si no hay opción válida, limpiar
+    }
+  } 
+
   // Escuchar cambios en el input para actualizar el hidden
   document.getElementById("curso-input").addEventListener("input", actualizarSeccionSeleccionada);
+  document.getElementById("tipo_plaza").addEventListener("input", actualizarTipoPlaza);
+
+  function mostrarModal(titulo, descripcion, exito = true) {
+    const modal = document.getElementById("modal_mensaje");
+    const icono = modal.querySelector("i");
+    const texto = modal.querySelector("span:last-of-type");
+    const modal_descripcion = document.getElementById("modal_descripcion");
+
+    // Estilo según éxito o error
+    modal.classList.remove("modal-exito", "modal-error");
+    modal.classList.add(exito ? "modal-exito" : "modal-error");
+
+    // Ícono y texto
+    icono.className = exito ? "fa fa-check" : "fa fa-times";
+    texto.textContent = exito ? "Éxito" : "Error";
+    modal_descripcion.textContent = descripcion;
+
+    modal.classList.add("active");
+  }
+
+  function cerrarModal() {
+    document.getElementById("modal_mensaje").classList.remove("active");
+  }
 
   document.getElementById("crearClaseMagistral").addEventListener("click", async function (event) {
     const fechaClase = document.getElementById("fechaClaseMagistral").value;
@@ -183,7 +261,7 @@
     const tipoPlaza = document.getElementById("tipo_plaza").value;
 
     if (!seccionSeleccionada) {
-      showToast("Debe seleccionar un curso válido.");
+      showToast("Debe seleccionar un curso.");
       event.preventDefault();
       return;
     }
@@ -213,22 +291,64 @@
       const response = await fetch("", {
         method: "POST",
         headers: {
-          "X-CSRFToken": "{{ csrf_token }}"
+          "X-CSRFToken": "{{ csrf_token }}",
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: formData
       });
 
-      if (!response.ok) {
-        throw new Error("Error al enviar los datos.");
-      }
 
       const result = await response.json();
-      showToast("Clase magistral creada exitosamente.");
+      console.log(result);
+      if (result.success) {
+        mostrarModal("Éxito", "Clase magistral creada exitosamente.", true);
+      } else {
+        showToast("Ocurrió un error al crear la clase magistral.");
+      }
     } catch (error) {
       showToast("Ocurrió un error al crear la clase magistral.");
     }
   });
-  {% endif %}
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputCurso = document.getElementById("curso-input");
+    const datalist = document.getElementById("cursos-list");
+    const hiddenInput = document.getElementById("curso-seleccionado-hidden");
+
+    const cursoSeleccionadoId = "{{ request.GET.curso_seleccionado|default:'' }}";
+
+    if (cursoSeleccionadoId) {
+      // Buscar el <option> con data-seccion == cursoSeleccionadoId
+      const opcion = Array.from(datalist.options).find(
+        opt => opt.getAttribute("data-seccion") === cursoSeleccionadoId
+      );
+
+      if (opcion) {
+        inputCurso.value = opcion.value;           // Mostrar el curso en el input
+        hiddenInput.value = cursoSeleccionadoId;   // Restaurar el hidden
+      }
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const inputCurso = document.getElementById("tipo_plaza");
+    const hiddenInput = document.getElementById("plaza-seleccionada-hidden");
+
+    const cursoSeleccionadoId = "{{ request.GET.tipo_plaza|default:'' }}";
+
+    if (cursoSeleccionadoId) {
+      // Buscar el <option> con data-seccion == cursoSeleccionadoId
+      const opcion = Array.from(inputCurso.options).find(
+        opt => opt.value === cursoSeleccionadoId
+      );
+
+      if (opcion) {
+        inputCurso.value = opcion.value;           // Mostrar el curso en el input
+        hiddenInput.value = cursoSeleccionadoId;   
+      }
+    }
+  });
+
 </script>
 {% endif %}
 {% endblock %}

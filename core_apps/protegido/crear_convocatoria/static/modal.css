@@ -22,7 +22,8 @@
   border-radius: 0.5rem;
   text-align: center;
   min-width: 350px;
-  min-height: 380px
+  min-height: 380px;
+  max-width: 350px;
 }
 .modal-exito .modal-content {
   border-top: 3px solid green;

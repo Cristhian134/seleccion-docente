@@ -28,11 +28,11 @@ def crear_convocatoria_interna_view(request):
   if request.method == 'GET':
     codigo = request.GET.get('cod_profesor', '').strip()
     sortear_tema = request.GET.get('sortear_tema') == 'true'
-    seccion_seleccionada = request.GET.get("curso_seleccionado")
+
     user = getattr(request, 'user', AnonymousUser())
     facultad = getattr(user, "facultad", None)
-    tipo_plazas = TipoPlaza.choices
 
+    tipo_plazas = TipoPlaza.choices
     cursos = Curso.objects.prefetch_related('seccion_set').all().filter(facultad=facultad)
 
     if codigo.isdigit() and int(codigo) > 0:
@@ -54,6 +54,8 @@ def crear_convocatoria_interna_view(request):
         context["error_db"] = f"No se encontró un docente con el Codigo {codigo}"
 
     if sortear_tema:
+      seccion_seleccionada = request.GET.get("curso_seleccionado")
+
       if not seccion_seleccionada:
         context["error_busqueda"] = "Debe seleccionar un curso para sortear un tema"
       else:
@@ -79,6 +81,9 @@ def crear_convocatoria_interna_view(request):
     tipo_plaza = request.POST.get("tipoPlaza")
 
     crear_convocatoria_interna(cod_profesor, tema, fecha, hora, seccion_id, tipo_plaza)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+      return JsonResponse({"success": True, "mensaje": "Clase magistral creada exitosamente"})
 
     return render(request, 'crear_convocatoria_interna.html', {
       "url_volver": "/crear-convocatoria/"
