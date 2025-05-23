@@ -23,7 +23,7 @@ def crear_modelo_convocatoria(cleaned_data, tipo=TipoConvocatoria.EXTERNA, fecha
       fechaCierre=cleaned_data["fechaCierre"],
       fechaAsignacionTema=cleaned_data["fechaAsignacionTema"],
       fechaClaseMagistral=cleaned_data["fechaClaseMagistral"],
-      estadoConvocatoria=EstadoConvocatoria.ACTIVO,
+      estadoConvocatoria=EstadoConvocatoria.PUBLICADO,
   )
 
 
