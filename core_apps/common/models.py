@@ -136,8 +136,9 @@ class TipoConvocatoria(models.TextChoices):
 
 
 class EstadoConvocatoria(models.TextChoices):
-  ACTIVO = "activo", "Activo"
-  INACTIVO = "inactivo", "Inactivo"
+  PUBLICADO = 'publicado', 'Publicado'
+  EN_PROCESO = 'en_proceso', "En proceso"
+  FINALIZADO = 'finalizado', 'Finalizado'
 
 
 class Convocatoria(models.Model):
