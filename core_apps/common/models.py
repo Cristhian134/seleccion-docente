@@ -72,13 +72,13 @@ class Facultad(models.TextChoices):
   FIC = "fic", "Facultad de Ingeniería Civil"
   FIEECS = "fieecs", "Facultad de Ingeniería Económica, Estadística y Ciencias Sociales"
   FIGMM = "figmm", "Facultad de Ingeniería Geológica, Minera y Metalúrgica"
-  FIIS = "fiis", "Facultad de Ingeniería Industrial y de Sistemas"
   FIEE = "fiee", "Facultad de Ingeniería Eléctrica y Electrónica"
   FIM = "fim", "Facultad de Ingeniería Mecánica"
   FC = "fc", "Facultad de Ciencias"
   FIPP = "fipp", "Facultad de Ingeniería de Petróleo, Gas Natural y Petroquímica"
   FIQT = "fiqt", "Facultad de Ingeniería Química y Textil"
   FIA = "fia", "Facultad de Ingeniería Ambiental"
+  FIIS = "fiis", "Facultad de Ingeniería Industrial y de Sistemas"
 
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
@@ -136,8 +136,9 @@ class TipoConvocatoria(models.TextChoices):
 
 
 class EstadoConvocatoria(models.TextChoices):
-  ACTIVO = "activo", "Activo"
-  INACTIVO = "inactivo", "Inactivo"
+  PUBLICADO = 'publicado', 'Publicado'
+  EN_PROCESO = 'en_proceso', "En proceso"
+  FINALIZADO = 'finalizado', 'Finalizado'
 
 
 class Convocatoria(models.Model):
@@ -166,7 +167,7 @@ class EstadoPostulante(models.TextChoices):
 
 
 class Postulante(models.Model):
-  persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
+  persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
   convocatoria = models.ForeignKey(Convocatoria, on_delete=models.CASCADE)
   estadoPostulante = models.CharField(
     max_length=64,

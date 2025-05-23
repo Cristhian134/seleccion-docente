@@ -9,6 +9,7 @@ urlpatterns = [
     path('ver_convocatorias/gestionar_documentos/<int:convocatoria_id>/agregar/', views.agregar_postulante, name='agregar_postulante'),
     path('convocatoria/<int:convocatoria_id>/postulantes_aptos/', views.postulantes_aptos, name='postulantes_aptos'),
     path("convocatoria/<int:convocatoria_id>/consolidado_pdf/", views.enviar_consolidado_pdf, name="enviar_consolidado_pdf"),
+    path('buscar_persona_por_dni/', views.buscar_persona_por_dni, name='buscar_persona_por_dni'),
 
     # path('convocatoria/<int:convocatoria_id>/generar-pdf/', views.generar_consolidado_pdf, name='generar_consolidado_pdf'),
 

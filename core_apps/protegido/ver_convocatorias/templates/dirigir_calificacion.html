@@ -1,5 +1,4 @@
-{% extends "base.html" %} 
-{% load static %} {% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
@@ -15,22 +14,9 @@
   </ol>
 </nav>
 
-<div class="seccion_arriba"
-style="display: flex; align-items: center; justify-content: space-between;"
->
+<div class="seccion_arriba" style="display: flex; align-items: center; justify-content: space-between;">
   <h2 style="font-size: 25px; font-weight: 300;"> Lista de postulantes </h2>
-  <div class="cantidad_postulantes" style="
-    background-color: #711610; 
-    color: #fff;
-    height: 35px; 
-    width: 35px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 35px;
-    border-radius: 12px;
-    "
-  >{{ cantidadPostulantes }}</div>
+  <div class="cantidad_postulantes" style="background-color: #711610; color: #fff;height: 35px; width: 35px;text-align: center;font-size: 20px;font-weight: 700;line-height: 35px;border-radius: 12px;">{{ cantidadPostulantes }}</div>
 </div>
 
 <div class="table__wrapper">
@@ -55,16 +41,7 @@ style="display: flex; align-items: center; justify-content: space-between;"
         <td>{{ p.clasemagistral.temaAsignado }}</td>
         <td>{{ p.clasemagistral.fechaProgramacion }}</td>
         <td>{{ p.clasemagistral.horaProgramada }}</td>
-        <td><a href="{% url 'mostrar_documentos' p.id %}" style="
-                background-color: #711610; 
-                color: #fff;
-                text-align: center;
-                font-size: 12px;
-                font-weight: 100;
-                line-height: 20px;
-                border-radius: 12px;
-                padding: 8px 12px;
-                ">Evaluar</a></td>
+        <td><a href="{% url 'mostrar_documentos' p.id %}" style="background-color: #711610; color: #fff;text-align: center;font-size: 12px;font-weight: 100;line-height: 20px;border-radius: 12px;padding: 8px 12px;">Evaluar</a></td>
       </tr>
       {% empty %}
       <tr>
@@ -75,18 +52,7 @@ style="display: flex; align-items: center; justify-content: space-between;"
   </table>
 </div>
 
-<a href="{% url 'generar_informe_notas' convocatoria_id %}" target="_blank" style="
-    background-color: #711610; 
-    color: #fff;
-    width: 200px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 300;
-    line-height: 35px;
-    border-radius: 12px;
-    padding: 5px 0px;
-    align-self: self-end;
-    ">Generar Informe</a>
+<a href="{% url 'generar_informe_notas' convocatoria_id %}" target="_blank" style="background-color: #711610; color: #fff;width: 200px;text-align: center;font-size: 20px;font-weight: 300;line-height: 35px;border-radius: 12px;padding: 5px 0px;align-self: self-end;">Generar Informe</a>
 
 {% endblock %}
 

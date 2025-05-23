@@ -4,10 +4,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
     Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral, Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante, EstadoPostulante,
-    EstadoClaseMagistral, Plaza, Temas, Seccion,
+    EstadoClaseMagistral, Plaza, Temas, Seccion, EstadoPostulante
 )
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponse, Http404, JsonResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
@@ -82,7 +82,7 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
     doc = postulante.documento_set.order_by("fechaRecepcion").first()
     postulante.fecha_documento_mas_antiguo = doc.fechaRecepcion if doc else None
 
-  # 🔥 Agrega esto: serialización para el frontend
+  #  Agrega esto: serialización para el frontend
     postulante.documentos_json = [
         {
             "tipoDocumento": d.tipoDocumento,
@@ -124,6 +124,7 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
   })
 
 
+'''
 @login_required
 def agregar_postulante(request, convocatoria_id):
   convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
@@ -187,9 +188,100 @@ def agregar_postulante(request, convocatoria_id):
     messages.success(request, "Postulante y documento agregados correctamente.")
     return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
 
+    return render(request, "agregar_postulante.html", {
+        "convocatoria": convocatoria
+    })'''
+
+
+@login_required
+def agregar_postulante(request, convocatoria_id):
+  convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
+
+  if request.method == "POST":
+    nombre = request.POST.get("nombre")
+    apellido_paterno = request.POST.get("apellidoPaterno")
+    apellido_materno = request.POST.get("apellidoMaterno")
+    tipo_documento = request.POST.get("tipoDocumento")
+    dni = request.POST.get("dni")
+    correo = request.POST.get("correo")
+    telefono = request.POST.get("telefono")
+    genero = request.POST.get("genero")
+
+    archivo: UploadedFile = request.FILES.get("archivo")
+
+    if not archivo:
+      messages.error(request, "Debe subir un archivo.")
+      return redirect(request.path)
+
+    mime_type, _ = mimetypes.guess_type(archivo.name)
+    if mime_type not in ["application/pdf", "image/png", "image/jpeg"]:
+      messages.error(request, "Formato de archivo no permitido. Solo PDF o imágenes.")
+      return redirect(request.path)
+
+    # Buscar o crear Persona por DNI
+    persona, creada = Persona.objects.get_or_create(
+        dni=dni,
+        defaults={
+            "nombre": nombre,
+            "apellidoPaterno": apellido_paterno,
+            "apellidoMaterno": apellido_materno,
+            "correo": correo,
+            "telefono": telefono,
+            "genero": genero,
+        }
+    )
+
+    # Si la persona existe pero no está asociada a este postulante
+    postulante, _ = Postulante.objects.get_or_create(
+        persona=persona,
+        convocatoria=convocatoria,
+        defaults={"estadoPostulante": EstadoPostulante.REGISTRADO}
+    )
+
+    # Documento principal
+    Documento.objects.create(
+        postulante=postulante,
+        tipoDocumento=tipo_documento,
+        archivo=archivo.read(),
+        fechaRecepcion=timezone.now(),
+        estadoDocumento=EstadoDocumento.REGISTRADO
+    )
+
+    # Múltiples archivos si los hay
+    archivos = request.FILES.getlist("archivos")
+    for archivo in archivos:
+      Documento.objects.create(
+          postulante=postulante,
+          tipoDocumento=tipo_documento,
+          archivo=archivo.read(),
+          fechaRecepcion=timezone.now(),
+          estadoDocumento=EstadoDocumento.REGISTRADO
+      )
+
+    messages.success(request, "Postulante y documento agregados correctamente.")
+    return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
+
   return render(request, "agregar_postulante.html", {
       "convocatoria": convocatoria
   })
+
+
+@login_required
+def buscar_persona_por_dni(request):
+  dni = request.GET.get("dni")
+  try:
+    persona = Persona.objects.get(dni=dni)
+    data = {
+        "nombre": persona.nombre,
+        "apellidoPaterno": persona.apellidoPaterno,
+        "apellidoMaterno": persona.apellidoMaterno,
+        "correo": persona.correo,
+        "telefono": persona.telefono,
+        "genero": persona.genero,
+    }
+    return JsonResponse({"existe": True, "persona": data})
+  except Persona.DoesNotExist:
+    return JsonResponse({"existe": False})
 
 
 @login_required
@@ -286,7 +378,8 @@ def dirigir_calificacion(request, convocatoria_id):
 
   ordenar = request.GET.get('ordenar', '0')
 
-  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).select_related('persona', 'clasemagistral')
+  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,
+                                          estadoPostulante=EstadoPostulante.ACEPTADO).select_related('persona', 'clasemagistral')
 
   if ordenar == '1':
     postulantes = postulantes.order_by('persona.apellidoPaterno', 'persona.apellidoMaterno', 'persona.nombre')
@@ -332,8 +425,6 @@ def mostrar_documentos(request, postulante_id):
 
 @login_required
 def calificar_documentos(request, postulante_id):
-
-  print(request.method)
 
   postulante = get_object_or_404(Postulante, pk=postulante_id)
   convocatoria_id = postulante.convocatoria_id

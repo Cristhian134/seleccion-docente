@@ -193,7 +193,7 @@
         <td>{{ postulante.fecha_documento_mas_antiguo }}</td>
         <td>
           <button type="button" class="button--primary"
-            onclick="mostrarModalVerDocumentos({{ postulante.id }}, '{{ postulante.persona.nombre }} {{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}', JSON.parse(document.getElementById('docs-{{ postulante.id }}').textContent))">
+            onclick="verificarYMostrar({{ postulante.id }}, '{{ postulante.persona.nombre }} {{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}')">
             Visualizar Documentos
           </button>
           <script type="application/json" id="docs-{{ postulante.id }}">
@@ -238,28 +238,39 @@
         {% csrf_token %}
         <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
 
-        <table class="table__modal">
-          <thead>
-            <tr>
-              <th>N°</th>
-              <th>Nombre</th>
-              <th>Tipo Documento</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td style="display: flex; flex-direction: column; gap: 8px;">
-                <input type="text" name="nombre" placeholder="Nombre" required>
-                <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required>
-                <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
-              </td>
-              <td>
-                <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <table class="table__modal">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Nombre</th>
+            <th>Datos Adicionales</th>
+            <th>Tipo Documento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>
+              <input type="text" name="nombre" placeholder="Nombre" required><br/>
+              <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" required><br/>
+              <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
+            </td>
+            <td>
+              <input type="text" name="dni" placeholder="DNI" required><br/>
+              <input type="email" name="correo" placeholder="Correo electrónico" required><br/>
+              <input type="text" name="telefono" placeholder="Teléfono" required><br/>
+              <select name="genero" required>
+                <option value="" disabled selected>Seleccione género</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+              </select>
+            </td>
+                <td>
+              <input type="text" name="tipoDocumento" placeholder="Ej: CV" required>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
         <div style="text-align: center; margin-top: 1em;">
           <label for="archivo" class="upload-label" style="cursor: pointer;">
@@ -401,6 +412,42 @@
     document.body.appendChild(form);
     form.submit();
   }
+
+  function verificarYMostrar(postulanteId, nombreCompleto) {
+  const radio = document.querySelector(`input[name='postulante_id'][value='${postulanteId}']`);
+  if (!radio || !radio.checked) {
+    alert("Por favor, seleccione este postulante antes de visualizar sus documentos.");
+    return;
+  }
+
+  const docsScript = document.getElementById(`docs-${postulanteId}`);
+  if (docsScript) {
+    const documentos = JSON.parse(docsScript.textContent);
+    mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos);
+  }
+
+}
+
+  document.querySelector('input[name="dni"]').addEventListener('blur', function () {
+    const dni = this.value.trim();
+    if (dni.length !== 8) return; // DNI peruano típico
+
+    fetch(`/buscar_persona_por_dni/?dni=${dni}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.existe) {
+          const p = data.persona;
+          document.querySelector('input[name="nombre"]').value = p.nombre;
+          document.querySelector('input[name="apellidoPaterno"]').value = p.apellidoPaterno;
+          document.querySelector('input[name="apellidoMaterno"]').value = p.apellidoMaterno;
+          document.querySelector('input[name="correo"]').value = p.correo;
+          document.querySelector('input[name="telefono"]').value = p.telefono;
+          document.querySelector('select[name="genero"]').value = p.genero;
+        }
+      })
+      .catch(err => console.error("Error buscando persona:", err));
+  });
+
 </script>
 
 

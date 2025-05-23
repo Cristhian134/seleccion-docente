@@ -1,11 +1,13 @@
+import random
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import render
 from django.http import JsonResponse
 
 from core_apps.protegido.crear_convocatoria.utils import convocatoria_externa_obtener_datos_profesor, crear_convocatoria
-from core_apps.common.models import Curso, Docente, TipoPlaza
+from core_apps.common.models import Curso, Docente, Seccion, Temas, TipoPlaza
 from .forms import ConvocatoriaExternaForm
+from .utils import crear_convocatoria_interna
 
 import json
 
@@ -24,28 +26,65 @@ def crear_convocatoria_interna_view(request):
   }
 
   if request.method == 'GET':
-    dni = request.GET.get('cod_profesor', '').strip()
+    codigo = request.GET.get('cod_profesor', '').strip()
+    sortear_tema = request.GET.get('sortear_tema') == 'true'
 
-    if dni.isdigit() and int(dni) > 0:
+    user = getattr(request, 'user', AnonymousUser())
+    facultad = getattr(user, "facultad", None)
+
+    tipo_plazas = TipoPlaza.choices
+    cursos = Curso.objects.prefetch_related('seccion_set').all().filter(facultad=facultad)
+
+    if codigo.isdigit() and int(codigo) > 0:
       pass
     else:
       context["error_busqueda"] = "El codigo debe ser un numero entero mayor o igual a 1"
       return render(request, 'crear_convocatoria_interna.html', context)
 
-    if not dni:
+    if not codigo:
       context["error_busqueda"] = "Codigo no proporcionado"
     else:
-      profesor = Docente.objects.get(id=dni)
-      print(profesor.id, "ssssssss")
+      profesor = Docente.objects.get(id=codigo)
+
       if profesor:
-        data = convocatoria_externa_obtener_datos_profesor(dni)
+        data = convocatoria_externa_obtener_datos_profesor(codigo)
         context["data"] = data
+        context["cod_profesor"] = codigo
       else:
-        context["error_db"] = f"No se encontró un docente con el Codigo {dni}"
+        context["error_db"] = f"No se encontró un docente con el Codigo {codigo}"
+
+    if sortear_tema:
+      seccion_seleccionada = request.GET.get("curso_seleccionado")
+
+      if not seccion_seleccionada:
+        context["error_busqueda"] = "Debe seleccionar un curso para sortear un tema"
+      else:
+        seccion = Seccion.objects.get(id=seccion_seleccionada)
+        curso_seleccionado = seccion.curso.codigoCurso
+
+        secciones = Seccion.objects.filter(curso__codigoCurso=curso_seleccionado)
+        temas_disponibles = Temas.objects.filter(silabus__curso__seccion__in=secciones)
+        tema_asignado = random.choice(list(temas_disponibles)) if temas_disponibles.exists() else None
+        context["curso_sorteado"] = tema_asignado.nombreTema
+
+    context["cursos"] = cursos
+    context["tipo_plazas"] = tipo_plazas
 
     return render(request, 'crear_convocatoria_interna.html', context)
 
   if request.method == 'POST':
+    cod_profesor = request.POST.get("cod_profesor")
+    tema = request.POST.get("tema")
+    fecha = request.POST.get("fecha")
+    hora = request.POST.get("hora")
+    seccion_id = request.POST.get("seccion_id")
+    tipo_plaza = request.POST.get("tipoPlaza")
+
+    crear_convocatoria_interna(cod_profesor, tema, fecha, hora, seccion_id, tipo_plaza)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+      return JsonResponse({"success": True, "mensaje": "Clase magistral creada exitosamente"})
+
     return render(request, 'crear_convocatoria_interna.html', {
       "url_volver": "/crear-convocatoria/"
     })

@@ -9,7 +9,12 @@
 </nav>
 <section class="listar_docentes__wrapper relative">
   <div class="relative">
-    <h1 class="title-base">Lista de docentes total</h1>
+    <h1 class="title-base">
+      Lista de docentes
+      {% if titulo %}
+        del curso {{ titulo }}
+      {% endif %}
+    </h1>
   <form method="get" action="" class="listar_docentes__curso">
     <button type="submit" class="button--primary">Buscar</button>
     <label for="curso-input" class="input-primary">

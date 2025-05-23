@@ -16,44 +16,14 @@
     <a>Clase</a>
   </li>
 </ol>
-
-<div class="clase_magistral" style="
-  display: flex;
-  flex-direction: row;
-  align-content: space-between;
-  margin: 10px auto 10px auto;
-  position: relative;
-">
-  <div class="izquierda__clase"  style="
-    border: 10px solid #711610;
-    border-radius: 14px;
-    height: 56vh;
-    margin: auto 0px;
-    padding: 0px 30px 0px 0px;
-    width: 43vw;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  ">
+<div class="clase_magistral" style="  display: flex;  flex-direction: row;  align-content: space-between;  margin: 10px auto 10px auto;position: relative;">
+  <div class="izquierda__clase"  style="    border: 10px solid #711610;    border-radius: 14px;    height: 56vh;    margin: auto 0px;    padding: 0px 30px 0px 0px;    width: 43vw;    padding: 5px;    display: flex;    align-items: center;    justify-content: center;">
     <div class="mostrar__clase">
       <!-- Aquí se inserta la transmisión de Jitsi Meet -->
-      <iframe 
-        src="https://meet.jit.si/ClaseEvaluacion_{{ postulante_id }}" 
-        style="width: 100%; height: 50vh; width: 40vw; border: 0; border-radius: 8px;" 
-        allow="camera; microphone; fullscreen; display-capture">
-      </iframe>
+      <iframe         src="https://meet.jit.si/ClaseEvaluacion_{{ postulante_id }}"         style="width: 100%; height: 50vh; width: 40vw; border: 0; border-radius: 8px;"         allow="camera; microphone; fullscreen; display-capture"></iframe>
     </div>
   </div>
-
-  <div class="derecha__clase"  style="
-    height: 60vh;
-    margin: auto 0px;
-    margin-left: 40px;
-    width: 20vw;
-    text-align: center;
-    font-size: 25px;
-  ">
+  <div class="derecha__clase"  style="    height: 60vh;    margin: auto 0px;    margin-left: 40px;    width: 20vw;    text-align: center;    font-size: 25px;  ">
     <div class="horas" style="display: flex; flex-direction: row; justify-content: space-between;">
       <div class="inicio" style="text-align: left;">
         <span style="font-size: 13px;">Hora Inicio:</span>
@@ -64,24 +34,11 @@
         <span style="font-size: 13px; text-align: right;">{{ hora_final }}</span>
       </div>
     </div>
-
     <div class="calificar__clase">
-
-      <h2  style="
-        font-size: 20px;
-        font-weight: 800;
-        padding: 30px 0px 30px;
-      ">Calificar clase magistral</h2>
-
-      <div  style="
-        padding: 5px 18px 5px 10px;
-        border: 3px solid black;
-        border-radius: 20px;  
-      ">
-
+      <h2  style="        font-size: 20px;        font-weight: 800;        padding: 30px 0px 30px;    ">Calificar clase magistral</h2>
+      <div  style="        padding: 5px 18px 5px 10px;        border: 3px solid black;        border-radius: 20px;      ">
         <form method="post" id="form_clase">
         {% csrf_token %}
-
         <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
           <h3 style="font-size: 13px; font-weight: 100; width: 400px; padding: 20px 13px 10px 15px; text-align: right;">Claridad en la Exposición y Metodología Didáctica</h3>
           <div style="display: flex; flex-direction: column-reverse;">
@@ -89,7 +46,6 @@
             <label style="font-size: 12px; text-align: right;" for="c1" class="label__criterio">(0-20)</label>
           </div>
         </div>
-
         <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
           <h3 style="font-size: 13px; font-weight: 100; width: 400px; padding: 20px 13px 10px 15px; text-align: right;">Grado de Conocimiento</h3>
           <div style="display: flex; flex-direction: column-reverse;">
@@ -97,7 +53,6 @@
             <label style="font-size: 12px; text-align: right;" for="c2" class="label__criterio">(0-10)</label>
           </div>
         </div>
-
         <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
           <h3 style="font-size: 13px; font-weight: 100; width: 400px; padding: 20px 13px 10px 15px; text-align: right;">Aptitud para Motivar el Interés del Tema</h3>
           <div style="display: flex; flex-direction: column-reverse;">
@@ -105,7 +60,6 @@
             <label style="font-size: 12px; text-align: right;" for="c3" class="label__criterio">(0-10)</label>
           </div>
         </div>
-
         <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
           <h3 style="font-size: 13px; font-weight: 100; width: 400px; padding: 20px 13px 10px 15px; text-align: right;">Absolución de Preguntas del Jurado y del Auditorio</h3>
           <div style="display: flex; flex-direction: column-reverse;">
@@ -113,25 +67,9 @@
             <label style="font-size: 12px; text-align: right;" for="c4" class="label__criterio">(0-10)</label>
           </div>
         </div>
-
-
-        <button type="submit" id="boton_confirmar"   style="
-          background-color: #711610; 
-          color: #fff;
-          width: 120px;
-          text-align: center;
-          font-size: 17px;
-          font-weight: 300;
-          line-height: 35px;
-          border-radius: 30px;
-          padding: 5px 0px;
-          margin-top: 30px;
-          margin-bottom: 10px;
-        ">Guardar</button>
+        <button type="submit" id="boton_confirmar"   style="          background-color: #711610;           color: #fff;          width: 120px;          text-align: center;          font-size: 17px;          font-weight: 300;          line-height: 35px;          border-radius: 30px;          padding: 5px 0px;          margin-top: 30px;          margin-bottom: 10px;        ">Guardar</button>
       </form>
-
       </div>
-      
     </div>
   </div>
 </div>
