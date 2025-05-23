@@ -69,6 +69,19 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     fake = Faker(locale='es_ES')
     facultades = [choice[1] for choice in Facultad.choices]
+    # facultades = [
+    #   Facultad.FAUA,
+    #   Facultad.FC,
+    #   Facultad.FIA,
+    #   Facultad.FIC,
+    #   Facultad.FIEE,
+    #   Facultad.FIEECS,
+    #   Facultad.FIGMM,
+    #   Facultad.FIM,
+    #   Facultad.FIPP,
+    #   Facultad.FIQT,
+    #   Facultad.FIIS,
+    # ]
     User = get_user_model()
     CICLO_ACADEMICO = "2025-1"
     TOTAL_SECCIONES = 28
@@ -120,7 +133,7 @@ class Command(BaseCommand):
         Temas.objects.create(
           silabus=silabus,
           codigoTema=f'{curso.codigoCurso}-TEM{str(i+1).zfill(2)}',
-          nombreTema=f'Tema {i+1}',
+          nombreTema=f'Tema {i+1} - {curso.codigoCurso}',
           duracionTema=2,
         )
 

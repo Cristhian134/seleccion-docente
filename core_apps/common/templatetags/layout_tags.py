@@ -68,9 +68,14 @@ def render_header(context):
 
   nombre_completo = f'{persona.nombre} {persona.apellidoPaterno} {persona.apellidoMaterno}'
 
+  admin = False
+  if rol == ROLES.ADMINISTRADOR:
+    admin = True
+
   return {
       "usuario": nombre_completo,
       "rol": rol,
       "facultad": getattr(user, 'facultad', 'No tiene facultad'),
       "codigo": codigo,
+      "admin": admin,
   }
