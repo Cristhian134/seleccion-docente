@@ -63,6 +63,14 @@ main {
   flex-direction: column;
   gap: 1rem;
   /* max-width: calc(100dvw - 250px); */
+  max-height: calc(100dvh - 100px);
+}
+
+main > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: auto;
 }
 
 header {

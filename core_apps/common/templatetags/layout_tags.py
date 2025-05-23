@@ -67,7 +67,6 @@ def render_header(context):
   persona = getattr(user, "persona", None)
 
   nombre_completo = f'{persona.nombre} {persona.apellidoPaterno} {persona.apellidoMaterno}'
-  print(persona.nombre, "nombre")
 
   return {
       "usuario": nombre_completo,

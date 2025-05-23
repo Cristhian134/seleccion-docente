@@ -166,7 +166,7 @@ class EstadoPostulante(models.TextChoices):
 
 
 class Postulante(models.Model):
-  persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
+  persona = models.ForeignKey(Persona, on_delete=models.CASCADE)
   convocatoria = models.ForeignKey(Convocatoria, on_delete=models.CASCADE)
   estadoPostulante = models.CharField(
     max_length=64,
