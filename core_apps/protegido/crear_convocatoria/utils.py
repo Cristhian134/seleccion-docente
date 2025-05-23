@@ -1,7 +1,9 @@
 
-from django.utils.timezone import now
+from django.utils.timezone import now, make_aware
 
-from core_apps.common.models import Convocatoria, Docente, EstadoConvocatoria, EstadoPlaza, EstadoSeccion, EvaluacionDocente, Plaza, Requisito, Seccion
+from core_apps.common.models import ClaseMagistral, Convocatoria, Docente, EstadoClaseMagistral, EstadoConvocatoria, EstadoPlaza, EstadoPostulante, EstadoSeccion, EvaluacionDocente, Persona, Plaza, Postulante, Requisito, Seccion, TipoConvocatoria, TipoPlaza
+
+from datetime import datetime, timedelta
 
 # cursos_list
 # [
@@ -13,13 +15,11 @@ from core_apps.common.models import Convocatoria, Docente, EstadoConvocatoria, E
 # ]
 
 
-def crear_modelo_convocatoria(cleaned_data):
-  print(cleaned_data)
-
+def crear_modelo_convocatoria(cleaned_data, tipo=TipoConvocatoria.EXTERNA, fechaPublicacion=now()):
   return Convocatoria.objects.create(
       descripcionConvocatoria=cleaned_data["descripcionConvocatoria"],
-      tipoConvocatoria="externa",
-      fechaPublicacion=now(),
+      tipoConvocatoria=tipo,
+      fechaPublicacion=fechaPublicacion,
       fechaCierre=cleaned_data["fechaCierre"],
       fechaAsignacionTema=cleaned_data["fechaAsignacionTema"],
       fechaClaseMagistral=cleaned_data["fechaClaseMagistral"],
@@ -66,6 +66,46 @@ def crear_convocatoria(cleaned_data, cursos_list):
       return "Error al crear la convocaotoria", False
 
   return "Convocatoria creada correctamente", True
+
+
+def crear_convocatoria_interna(cod_profesor, tema, fecha, hora, seccion_id, tipo_plaza):
+  naive_dt = datetime.strptime(f"{fecha}T{hora}", "%Y-%m-%dT%H:%M")
+  aware_dt = make_aware(naive_dt)  # Usa la zona horaria por defecto de Django
+  fecha_cierre = aware_dt + timedelta(hours=1)
+
+  cleaned_data = {
+    "descripcionConvocatoria": "",
+    "fechaCierre": fecha_cierre,
+    "fechaAsignacionTema": aware_dt,
+    "fechaClaseMagistral": aware_dt,
+  }
+  convocatoria = crear_modelo_convocatoria(cleaned_data, tipo=TipoConvocatoria.INTERNA, fechaPublicacion=aware_dt)
+
+  seccion = Seccion.objects.get(id=seccion_id)
+  Plaza.objects.create(
+    convocatoria=convocatoria,
+    seccion=seccion,
+    estadoPlaza=EstadoPlaza.ACTIVO,
+    tipoPlaza=tipo_plaza,
+  )
+
+  persona = Docente.objects.get(id=cod_profesor).persona
+
+  postulante = Postulante.objects.create(
+    persona=persona,
+    convocatoria=convocatoria,
+    estadoPostulante=EstadoPostulante.ACEPTADO
+  )
+
+  ClaseMagistral.objects.create(
+    postulante=postulante,
+    fechaProgramacion=fecha,
+    horaProgramada=hora,
+    temaAsignado=tema,
+    estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
+  )
+
+  return
 
 
 def convocatoria_externa_obtener_datos_profesor(dni):

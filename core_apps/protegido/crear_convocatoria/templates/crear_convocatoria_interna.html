@@ -25,9 +25,13 @@
 
   {% if error_busqueda %}
   <p>{{ error_busqueda }}</p>
-  {% endif %} {% if error_db %}
+  {% endif %}
+  
+  {% if error_db %}
   <p>{{ error_db }}</p>
-  {% endif %} {% if data %}
+  {% endif %} 
+  
+  {% if data %}
   <section>
     <h2>Datos del profesor</h2>
     <div>
@@ -68,7 +72,6 @@
         <tr>
           <th>Facultad</th>
           <th>Curso</th>
-          <th><i class="fa fa-asterisk" aria-hidden="true"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -76,14 +79,6 @@
         <tr>
           <td>{{ facultad.facultad }}</td>
           <td>{{ curso.codigo }} - {{ curso.nombre }}</td>
-          <td>
-            <input
-              type="checkbox"
-              class="curso-checkbox"
-              data-curso="{{ curso.codigo }} - {{ curso.nombre }}"
-              name="curso_unico"
-            />
-          </td>
         </tr>
         {% endfor %} {% endfor %}
       </tbody>
@@ -93,39 +88,147 @@
   <section>
     <label class="input-primary">
       Curso:
+      <input list="cursos-list" id="curso-input" name="cod_curso_display" placeholder="Seleccionar curso" autocomplete="off" />
+      <datalist id="cursos-list">
+        {% for curso in cursos %}
+          {% for seccion in curso.seccion_set.all %}
+          <option data-seccion="{{ seccion.id }}" value="{{ curso.codigoCurso }}{{ seccion.codigoSeccion }} - {{ curso.nombreCurso }}"></option>
+          {% endfor %}
+        {% endfor %}
+      </datalist>
+    </label>
+    <label class="input-primary">
+      Tipo
+      <select required id="tipo_plaza" name="tipo_plaza">
+        {% for valor, nombre in tipo_plazas %}
+          <option value="{{ valor }}">{{ nombre }}</option>
+        {% endfor %}
+      </select>
+    </label>
+  </section>
+
+  <form method="get" action="">
+    <input type="hidden" id="curso-seleccionado-hidden" name="curso_seleccionado" value="">
+    <input type="hidden" name="cod_profesor" value="{{ cod_profesor }}" />
+    <label class="input-primary">
+      Tema sorteado:
+      <input type="text" id="cursoSorteado" value="{{ curso_sorteado }}" disabled />
+    </label>
+    <button type="submit" name="sortear_tema" value="true" class="button--primary">Sortear tema</button>
+  </form>
+  
+  <section>
+    <label class="input-primary">
+      Fecha de inicio de las clase magistral
       <input
-        type="text"
-        id="curso-seleccionado-input"
-        value="Ningún curso seleccionado"
-        disabled
+        type="datetime-local"
+        id="fechaClaseMagistral"
+        name="fechaClaseMagistral"
+        required
       />
     </label>
   </section>
+
+  <div id="toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #e74c3c; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1000;">
+    <span id="toast-message"></span>
+  </div>
+  <button type="submit" id="crearClaseMagistral" class="button--primary">Crear clase magistral</button>
   {% endif %}
 </div>
+{% if data %}
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const checkboxes = document.querySelectorAll(".curso-checkbox");
-    const cursoSeleccionadoInput = document.getElementById(
-      "curso-seleccionado-input"
+  {% if data %}
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    const messageBox = document.getElementById("toast-message");
+
+    messageBox.textContent = message;
+    toast.style.display = "block";
+
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 3000);
+  }
+
+  // Función para obtener data-seccion del option seleccionado
+  function actualizarSeccionSeleccionada() {
+    const inputCurso = document.getElementById("curso-input");
+    const datalist = document.getElementById("cursos-list");
+    const hiddenInput = document.getElementById("curso-seleccionado-hidden");
+    const valor = inputCurso.value;
+
+    // Buscar la opción cuyo valor coincide con el input
+    const opcionSeleccionada = Array.from(datalist.options).find(
+      option => option.value === valor
     );
 
-    checkboxes.forEach((cb) => {
-      cb.addEventListener("change", () => {
-        if (cb.checked) {
-          // Desmarca todos menos este
-          checkboxes.forEach((otherCb) => {
-            if (otherCb !== cb) otherCb.checked = false;
-          });
-          // Actualiza el input con el curso seleccionado
-          cursoSeleccionadoInput.value = cb.dataset.curso;
-        } else {
-          // Si se desmarca, vacía el input
-          cursoSeleccionadoInput.value = "Ningún curso seleccionado";
-        }
+    if (opcionSeleccionada) {
+      // Obtener el data-seccion y asignar al hidden input
+      const seccionId = opcionSeleccionada.getAttribute("data-seccion");
+      hiddenInput.value = seccionId;
+    } else {
+      hiddenInput.value = ""; // Si no hay opción válida, limpiar
+    }
+  }
+
+  // Escuchar cambios en el input para actualizar el hidden
+  document.getElementById("curso-input").addEventListener("input", actualizarSeccionSeleccionada);
+
+  document.getElementById("crearClaseMagistral").addEventListener("click", async function (event) {
+    const fechaClase = document.getElementById("fechaClaseMagistral").value;
+    const temaSorteado = document.getElementById("cursoSorteado").value;
+    const codProfesor = "{{ cod_profesor }}";
+    const seccionSeleccionada = document.getElementById("curso-seleccionado-hidden").value;
+    const tipoPlaza = document.getElementById("tipo_plaza").value;
+
+    if (!seccionSeleccionada) {
+      showToast("Debe seleccionar un curso válido.");
+      event.preventDefault();
+      return;
+    }
+
+    if (!temaSorteado || temaSorteado === "None") {
+      showToast("Debe sortear un tema antes de crear la clase magistral.");
+      event.preventDefault();
+      return;
+    }
+
+    if (!fechaClase) {
+      showToast("Debe indicar la fecha y hora de la clase magistral.");
+      event.preventDefault();
+      return;
+    }
+
+    const [fecha, hora] = fechaClase.split("T");
+    const formData = new FormData();
+    formData.append("cod_profesor", codProfesor);
+    formData.append("fecha", fecha);
+    formData.append("hora", hora);
+    formData.append("tema", temaSorteado);
+    formData.append("seccion_id", seccionSeleccionada);
+    formData.append("tipoPlaza", tipoPlaza)
+
+    try {
+      const response = await fetch("", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: formData
       });
-    });
+
+      if (!response.ok) {
+        throw new Error("Error al enviar los datos.");
+      }
+
+      const result = await response.json();
+      showToast("Clase magistral creada exitosamente.");
+    } catch (error) {
+      showToast("Ocurrió un error al crear la clase magistral.");
+    }
   });
+  {% endif %}
 </script>
+{% endif %}
 {% endblock %}
