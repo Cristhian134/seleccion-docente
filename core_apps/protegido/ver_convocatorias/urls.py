@@ -21,7 +21,7 @@ urlpatterns = [
      path('ver_convocatorias/elegir_modulo/<int:postulante_id>/',
          views.seleccionar_modulo, name='seleccionar_modulo'),
 
-     path('ver_convocatorias/dirigir_calificacion/evaluar_clase_magistral/<int:postulante_id>/',
+     path('ver_convocatorias/dirigir_calificacion/evaluar_clase_magistral/<int:postulante_id>/<str:tipo>/',
          views.evaluar_clase_magistral, name='evaluar_clase_magistral'),
      path('ver_convocatorias/dirigir_calificacion/generar_informe/<int:convocatoria_id>/',
          views.generar_informe_notas, name='generar_informe_notas'),

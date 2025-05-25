@@ -12,32 +12,19 @@
   </ol>
 </nav>
 <section class="section__wrapper">
-  <div class="section__crear-convocatoria">
-    <div class="section__interno">
-      <h2>Clase Presencial</h2>
-      <span><i class="fa fa-university" aria-hidden="true"></i></span>
-      <a href="convocatoria-interna/">Seleccionar Convocatoria</a>
-    </div>
-    <div class="section__externo">
-      <h2>Clase Virtual</h2>
-      <span><i class="fa fa-external-link" aria-hidden="true"></i></span>
-      <a href="convocatoria-externa/">Seleccionar Convocatoria</a>
-    </div>
-  </div>
+  <form method="post" action="{% url 'seleccionar_modulo' postulante_id=postulante.id %}" class="section__crear-convocatoria">
+        {% csrf_token %}
+      <div class="section__interno">
+        <h2>Clase Presencial</h2>
+        <span><i class="fa fa-university" aria-hidden="true"></i></span>
+        <button type="submit" name="tipo" value="presencial">Seleccionar modalidad</button>
+      </div>
+      <div class="section__externo">
+        <h2>Clase Virtual</h2>
+        <span><i class="fa fa-external-link" aria-hidden="true"></i></span>
+        <button type="submit" name="tipo" value="virtual">Seleccionar modalidad</button>
+      </div>
+  </form>
 </section>
-
-<form method="post" action="{% url 'seleccionar_modulo' postulante_id=postulante.id %}" class="contenido">
-      {% csrf_token %}
-    <div class="section__interno">
-      <h2>Clase Presencial</h2>
-      <span><i class="fa fa-university" aria-hidden="true"></i></span>
-      <button type="submit" name="tipo" value="true">Seleccionar modalidad</button>
-    </div>
-    <div class="section__externo">
-      <h2>Clase Virtual</h2>
-      <span><i class="fa fa-external-link" aria-hidden="true"></i></span>
-      <button type="submit" name="tipo" value="false">Seleccionar modalidad</button>
-    </div>
-</form>
 
 {% endblock %}

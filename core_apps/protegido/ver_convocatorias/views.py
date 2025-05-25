@@ -473,7 +473,7 @@ def calificar_documentos(request, postulante_id):
           estadoNotaPostulante=EstadoNotaPostulante.REVISADO_PARCIALMENTE
       )
 
-    return redirect('evaluar_clase_magistral', postulante_id=postulante.id)
+    return redirect('seleccionar_modulo', postulante_id=postulante.id)
 
   return render(request, 'calificar_documentos.html', {
       'postulante': postulante
@@ -482,19 +482,26 @@ def calificar_documentos(request, postulante_id):
 
 @login_required
 def seleccionar_modulo(request, postulante_id):
+    postulante = get_object_or_404(Postulante, pk=postulante_id)
 
-  if request.method == 'POST':
-    tipo = bool(request.POST.get('tipo'))
+    
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')  # 'presencial' o 'virtual'
+        return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
 
-    return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
-
-  return render(request, 'seleccionar_modulo.html', {
-      'postulante': postulante
-  })
+    return render(request, 'seleccionar_modulo.html', {
+        'postulante': postulante
+    })
 
 
 @login_required
 def evaluar_clase_magistral(request, postulante_id, tipo):
+
+  if tipo == 'presencial':
+    tipo_bool = True
+  else:
+    tipo_bool = False
+
   clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
 
   fecha = clase_magistral.fechaProgramacion
@@ -537,7 +544,7 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
       'hora_final': hora_final,
       'postulante_id': postulante_id,
       'convocatoria_id': convocatoria_id,
-      'tipo': tipo
+      'tipo': tipo_bool
   })
 
 
