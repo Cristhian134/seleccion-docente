@@ -481,7 +481,20 @@ def calificar_documentos(request, postulante_id):
 
 
 @login_required
-def evaluar_clase_magistral(request, postulante_id):
+def seleccionar_modulo(request, postulante_id):
+
+  if request.method == 'POST':
+    tipo = bool(request.POST.get('tipo'))
+
+    return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
+
+  return render(request, 'seleccionar_modulo.html', {
+      'postulante': postulante
+  })
+
+
+@login_required
+def evaluar_clase_magistral(request, postulante_id, tipo):
   clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
 
   fecha = clase_magistral.fechaProgramacion
@@ -523,8 +536,8 @@ def evaluar_clase_magistral(request, postulante_id):
       'clase_magistral': clase_magistral,
       'hora_final': hora_final,
       'postulante_id': postulante_id,
-      'convocatoria_id': convocatoria_id
-
+      'convocatoria_id': convocatoria_id,
+      'tipo': tipo
   })
 
 

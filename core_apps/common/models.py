@@ -351,13 +351,15 @@ class TipoEvaluador(models.TextChoices):
   ALUMNO = "alumno", "Alumno"
   DOCENTE = "docente", "Docente"
 
-
 class EstadoEvaluador(models.TextChoices):
   CONVOCADO = "convocado", "Convocado"
   CONFIRMADO = "confirmado", "Confirmado"
   PRESENTE = "presente", "Presente"
   AUSENTE = "ausente", "Ausente"
 
+class JerarquiaEvaluador(models.TextChoices):
+  PRINCIPAL = "alumno", "Alumno"
+  SECUNDARIO = "docente", "Docente"
 
 class Evaluador(models.Model):
   persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True)
