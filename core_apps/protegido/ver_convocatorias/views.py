@@ -212,19 +212,6 @@ def agregar_postulante(request, convocatoria_id):
       messages.error(request, "Formato de archivo no permitido. Solo PDF o imágenes.")
       return redirect(request.path)
 
-<<<<<<< HEAD
-        persona, creada = Persona.objects.get_or_create(
-            dni=dni,
-            defaults={
-                "nombre": nombre,
-                "apellidoPaterno": apellido_paterno,
-                "apellidoMaterno": apellido_materno,
-                "correo": correo,
-                "telefono": telefono,
-                "genero": genero,
-            }
-        )
-=======
     # Buscar o crear Persona por DNI
     persona, creada = Persona.objects.get_or_create(
         dni=dni,
@@ -237,7 +224,6 @@ def agregar_postulante(request, convocatoria_id):
             "genero": genero,
         }
     )
->>>>>>> main
 
     # Si la persona existe pero no está asociada a este postulante
     postulante, _ = Postulante.objects.get_or_create(
@@ -255,38 +241,6 @@ def agregar_postulante(request, convocatoria_id):
         estadoDocumento=EstadoDocumento.REGISTRADO
     )
 
-<<<<<<< HEAD
-        postulante, _ = Postulante.objects.get_or_create(
-            persona=persona,
-            convocatoria=convocatoria,
-            defaults={"estadoPostulante": EstadoPostulante.REGISTRADO}
-        )
-
-        Documento.objects.create(
-            postulante=postulante,
-            tipoDocumento=tipo_documento,
-            archivo=archivo.read(),
-            fechaRecepcion=timezone.now(),
-            estadoDocumento=EstadoDocumento.REGISTRADO
-        )
-
-        archivos = request.FILES.getlist("archivos")
-        for archivo in archivos:
-            Documento.objects.create(
-                postulante=postulante,
-                tipoDocumento=tipo_documento,
-                archivo=archivo.read(),
-                fechaRecepcion=timezone.now(),
-                estadoDocumento=EstadoDocumento.REGISTRADO
-            )
-
-        messages.success(request, "Postulante y documento agregados correctamente.")
-        return redirect("gestionar_documentos", convocatoria_id=convocatoria.id)
-
-    return render(request, "home.html", {
-        "convocatoria": convocatoria
-    })
-=======
     # Múltiples archivos si los hay
     archivos = request.FILES.getlist("archivos")
     for archivo in archivos:
@@ -305,7 +259,6 @@ def agregar_postulante(request, convocatoria_id):
       "convocatoria": convocatoria
   })
 
->>>>>>> main
 
 @login_required
 def buscar_persona_por_dni(request):
@@ -517,14 +470,15 @@ def calificar_documentos(request, postulante_id):
 @login_required
 def seleccionar_modulo(request, postulante_id):
     postulante = get_object_or_404(Postulante, pk=postulante_id)
-
+    convocatoria_id = postulante.convocatoria_id
     
     if request.method == 'POST':
         tipo = request.POST.get('tipo')  # 'presencial' o 'virtual'
         return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
 
     return render(request, 'seleccionar_modulo.html', {
-        'postulante': postulante
+        'postulante': postulante,
+        'convocatoria_id': convocatoria_id
     })
 
 

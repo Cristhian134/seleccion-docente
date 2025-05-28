@@ -1,62 +1,61 @@
-<div style="  width: 70vw;  border: 1px solid black;  border-radius: 12px;  padding: 15px 25px;  position: absolute;  top: 180px;  left: 380px;  margin: auto;  background-color: #fff;">
-  <a href="{% url 'mostrar_documentos' postulante.id %}"  style=" background-color: #711610;  color: #fff; height: 30px;  padding: 3px 12px; text-align: center; font-size: 12px; font-weight: 700; line-height: 30px; border-radius: 12px; ">X</a>
-  <h2 style=" font-size: 25px; font-weight: 800; padding: 5px 0px;">Evaluación de documentos</h2>
-  <h3 style=" font-size: 20px; font-weight: 100; padding: 5px 0px;"><strong  style=" font-weight: 800; font-size: 20px;">Postulante: </strong>{{postulante.persona.nombre}} {{postulante.persona.apellidoPaterno}} {{postulante.persona.apellidoMaterno}}</h3>
+<div style="  width: 760px;  border: 1px solid black;  border-radius: 12px;  padding: 15px 25px;  position: absolute;  top: 25vh;  left: 60vh;  margin: auto;  background-color: #fff;">
+  <a href="{% url 'mostrar_documentos' postulante.id %}"  style=" background-color: #711610;  color: #fff; height: 25px;  padding: 3px 9px; text-align: center; font-size: 8px; font-weight: 700; line-height: 20px; border-radius: 12px; ">X</a>
+  <h2 style=" font-size: 20px; font-weight: 800; padding: 5px 0px;">Evaluación de documentos</h2>
+  <h3 style=" font-size: 15px; font-weight: 100; padding: 5px 0px;"><strong  style=" font-weight: 800; font-size: 15px;">Postulante: </strong>{{postulante.persona.nombre}} {{postulante.persona.apellidoPaterno}} {{postulante.persona.apellidoMaterno}}</h3>
   <div style=" padding: 20px;">
     <form method="post" action="{% url 'calificar_documentos' postulante_id=postulante.id %}" class="contenido">
       {% csrf_token %}
       <div style="display: flex; flex-direction: row;  justify-content: space-between; padding: 10px 0px;">
-        <div class="cuadro_criterios" style="display: grid; grid-template-columns: 350px 350px; grid-template-rows: 70px 70px 70px; border: 5px solid black; border-radius: 20px; padding: 10px 0px;">
+        <div class="cuadro_criterios" style="display: grid; grid-template-columns: 250px 250px; grid-template-rows: 50px 50px 50px; border: 5px solid black; border-radius: 20px; padding: 10px 0px;">
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Grados Académicos y Títulos Profesionales</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 10px 5px 0px; text-align: right;">Grados Académicos y Títulos Profesionales</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd1" name="cd1" min="0" max="10" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd1" class="label__criterio">(0-10)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd1" name="cd1" min="0" max="10" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd1" class="label__criterio">(0-10)</label>
             </div>
           </div>
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Investigación</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 13px 5px 15px; text-align: right;">Investigación</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd2" name="cd2" min="0" max="10" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd2" class="label__criterio">(0-10)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd2" name="cd2" min="0" max="10" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd2" class="label__criterio">(0-10)</label>
             </div>
           </div>
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Enseñanza</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 13px 5px 15px; text-align: right;">Enseñanza</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd3" name="cd3" min="0" max="10" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd3" class="label__criterio">(0-10)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd3" name="cd3" min="0" max="10" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd3" class="label__criterio">(0-10)</label>
             </div>
           </div>
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Capacitación Académica</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 13px 5px 15px; text-align: right;">Capacitación Académica</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd4" name="cd4" min="0" max="5" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd4" class="label__criterio">(0-5)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd4" name="cd4" min="0" max="5" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd4" class="label__criterio">(0-5)</label>
             </div>
           </div>
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Proyección Social</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 13px 5px 15px; text-align: right;">Proyección Social</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd5" name="cd5" min="0" max="5" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd5" class="label__criterio">(0-5)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd5" name="cd5" min="0" max="5" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd5" class="label__criterio">(0-5)</label>
             </div>
           </div>
           <div class="item__cuadro" style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <h3 style="font-weight: 100; width: 200px; padding: 10px 13px 5px 15px; text-align: right;">Ejercicio Profesional</h3>
+            <h3 style="font-size: 12px; font-weight: 100; width: 130px; padding: 10px 13px 5px 15px; text-align: right;">Ejercicio Profesional</h3>
             <div style="display: flex; flex-direction: column-reverse;">
-              <input style="border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd6" name="cd6" min="0" max="10" oninput="validarYSumar()">
-              <label style="font-size: 12px; text-align: right;" for="cd6" class="label__criterio">(0-10)</label>
+              <input style="width: 70px; border: 2px solid black; padding: 5px 0px; border-radius: 10px;" type="number" id="cd6" name="cd6" min="0" max="10" oninput="validarYSumar()">
+              <label style="font-size: 10px; text-align: right;" for="cd6" class="label__criterio">(0-10)</label>
             </div>
           </div>
         </div>
-        <div class="derecha" style=" width: 300px; padding: 20px 10px; margin: auto;">
-          <h2 style="font-size: 25px;font-weight: 800; padding: 5px 0px 15px 0px;text-align: center;">Puntaje Total</h2>
-          <div class="cuadro_total" id="total_puntaje" style=" font-size: 25px;font-weight: 800;padding: 5px 0px;text-align: center;border: 2px solid black;width: 100px;border-radius: 5px;margin: 0px auto;">0</div>
-          <button type="submit" id="boton_confirmar"  style="background-color: #711610; color: #fff;width: 150px;text-align: center;font-size: 20px;font-weight: 300;line-height: 35px;border-radius: 12px;padding: 5px 0px;margin: 20px 45px;">Confirmar </button>
+        <div class="derecha" style=" width: 250px; padding: 20px 0px; margin: auto;">
+          <h2 style="font-size: 15px;font-weight: 800; padding: 5px 0px 15px 0px;text-align: center;">Puntaje Total</h2>
+          <div class="cuadro_total" id="total_puntaje" style=" font-size: 15px;font-weight: 800;padding: 5px 0px;text-align: center;border: 2px solid black;width: 100px;border-radius: 5px;margin: 0px auto;">0</div>
+          <button type="submit" id="boton_confirmar"  style="background-color: #711610; color: #fff;width: 100px;text-align: center;font-size: 15px;font-weight: 300;line-height: 30px;border-radius: 12px;padding: 5px 0px;margin: 20px 45px;">Confirmar </button>
         </div>       
       </div>
     </form>
   </div>
 </div>
-
