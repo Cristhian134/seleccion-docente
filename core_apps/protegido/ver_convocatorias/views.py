@@ -44,7 +44,6 @@ def ver_convocatorias(request):
     elif accion == "calificacion":
       return redirect('dirigir_calificacion', convocatoria_id=convocatoria_id)
 
-
   query = request.GET.get('q')
   convocatorias = Convocatoria.objects.filter(
       plaza__seccion__curso__facultad=facultad
@@ -61,7 +60,7 @@ def ver_convocatorias(request):
       if plaza.seccion and plaza.seccion.curso:
         primer_curso = plaza.seccion.curso
         break
-    convocatoria.curso = primer_curso  
+    convocatoria.curso = primer_curso
 
   return render(request, 'ver_convocatorias.html', {
       "convocatorias": convocatorias,
@@ -322,8 +321,7 @@ def postulantes_aptos(request, convocatoria_id):
           estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
       )
 
-      horas_ocupadas.add(hora_actual)  
-
+      horas_ocupadas.add(hora_actual)
 
   clases_actualizadas = ClaseMagistral.objects.filter(
       postulante__in=postulantes_aceptados
@@ -469,17 +467,17 @@ def calificar_documentos(request, postulante_id):
 
 @login_required
 def seleccionar_modulo(request, postulante_id):
-    postulante = get_object_or_404(Postulante, pk=postulante_id)
-    convocatoria_id = postulante.convocatoria_id
-    
-    if request.method == 'POST':
-        tipo = request.POST.get('tipo')  # 'presencial' o 'virtual'
-        return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
+  postulante = get_object_or_404(Postulante, pk=postulante_id)
+  convocatoria_id = postulante.convocatoria_id
 
-    return render(request, 'seleccionar_modulo.html', {
-        'postulante': postulante,
-        'convocatoria_id': convocatoria_id
-    })
+  if request.method == 'POST':
+    tipo = request.POST.get('tipo')  # 'presencial' o 'virtual'
+    return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
+
+  return render(request, 'seleccionar_modulo.html', {
+      'postulante': postulante,
+      'convocatoria_id': convocatoria_id
+  })
 
 
 @login_required
