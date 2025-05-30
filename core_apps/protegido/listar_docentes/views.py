@@ -34,13 +34,17 @@ def listar_docentes_view(request):
       Q(seccion__curso__nombreCurso__icontains=codigo_curso)
     ).order_by('-notaEvaluacion')[:5]
     docentes = formatear_docentes(evaluaciones)
-    curso = Curso.objects.get(codigoCurso=codigo_curso)
+    curso = Curso.objects.filter(codigoCurso=codigo_curso).first()
+
+    titulo = None
+    if curso:
+      titulo = curso.nombreCurso.capitalize()
 
     return render(request, 'listar_docentes.html', {
       "url_volver": "/home",
       "docentes": docentes,
       "cursos": cursos,
-      "titulo": curso.nombreCurso.capitalize()
+      "titulo": titulo
     })
 
   return render(request, 'listar_docentes.html', {
