@@ -55,7 +55,7 @@ def crear_convocatoria(cleaned_data, cursos_list):
         Requisito.objects.create(
             plaza=plaza,
             descripcion=req,
-            vigencia="actual"  # Puedes cambiarlo luego si quieres
+            vigencia="actual"
         )
 
     except Seccion.DoesNotExist:

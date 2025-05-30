@@ -96,7 +96,8 @@ class Command(BaseCommand):
 
     # Crear horarios para cada seccion
     secciones = Seccion.objects.all()
-    for seccion in secciones:
+
+    for k, seccion in enumerate(secciones):
       # Elegir 2 días al azar sin repetir
       dias_disponibles = [
         ("lunes", DiaSemana.LUNES),
