@@ -544,28 +544,34 @@ def generar_informe_notas(request, convocatoria_id):
     notas = NotaPostulante.objects.filter(postulante=postulante)
 
     # Calculamos nota total — puedes ajustar este cálculo
-    nota_total = 0
+    nota_totales = []
     for nota in notas:
-      suma_documentos = (
-          (nota.notaDocumentoCriterio1 or 0) +
-          (nota.notaDocumentoCriterio2 or 0) +
-          (nota.notaDocumentoCriterio3 or 0) +
-          (nota.notaDocumentoCriterio4 or 0) +
-          (nota.notaDocumentoCriterio5 or 0) +
-          (nota.notaDocumentoCriterio6 or 0)
-      )
-      suma_clase = (
-          (nota.notaClaseCriterio1 or 0) +
-          (nota.notaClaseCriterio2 or 0) +
-          (nota.notaClaseCriterio3 or 0) +
-          (nota.notaClaseCriterio4 or 0)
-      )
-      nota_total += suma_documentos + suma_clase
+        suma_documentos = (
+            (nota.notaDocumentoCriterio1 or 0) +
+            (nota.notaDocumentoCriterio2 or 0) +
+            (nota.notaDocumentoCriterio3 or 0) +
+            (nota.notaDocumentoCriterio4 or 0) +
+            (nota.notaDocumentoCriterio5 or 0) +
+            (nota.notaDocumentoCriterio6 or 0)
+        )
+        suma_clase = (
+            (nota.notaClaseCriterio1 or 0) +
+            (nota.notaClaseCriterio2 or 0) +
+            (nota.notaClaseCriterio3 or 0) +
+            (nota.notaClaseCriterio4 or 0)
+        )
+        nota_total_evaluador = suma_documentos + suma_clase
+        nota_totales.append(nota_total_evaluador)
 
+    # Promedio de las notas totales de los evaluadores
+    if nota_totales:
+        promedio_nota_total = sum(nota_totales) / len(nota_totales)
+    else:
+        promedio_nota_total = 0
+    
     datos_postulantes.append({
         'nombre': f"{postulante.persona.nombre} {postulante.persona.apellidoPaterno} {postulante.persona.apellidoMaterno} ",
-        'nota_total': nota_total
-    })
+        'nota_total': promedio_nota_total
 
   # Ordenar de mayor a menor
   datos_postulantes = sorted(datos_postulantes, key=lambda x: x['nota_total'], reverse=True)
