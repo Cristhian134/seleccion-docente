@@ -3,12 +3,8 @@
 
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
-    <li class="breadcrumb__item">
-      <a href="/home">Inicio</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a>Listar Docentes</a>
-    </li>
+    <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+    <li class="breadcrumb__item"><a>Listar Docentes</a></li>
   </ol>
 </nav>
 <section class="listar_docentes__wrapper relative">
@@ -28,11 +24,9 @@
           <option data-codigo="{{ curso.codigoCurso }}" value="{{ curso.nombreCurso }}"></option>
         {% endfor %}
       </datalist>
-      <!-- input oculto que se enviará realmente -->
       <input type="hidden" id="cod_curso_real" name="cod_curso" />
     </label>
   </form>
-  
   </div>
   <div class="tabla_docentes_container">
     <table border="1" id="tabla_docentes" class="table__primary">

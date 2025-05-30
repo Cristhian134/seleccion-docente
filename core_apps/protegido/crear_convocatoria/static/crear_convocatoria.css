@@ -37,6 +37,16 @@
   transition: all 0.3s ease;
 }
 
+.section__crear-convocatoria > div > button {
+  cursor: pointer;
+  padding-inline: 1rem;
+  padding-block: 0.7rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
 .section__crear-convocatoria > div > a:active {
   scale: 1.04;
   opacity: 0.8;

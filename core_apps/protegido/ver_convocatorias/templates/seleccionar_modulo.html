@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'crear_convocatoria.css' %}" />
+
+<nav class="breadcrumb__wrapper">
+  <ol class="breadcrumb__list">
+  <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+  <li class="breadcrumb__item"><a href="/ver_convocatorias/">Ver convocatoria</a></li>
+  <li class="breadcrumb__item">
+    <a href="{% url 'dirigir_calificacion' convocatoria_id %}">Dirigir Calificación</a>
+  </li>
+  <li class="breadcrumb__item">
+    <a href="{% url 'mostrar_documentos' convocatoria_id %}">Mostrar Documentos</a>
+  </li>
+  <li class="breadcrumb__item"><a>Selección de modalidad</a></li>
+</ol>
+</nav>
+<section class="section__wrapper">
+  <form method="post" action="{% url 'seleccionar_modulo' postulante_id=postulante.id %}" class="section__crear-convocatoria">
+        {% csrf_token %}
+      <div class="section__interno">
+        <h2>Clase Presencial</h2>
+        <span><i class="fa fa-university" aria-hidden="true"></i></span>
+        <button type="submit" name="tipo" value="presencial" style="cursor: pointer;
+            padding-inline: 1rem;
+            padding-block: 0.7rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            background-color: #0fbccf;" 
+        >Seleccionar modalidad</button>
+      </div>
+      <div class="section__externo">
+        <h2>Clase Virtual</h2>
+        <span><i class="fa fa-external-link" aria-hidden="true"></i></span>
+        <button type="submit" name="tipo" value="virtual"  style="cursor: pointer;
+            padding-inline: 1rem;
+            padding-block: 0.7rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            background-color: #23b665;" 
+        >Seleccionar modalidad</button>
+      </div>
+  </form>
+</section>
+
+{% endblock %}

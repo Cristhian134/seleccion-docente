@@ -5,15 +5,9 @@
 
 <nav class="breadcrumb__wrapper">
   <ol class="breadcrumb__list">
-    <li class="breadcrumb__item">
-      <a href="/home">Inicio</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a href="/crear-convocatoria/">Crear convocatoria</a>
-    </li>
-    <li class="breadcrumb__item">
-      <a>Convocatoria externa</a>
-    </li>
+    <li class="breadcrumb__item"><a href="/home">Inicio</a></li>
+    <li class="breadcrumb__item"><a href="/crear-convocatoria/">Crear convocatoria</a></li>
+    <li class="breadcrumb__item"><a>Convocatoria externa</a></li>
   </ol>
 </nav>
 
@@ -42,42 +36,22 @@
 {% endif %}
 
 <div class="programacion_convocatoria__wrapper">
-  <section
-    class="programacion_convocatoria flex"
-    id="programacion_convocatoria"
-  >
+  <section class="programacion_convocatoria flex" id="programacion_convocatoria">
     <h1 class="title-base">Programar convocatoria externa</h1>
     <form method="POST" class="form__programacion">
       {% csrf_token %}
       <input type="hidden" id="cursos_json" name="cursos_json" />
       <label class="input-primary">
         Fecha publicación
-        <input
-          type="date"
-          id="fechaPublicacion"
-          name="fechaPublicacion"
-          class="form-control"
-          disabled
-          required
-        />
+        <input type="date" id="fechaPublicacion" name="fechaPublicacion" class="form-control" disabled required />
       </label>
       <label class="input-primary">
         Fecha límite para enviar documentos
-        <input
-          type="datetime-local"
-          id="fechaCierre"
-          name="fechaCierre"
-          required
-        />
+        <input type="datetime-local" id="fechaCierre" name="fechaCierre" required />
       </label>
       <label class="input-primary">
         Fecha de asignación de tema
-        <input
-          type="datetime-local"
-          id="fechaAsignacionTema"
-          name="fechaAsignacionTema"
-          required
-        />
+        <input type="datetime-local" id="fechaAsignacionTema" name="fechaAsignacionTema" required />
       </label>
       <label class="input-primary">
         Fecha de inicio de las clases magistrales
@@ -90,13 +64,7 @@
       </label>
       <label class="input-primary">
         Descripción
-        <textarea
-          id="descripcionConvocatoria"
-          name="descripcionConvocatoria"
-          rows="4"
-          cols="50"
-          required
-        ></textarea>
+        <textarea id="descripcionConvocatoria" name="descripcionConvocatoria" rows="4" cols="50" required ></textarea>
       </label>
       <button type="button" id="boton_siguiente" class="button--primary">
         Siguiente

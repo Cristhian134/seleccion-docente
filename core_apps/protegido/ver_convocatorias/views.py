@@ -7,7 +7,7 @@ from core_apps.common.models import (
     EstadoClaseMagistral, Plaza, Temas, Seccion, EstadoPostulante
 )
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import HttpResponse, Http404, JsonResponse, HttpResponseForbidden
 from django.urls import reverse
 from django.contrib import messages
 from django.core.files.uploadedfile import UploadedFile
@@ -16,7 +16,6 @@ from io import BytesIO
 import mimetypes
 from datetime import datetime, timedelta
 from xhtml2pdf import pisa
-
 from django.template.loader import render_to_string, get_template
 from django.utils.timezone import make_aware
 from datetime import datetime, time, timedelta
@@ -33,20 +32,19 @@ def ver_convocatorias(request):
     accion = request.POST.get("accion")
 
     if not convocatoria_id:
-      # Si no seleccionó convocatoria, redirige con error (opcional)
+
       return render(request, 'ver_convocatorias.html', {
           "convocatorias": Convocatoria.objects.all(),
           "error": "Debe seleccionar una convocatoria.",
           "url_volver": "/home"
       })
 
-    # Redireccionar según el botón presionado
     if accion == "documentos":
       return redirect('gestionar_documentos', convocatoria_id=convocatoria_id)
     elif accion == "calificacion":
       return redirect('dirigir_calificacion', convocatoria_id=convocatoria_id)
 
-  # GET con posible búsqueda
+
   query = request.GET.get('q')
   convocatorias = Convocatoria.objects.filter(
       plaza__seccion__curso__facultad=facultad
@@ -63,7 +61,7 @@ def ver_convocatorias(request):
       if plaza.seccion and plaza.seccion.curso:
         primer_curso = plaza.seccion.curso
         break
-    convocatoria.curso = primer_curso  # Atributo dinámico solo para esta vista
+    convocatoria.curso = primer_curso  
 
   return render(request, 'ver_convocatorias.html', {
       "convocatorias": convocatorias,
@@ -77,12 +75,10 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
   postulantes = Postulante.objects.filter(convocatoria=convocatoria).select_related("persona")
   postulantes = Postulante.objects.filter(convocatoria=convocatoria).prefetch_related('documento_set')
 
-  # Anotar fecha más antigua (mínima) por postulante
   for postulante in postulantes:
     doc = postulante.documento_set.order_by("fechaRecepcion").first()
     postulante.fecha_documento_mas_antiguo = doc.fechaRecepcion if doc else None
 
-  #  Agrega esto: serialización para el frontend
     postulante.documentos_json = [
         {
             "tipoDocumento": d.tipoDocumento,
@@ -92,14 +88,12 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
         for d in postulante.documento_set.all()
     ]
 
-  # Acción: Eliminar postulante
   if request.method == "POST" and "eliminar" in request.POST:
     postulante_id = request.POST.get("postulante_id")
     postulante = get_object_or_404(Postulante, id=postulante_id)
     postulante.delete()
     return redirect('gestionar_documentos/', convocatoria_id=convocatoria_id)
 
-  # Acción: Aceptar / Rechazar documentos
   if request.method == "POST" and "accion_documentos" in request.POST:
     postulante_id = request.POST.get("postulante_id")
     accion = request.POST.get("accion_documentos")
@@ -307,7 +301,6 @@ def postulantes_aptos(request, convocatoria_id):
   hora_actual = hora_base
   for postulante in postulantes_aceptados:
     if postulante.id not in clases_por_postulante:
-      # Calcular siguiente hora libre
       while hora_actual in horas_ocupadas and hora_actual <= hora_maxima:
         hora_actual = (datetime.combine(datetime.today(), hora_actual) + timedelta(hours=1)).time()
 
@@ -315,7 +308,6 @@ def postulantes_aptos(request, convocatoria_id):
         messages.warning(request, f"No hay más horarios disponibles para asignar a {postulante}.")
         continue
 
-      # Buscar temas relacionados
       plazas = Plaza.objects.filter(convocatoria=convocatoria)
       secciones = [plaza.seccion for plaza in plazas]
       temas_disponibles = Temas.objects.filter(silabus__curso__seccion__in=secciones)
@@ -330,9 +322,9 @@ def postulantes_aptos(request, convocatoria_id):
           estadoClaseMagistral=EstadoClaseMagistral.PROGRAMADO
       )
 
-      horas_ocupadas.add(hora_actual)  # Reservar esa hora
+      horas_ocupadas.add(hora_actual)  
 
-  # Recargar clases con los nuevos
+
   clases_actualizadas = ClaseMagistral.objects.filter(
       postulante__in=postulantes_aceptados
   ).select_related("postulante")
@@ -468,7 +460,7 @@ def calificar_documentos(request, postulante_id):
           estadoNotaPostulante=EstadoNotaPostulante.REVISADO_PARCIALMENTE
       )
 
-    return redirect('evaluar_clase_magistral', postulante_id=postulante.id)
+    return redirect('seleccionar_modulo', postulante_id=postulante.id)
 
   return render(request, 'calificar_documentos.html', {
       'postulante': postulante
@@ -476,7 +468,28 @@ def calificar_documentos(request, postulante_id):
 
 
 @login_required
-def evaluar_clase_magistral(request, postulante_id):
+def seleccionar_modulo(request, postulante_id):
+    postulante = get_object_or_404(Postulante, pk=postulante_id)
+    convocatoria_id = postulante.convocatoria_id
+    
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')  # 'presencial' o 'virtual'
+        return redirect('evaluar_clase_magistral', postulante_id=postulante.id, tipo=tipo)
+
+    return render(request, 'seleccionar_modulo.html', {
+        'postulante': postulante,
+        'convocatoria_id': convocatoria_id
+    })
+
+
+@login_required
+def evaluar_clase_magistral(request, postulante_id, tipo):
+
+  if tipo == 'presencial':
+    tipo_bool = True
+  else:
+    tipo_bool = False
+
   clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
 
   fecha = clase_magistral.fechaProgramacion
@@ -518,8 +531,8 @@ def evaluar_clase_magistral(request, postulante_id):
       'clase_magistral': clase_magistral,
       'hora_final': hora_final,
       'postulante_id': postulante_id,
-      'convocatoria_id': convocatoria_id
-
+      'convocatoria_id': convocatoria_id,
+      'tipo': tipo_bool
   })
 
 

@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <style>
-    /* --- Modal general --- */
+    
 .modal {
   position: fixed;
   z-index: 1000;
@@ -11,21 +11,25 @@
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4); /* Fondo semitransparente */
+  background-color: rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .modal > div {
-  height: 100%;
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  height: 100%;
+  margin-top: 5vh;
+  padding-bottom: 5vh;
 }
 
 .modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
   position: relative;
   margin: 0 auto;
   background-color: #fff;
@@ -38,7 +42,7 @@
   animation: aparecer 0.3s ease;
 }
 
-/* --- Botón cerrar --- */
+
 .modal-content .close {
   position: absolute;
   top: 1rem;
@@ -48,7 +52,6 @@
   cursor: pointer;
 }
 
-/* --- Tabla adaptada a .table__primary --- */
 .table__modal {
   width: 100%;
   overflow-x: auto;
@@ -72,7 +75,7 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* --- Input adaptado a .input-primary --- */
+
 .table__modal input[type="text"],
 .table__modal input[type="file"] {
   width: 100%;
@@ -91,7 +94,7 @@
   outline: none;
 }
 
-/* --- Botones adaptados a .button--primary --- */
+
 .btn-agregar,
 .btn-cancelar {
   background-color: var(--c-primary);
@@ -117,12 +120,10 @@
   transform: scale(0.98);
 }
 
-/* Estilo diferente para botón Cancelar si quieres variarlo */
 .btn-cancelar {
   background-color: var(--c-gray-dark-3);
 }
 
-/* --- Etiqueta de carga de archivo --- */
 .upload-label {
   display: inline-block;
   padding: 0.5rem 1rem;
@@ -137,7 +138,6 @@
   background-color: #f0f0f0;
 }
 
-/* --- Animación de aparición --- */
 @keyframes aparecer {
   from {
     opacity: 0;
@@ -150,8 +150,6 @@
 }
 </style>
 
-
-<link rel="stylesheet" href="{% static 'static/ver_convocatorias.css' %}" />
 
 <h1>Revisión de Documentos</h1>
 <div class="gestionar_documentos--parte_de_arriba" style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -220,16 +218,10 @@
   </table>
 
   <div style="margin-top: 1em;">
-    <!--<button name="accion_documentos" value="aceptar" class="button--primary">Aceptar</button>
-    <button name="accion_documentos" value="rechazar" class="button--primary">Rechazar</button> -->
   </div>
 </form>
 
 
-
-
-
-<!-- Modal para agregar postulante y cargar documentos -->
 <div id="modalAgregar" class="modal" style="display: none;" >
   <div>
     <div class="modal-content">
@@ -302,7 +294,6 @@
         </div>
 
         <div id="contenedorDocumentos">
-          <!-- Aquí se cargarán los documentos con JS -->
         </div>
       </div>
   </div>
@@ -315,7 +306,7 @@
 </script>
 
 <script>
-  // Abrir el modal de "Agregar Postulante"
+
   function mostrarModal() {
     document.getElementById("modalAgregar").style.display = "block";
   }
@@ -324,7 +315,7 @@
     document.getElementById("modalAgregar").style.display = "none";
   }
 
-  // Cerrar el modal de agregar si se hace clic fuera
+
   window.addEventListener("click", function (e) {
     const modalAgregar = document.getElementById("modalAgregar");
     if (e.target === modalAgregar) {
@@ -333,31 +324,26 @@
   });
 
   let actualPostulanteId = null;
-  // ---- VISUALIZAR DOCUMENTOS ----
   function mostrarModalVerDocumentos(postulanteId, nombreCompleto, documentos) {
     actualPostulanteId = postulanteId;
     const modal = document.getElementById("modalVerDocumentos");
     const nombreElem = document.getElementById("nombrePostulante");
     const contenedor = document.getElementById("contenedorDocumentos");
 
-    // Mostrar nombre del postulante
     nombreElem.textContent = nombreCompleto;
 
-    // Limpiar documentos anteriores
+
     contenedor.innerHTML = "";
 
-    // Almacenar temporalmente en el buscador el pdf desde un endpoint
 
-    // Función para obtener el blob y devolver la URL temporal
     async function obtenerBlobUrl(docId) {
       const response = await fetch(`/descargar-pdf/${docId}/`);
       const blob = await response.blob();
       return URL.createObjectURL(blob);
     }
 
-    // Renderizar documentos
     documentos.forEach(async (doc) => {
-      const blobUrl = await obtenerBlobUrl(postulanteId); // Asumimos que cada doc tiene un "id"
+      const blobUrl = await obtenerBlobUrl(postulanteId); 
 
       const docElem = document.createElement("div");
       docElem.innerHTML = `
@@ -371,7 +357,7 @@
       contenedor.appendChild(docElem);
     });
 
-    // Asociar eventos a botones
+
     document.querySelector(".btn-agregar").onclick = function () {
       enviarAccionDocumentos(postulanteId, "aceptar");
     };
@@ -379,7 +365,7 @@
       enviarAccionDocumentos(postulanteId, "rechazar");
     };
 
-    // Mostrar modal
+
     modal.style.display = "block";
   }
 
@@ -387,7 +373,6 @@
     document.getElementById("modalVerDocumentos").style.display = "none";
   }
 
-  // Cerrar si se hace clic fuera del modal
   window.addEventListener("click", function (e) {
     const modal = document.getElementById("modalVerDocumentos");
     if (e.target === modal) {
@@ -395,11 +380,10 @@
     }
   });
 
-  // Enviar acción al backend
   function enviarAccionDocumentos(postulanteId, accion) {
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "";  // Acción actual
+    form.action = ""; 
 
     const csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
 
@@ -430,7 +414,7 @@
 
   document.querySelector('input[name="dni"]').addEventListener('blur', function () {
     const dni = this.value.trim();
-    if (dni.length !== 8) return; // DNI peruano típico
+    if (dni.length !== 8) return; 
 
     fetch(`/buscar_persona_por_dni/?dni=${dni}`)
       .then(response => response.json())
