@@ -93,7 +93,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
   'default': dj_database_url.config(
-    # Replace this value with your local database's connection string.
     default='postgresql://selecciondocente_user:Bm8YdcvEQBy6FWD3Bs6WUyQLTYgL0FQZ@dpg-d0ihccje5dus739kljb0-a/selecciondocente',
     conn_max_age=600
   )

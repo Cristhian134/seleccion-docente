@@ -51,7 +51,7 @@ def ver_convocatorias(request):
 
   if query:
     convocatorias = convocatorias.filter(
-        plaza__curso__nombreCurso__icontains=query
+        plaza__seccion__curso__nombreCurso__icontains=query
     )
 
   for convocatoria in convocatorias:
