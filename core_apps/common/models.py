@@ -154,7 +154,7 @@ class EstadoConvocatoria(models.TextChoices):
 
 
 class Convocatoria(models.Model):
-  descripcionConvocatoria = models.CharField(max_length=128)
+  descripcionConvocatoria = models.CharField(max_length=512)
   tipoConvocatoria = models.CharField(
     max_length=64,
     choices=TipoConvocatoria.choices,
@@ -400,15 +400,18 @@ class TipoEvaluador(models.TextChoices):
   ALUMNO = "alumno", "Alumno"
   DOCENTE = "docente", "Docente"
 
+
 class EstadoEvaluador(models.TextChoices):
   CONVOCADO = "convocado", "Convocado"
   CONFIRMADO = "confirmado", "Confirmado"
   PRESENTE = "presente", "Presente"
   AUSENTE = "ausente", "Ausente"
 
+
 class JerarquiaEvaluador(models.TextChoices):
   PRINCIPAL = "alumno", "Alumno"
   SECUNDARIO = "docente", "Docente"
+
 
 class Evaluador(models.Model):
   persona = models.ForeignKey(Persona, on_delete=models.CASCADE, null=True)
