@@ -1,6 +1,6 @@
 from django import template
-from django.contrib.auth.models import AnonymousUser, User
-from core_apps.common.models import Decano, EstadoEvaluador, Evaluador, Persona, EncargadoConsejo, EstadoDecano, EstadoEncargadoConsejo
+from django.contrib.auth.models import AnonymousUser
+from core_apps.common.models import Decano, Evaluador, EncargadoConsejo, EstadoDecano, EstadoEncargadoConsejo
 from core_apps.permisos import ROLES, MODULOS
 
 register = template.Library()
@@ -32,10 +32,7 @@ def render_sidenav(context):
   request = context.get('request')
   user = getattr(request, 'user', AnonymousUser())
   url_volver = context.get('url_volver', '/home')
-
   rol = get_user_rol(user)
-
-  # Filtrar módulos según los roles permitidos
   modulos_permitidos = [
       modulo for modulo in MODULOS
       if rol in modulo.get("roles", [])
@@ -53,7 +50,6 @@ def render_header(context):
   request = context.get('request')
   user = getattr(request, 'user', AnonymousUser())
   codigo = user.codigoUsuario
-
   if not user.is_authenticated:
     return {
         "usuario": user,
@@ -61,13 +57,9 @@ def render_header(context):
         "facultad": None,
         "codigo": codigo,
     }
-
-  # Determinar rol
   rol = get_user_rol(user)
   persona = getattr(user, "persona", None)
-
   nombre_completo = f'{persona.nombre} {persona.apellidoPaterno} {persona.apellidoMaterno}'
-
   admin = False
   if rol == ROLES.ADMINISTRADOR:
     admin = True
