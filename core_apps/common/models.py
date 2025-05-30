@@ -27,6 +27,9 @@ class Persona(models.Model):
   def __str__(self):
     return f"{self.nombre} {self.apellidoPaterno}"
 
+  class Meta:
+    db_table = "persona"
+
 
 class UserManager(BaseUserManager):
   def create_user(self, codigoUser, nombreUser, claveUser=None, facultad=None, persona=None, **extra_fields):
@@ -100,6 +103,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
   def __str__(self):
     return self.nombreUsuario
 
+  class Meta:
+    db_table = "usuario"
+
 
 class EstadoDecano(models.TextChoices):
   ACTIVO = "activo", "Activo"
@@ -112,6 +118,9 @@ class Decano(models.Model):
     max_length=64,
     choices=EstadoDecano.choices,
   )
+
+  class Meta:
+    db_table = "decano"
 
 
 class EstadoEncargadoConsejo(models.TextChoices):
@@ -128,6 +137,9 @@ class EncargadoConsejo(models.Model):
 
   def __str__(self):
     return f"Encargado Consejo: {self.persona}"
+
+  class Meta:
+    db_table = "encargado_consejo"
 
 
 class TipoConvocatoria(models.TextChoices):
@@ -156,6 +168,9 @@ class Convocatoria(models.Model):
     choices=EstadoConvocatoria.choices,
   )
 
+  class Meta:
+    db_table = "convocatoria"
+
 
 class EstadoPostulante(models.TextChoices):
   REGISTRADO = "registrado", "Registrado"
@@ -174,6 +189,9 @@ class Postulante(models.Model):
     choices=EstadoPostulante.choices,
   )
 
+  class Meta:
+    db_table = "postulante"
+
 
 class Curso(models.Model):
   nombreCurso = models.CharField(max_length=64)
@@ -183,6 +201,9 @@ class Curso(models.Model):
     max_length=64,
     choices=Facultad.choices
   )
+
+  class Meta:
+    db_table = "curso"
 
 
 class EstadoSeccion(models.TextChoices):
@@ -200,6 +221,9 @@ class Seccion(models.Model):
     max_length=20,
     choices=EstadoSeccion.choices,
   )
+
+  class Meta:
+    db_table = "seccion"
 
   @property
   def total_horas(self):
@@ -242,6 +266,9 @@ class Plaza(models.Model):
     choices=TipoPlaza.choices,
   )
 
+  class Meta:
+    db_table = "plaza"
+
 
 class Requisito(models.Model):
   plaza = models.ForeignKey(
@@ -250,6 +277,9 @@ class Requisito(models.Model):
   )
   descripcion = models.CharField(max_length=128)
   vigencia = models.CharField(max_length=64)
+
+  class Meta:
+    db_table = "requisito"
 
 
 class EstadoDocente(models.TextChoices):
@@ -267,6 +297,9 @@ class Docente(models.Model):
     choices=EstadoDocente.choices,
   )
 
+  class Meta:
+    db_table = "docente"
+
 
 class EvaluacionDocente(models.Model):
   seccion = models.ForeignKey(
@@ -280,6 +313,9 @@ class EvaluacionDocente(models.Model):
   notaEvaluacion = models.FloatField()
   cicloAcademico = models.CharField(max_length=10)
   cantidadAlumnos = models.CharField(max_length=64)
+
+  class Meta:
+    db_table = "evaluacion_docente"
 
 
 class DiaSemana(models.TextChoices):
@@ -303,6 +339,9 @@ class Horario(models.Model):
   horaInicio = models.TimeField()
   horaFin = models.TimeField()
 
+  class Meta:
+    db_table = "horario"
+
 
 class Silabus(models.Model):
   curso = models.ForeignKey(
@@ -313,6 +352,9 @@ class Silabus(models.Model):
   sistemaEvaluacion = models.CharField(max_length=32)
   fechaSilabus = models.DateField()
 
+  class Meta:
+    db_table = "silabus"
+
 
 class Temas(models.Model):
   silabus = models.ForeignKey(
@@ -322,6 +364,9 @@ class Temas(models.Model):
   codigoTema = models.CharField(max_length=20)
   nombreTema = models.CharField(max_length=32)
   duracionTema = models.IntegerField()
+
+  class Meta:
+    db_table = "temas"
 
 
 class EstadoClaseMagistral(models.TextChoices):
@@ -346,6 +391,9 @@ class ClaseMagistral(models.Model):
     max_length=64,
     choices=EstadoClaseMagistral.choices,
   )
+
+  class Meta:
+    db_table = "clase_magistral"
 
 
 class TipoEvaluador(models.TextChoices):
@@ -374,6 +422,9 @@ class Evaluador(models.Model):
   def __str__(self):
     return f"{self.persona.nombre} ({self.tipoEvaluador})"
 
+  class Meta:
+    db_table = "evaluador"
+
 
 class EstadoDocumento(models.TextChoices):
   REGISTRADO = "registrado", "Registrado"
@@ -395,6 +446,9 @@ class Documento(models.Model):
     max_length=64,
     choices=EstadoDocumento.choices,
   )
+
+  class Meta:
+    db_table = "documento"
 
   def descargar_url(self):
     return reverse('descargar_pdf', args=[str(self.id)])
@@ -433,3 +487,6 @@ class NotaPostulante(models.Model):
     choices=EstadoNotaPostulante.choices,
     default=EstadoNotaPostulante.POR_CALIFICAR
       )
+
+  class Meta:
+    db_table = "nota_postulante"
