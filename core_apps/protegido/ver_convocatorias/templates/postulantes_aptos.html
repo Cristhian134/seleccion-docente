@@ -40,14 +40,6 @@
   </tbody>
 </table>
 
-{% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-      <li class="alert {{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
-
 <a href="{% url 'enviar_consolidado_pdf' convocatoria.id %}" class="button--primary">
   Enviar Consolidado (PDF)
 </a>
