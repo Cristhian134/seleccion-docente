@@ -369,12 +369,13 @@ def dirigir_calificacion(request, convocatoria_id):
   ordenar = request.GET.get('ordenar', '0')
 
   postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,
-                                          estadoPostulante=EstadoPostulante.ACEPTADO).select_related('persona', 'clasemagistral')
+  estadoPostulante=EstadoPostulante.ACEPTADO).select_related('persona', 'clasemagistral')
 
   if ordenar == '1':
     postulantes = postulantes.order_by('persona.apellidoPaterno', 'persona.apellidoMaterno', 'persona.nombre')
 
-  cantidadPostulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id).count()
+  cantidadPostulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,
+  estadoPostulante=EstadoPostulante.ACEPTADO).count()
 
   return render(request, 'dirigir_calificacion.html', {
       'postulantes': postulantes,
@@ -425,7 +426,6 @@ def calificar_documentos(request, postulante_id):
     return HttpResponseForbidden("No tienes permisos para calificar documentos")
 
   if request.method == 'POST':
-
     cd1 = int(request.POST.get('cd1', 0))
     cd2 = int(request.POST.get('cd2', 0))
     cd3 = int(request.POST.get('cd3', 0))
@@ -434,7 +434,6 @@ def calificar_documentos(request, postulante_id):
     cd6 = int(request.POST.get('cd6', 0))
 
     if NotaPostulante.objects.filter(postulante_id=postulante_id):
-
       nota_postulante = nota_postulante = NotaPostulante.objects.filter(postulante=postulante, evaluador=evaluador).order_by('-id').first()
       nota_postulante.notaDocumentoCriterio1 = cd1
       nota_postulante.notaDocumentoCriterio2 = cd2
@@ -445,7 +444,6 @@ def calificar_documentos(request, postulante_id):
       nota_postulante.save()
 
     else:
-
       NotaPostulante.objects.create(
           evaluador=evaluador,
           postulante=postulante,
@@ -459,7 +457,6 @@ def calificar_documentos(request, postulante_id):
       )
 
     return redirect('seleccionar_modulo', postulante_id=postulante.id)
-
   return render(request, 'calificar_documentos.html', {
       'postulante': postulante
   })
@@ -482,27 +479,18 @@ def seleccionar_modulo(request, postulante_id):
 
 @login_required
 def evaluar_clase_magistral(request, postulante_id, tipo):
-
   if tipo == 'presencial':
     tipo_bool = True
   else:
     tipo_bool = False
-
   clase_magistral = ClaseMagistral.objects.filter(postulante_id=postulante_id).first()
-
   fecha = clase_magistral.fechaProgramacion
   hora = clase_magistral.horaProgramada
   datetime_combinado = datetime.combine(fecha, hora)
-
-  # sumar una hora
   datetime_mas_una_hora = datetime_combinado + timedelta(hours=1)
-
-  # si quieres la hora solamente después de sumar
   hora_final = datetime_mas_una_hora.time()
-
   postulante = get_object_or_404(Postulante, pk=postulante_id)
   evaluador = Evaluador.objects.get(persona=request.user.persona)
-
   convocatoria_id = postulante.convocatoria_id
 
   if request.method == 'POST':
@@ -536,46 +524,45 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
 
 @login_required
 def generar_informe_notas(request, convocatoria_id):
-  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id)
-
+  postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,
+  estadoPostulante=EstadoPostulante.ACEPTADO)
   datos_postulantes = []
-
   for postulante in postulantes:
     notas = NotaPostulante.objects.filter(postulante=postulante)
-
-    # Calculamos nota total — puedes ajustar este cálculo
-    nota_total = 0
+    nota_totales = []
     for nota in notas:
-      suma_documentos = (
-          (nota.notaDocumentoCriterio1 or 0) +
-          (nota.notaDocumentoCriterio2 or 0) +
-          (nota.notaDocumentoCriterio3 or 0) +
-          (nota.notaDocumentoCriterio4 or 0) +
-          (nota.notaDocumentoCriterio5 or 0) +
-          (nota.notaDocumentoCriterio6 or 0)
-      )
-      suma_clase = (
-          (nota.notaClaseCriterio1 or 0) +
-          (nota.notaClaseCriterio2 or 0) +
-          (nota.notaClaseCriterio3 or 0) +
-          (nota.notaClaseCriterio4 or 0)
-      )
-      nota_total += suma_documentos + suma_clase
+        suma_documentos = (
+            (nota.notaDocumentoCriterio1 or 0) +
+            (nota.notaDocumentoCriterio2 or 0) +
+            (nota.notaDocumentoCriterio3 or 0) +
+            (nota.notaDocumentoCriterio4 or 0) +
+            (nota.notaDocumentoCriterio5 or 0) +
+            (nota.notaDocumentoCriterio6 or 0)
+        )
+        suma_clase = (
+            (nota.notaClaseCriterio1 or 0) +
+            (nota.notaClaseCriterio2 or 0) +
+            (nota.notaClaseCriterio3 or 0) +
+            (nota.notaClaseCriterio4 or 0)
+        )
+        nota_total_evaluador = suma_documentos + suma_clase
+        nota_totales.append(nota_total_evaluador)
 
+    if nota_totales:
+        promedio_nota_total = sum(nota_totales) / len(nota_totales)
+    else:
+        promedio_nota_total = 0
+    
     datos_postulantes.append({
         'nombre': f"{postulante.persona.nombre} {postulante.persona.apellidoPaterno} {postulante.persona.apellidoMaterno} ",
-        'nota_total': nota_total
+        'nota_total': promedio_nota_total
     })
 
-  # Ordenar de mayor a menor
   datos_postulantes = sorted(datos_postulantes, key=lambda x: x['nota_total'], reverse=True)
-
-  # Cargar plantilla
   context = {'postulantes': datos_postulantes, 'convocatoria_id': convocatoria_id}
   template = get_template('pdf_informe_notas.html')
   html = template.render(context)
 
-  # Crear el PDF
   response = HttpResponse(content_type='application/pdf')
   response['Content-Disposition'] = f'inline; filename="informe_notas_convocatoria_{convocatoria_id}.pdf"'
   pisa_status = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), dest=response, encoding='UTF-8')

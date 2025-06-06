@@ -185,7 +185,7 @@
     <tbody>
       {% for postulante in postulantes %}
       <tr>
-        <td>{{ forloop.counter }}</td>
+        <td>{{ postulante.id }}</td>
         <td>{{ postulante.persona.nombre }}</td>
         <td>{{ postulante.persona.apellidoPaterno }} {{ postulante.persona.apellidoMaterno }}</td>
         <td>{{ postulante.fecha_documento_mas_antiguo }}</td>
