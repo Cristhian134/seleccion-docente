@@ -14,15 +14,15 @@ def get_user_rol(user):
   if not persona:
     return "Usuario"
 
+  if user.is_superuser:
+    return ROLES.ADMINISTRADOR
+
   if Decano.objects.filter(persona=persona, estadoDecano=EstadoDecano.ACTIVO).exists():
     return ROLES.DECANO
   elif EncargadoConsejo.objects.filter(persona=persona, estadoEncargadoConsejo=EstadoEncargadoConsejo.ACTIVO).exists():
     return ROLES.ENCARGADO_CONSEJO
   elif Evaluador.objects.filter(persona=persona).exists():
     return ROLES.EVALUADOR
-
-  if user.is_superuser:
-    return ROLES.ADMINISTRADOR
 
   return "Usuario"
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from core_apps.common.models import Persona
+from core_apps.common.models import EstadoEvaluador, Evaluador, Persona, TipoEvaluador
 from dotenv import load_dotenv
 import os
 
@@ -78,6 +78,12 @@ class Command(BaseCommand):
           facultad=facultad,
           is_staff=True,     # Puede iniciar sesión
           is_superuser=True  # No es superusuario
+      )
+
+      Evaluador.objects.create(
+        persona=persona,
+        tipoEvaluador=TipoEvaluador.DOCENTE,
+        estadoEvaluador=EstadoEvaluador.CONFIRMADO,
       )
       self.stdout.write(self.style.SUCCESS(f'Superusuario creado: {user}'))
     except Exception as e:
