@@ -12,7 +12,8 @@ MODULOS = [
     "url": "/listar-docentes/",
     "roles": [
       ROLES.ADMINISTRADOR,
-      ROLES.DECANO
+      ROLES.DECANO,
+      ROLES.ENCARGADO_CONSEJO
     ],
   },
   {
