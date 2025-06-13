@@ -87,11 +87,21 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
         for d in postulante.documento_set.all()
     ]
 
-  if request.method == "POST" and "eliminar" in request.POST:
+  """if request.method == "POST" and "eliminar" in request.POST:
     postulante_id = request.POST.get("postulante_id")
     postulante = get_object_or_404(Postulante, id=postulante_id)
     postulante.delete()
-    return redirect('gestionar_documentos/', convocatoria_id=convocatoria_id)
+    return redirect('gestionar_documentos/', convocatoria_id=convocatoria_id)"""
+  
+  if request.method == "POST" and "eliminar" in request.POST:
+    postulante_id = request.POST.get("postulante_id")
+    if not postulante_id:
+        messages.error(request, "Debe seleccionar un postulante para eliminar.")
+    else:
+        postulante = get_object_or_404(Postulante, id=postulante_id)
+        postulante.delete()
+        messages.success(request, "Postulante eliminado correctamente.")
+    return redirect("gestionar_documentos", convocatoria_id=convocatoria_id)
 
   if request.method == "POST" and "accion_documentos" in request.POST:
     postulante_id = request.POST.get("postulante_id")
