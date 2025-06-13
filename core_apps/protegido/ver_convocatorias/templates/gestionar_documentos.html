@@ -207,9 +207,10 @@
             ]
           </script>
         </td>
-        <td>
-          <input type="radio" name="postulante_id" value="{{ postulante.id }}">
-        </td>
+       <td class="text-center align-middle">
+        <input type="radio" name="postulante_id" value="{{ postulante.id }}" style="transform: scale(1.7);">
+      </td>
+
       </tr>
       {% empty %}
       <tr><td colspan="6">No hay postulantes registrados.</td></tr>
@@ -248,9 +249,9 @@
               <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" required>
             </td>
             <td>
-              <input type="text" name="dni" placeholder="DNI" required><br/>
+              <input type="text" name="dni" placeholder="DNI" required maxlength="8"><br/>
               <input type="email" name="correo" placeholder="Correo electrónico" required><br/>
-              <input type="text" name="telefono" placeholder="Teléfono" required><br/>
+              <input type="text" name="telefono" placeholder="Teléfono" maxlength="9" required><br/>
               <select name="genero" required>
                 <option value="" disabled selected>Seleccione género</option>
                 <option value="masculino">Masculino</option>
@@ -343,7 +344,17 @@
     }
 
     documentos.forEach(async (doc) => {
-      const blobUrl = await obtenerBlobUrl(postulanteId); 
+      const match = doc.url.match(/\/(\d+)\/?$/);
+      const docId = match ? match[1] : null;
+
+      if (!docId) {
+        console.error("No se pudo obtener el ID del documento desde la URL", doc.url);
+        return;
+      }
+
+      const blobUrl = await obtenerBlobUrl(docId);
+
+
 
       const docElem = document.createElement("div");
       docElem.innerHTML = `
@@ -431,6 +442,20 @@
       })
       .catch(err => console.error("Error buscando persona:", err));
   });
+
+  document.querySelector('input[name="dni"]').addEventListener('input', function () {
+  this.value = this.value.replace(/\D/g, '').slice(0, 8);
+  });
+
+  document.querySelector('input[name="telefono"]').addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+  });
+
+  document.querySelector('input[name="correo"]').addEventListener('input', function () {
+    this.value = this.value.normalize("NFD").replace(/[\u0300-\u036f]/g, '');
+  });
+
+
 
 </script>
 
