@@ -93,7 +93,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
   'default': dj_database_url.config(
-    default='postgresql://selecciondocente_user:Bm8YdcvEQBy6FWD3Bs6WUyQLTYgL0FQZ@dpg-d0ihccje5dus739kljb0-a/selecciondocente',
+    default='postgresql://selecciondocente_backup_user:leYDk0UYX7Q2qzxieKTRm4UwT85WHx5m@dpg-d16b0v0dl3ps7396qak0-a/selecciondocente_backup',
     conn_max_age=600
   )
 }
