@@ -123,7 +123,7 @@ def convocatoria_gestionar_documentos(request, convocatoria_id):
   return render(request, 'gestionar_documentos.html', {
       "convocatoria": convocatoria,
       "postulantes": postulantes,
-      "url_volver": "/ver_convocatorias"
+      "url_volver": "/ver_convocatorias/"
   })
 
 
