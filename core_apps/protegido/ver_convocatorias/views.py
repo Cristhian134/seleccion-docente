@@ -502,7 +502,7 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
   postulante = get_object_or_404(Postulante, pk=postulante_id)
   evaluador = Evaluador.objects.get(persona=request.user.persona)
   convocatoria_id = postulante.convocatoria_id
-
+    
   if request.method == 'POST':
     c1 = int(request.POST.get('c1', 0))
     c2 = int(request.POST.get('c2', 0))
@@ -528,7 +528,8 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
       'hora_final': hora_final,
       'postulante_id': postulante_id,
       'convocatoria_id': convocatoria_id,
-      'tipo': tipo_bool
+      'tipo': tipo_bool,
+      'postulante': postulante
   })
 
 
