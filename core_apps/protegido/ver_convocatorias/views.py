@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from core_apps.common.models import (
     Convocatoria, Documento, Postulante, EstadoDocumento, Persona, ClaseMagistral, Usuario, Evaluador, NotaPostulante, EstadoNotaPostulante, EstadoPostulante,
-    EstadoClaseMagistral, Plaza, Temas, Seccion, EstadoPostulante
+    EstadoClaseMagistral, Plaza, Temas, Seccion, EstadoPostulante, EstadoConvocatoria  
 )
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, Http404, JsonResponse, HttpResponseForbidden
@@ -19,6 +19,9 @@ from xhtml2pdf import pisa
 from django.template.loader import render_to_string, get_template
 from django.utils.timezone import make_aware
 from datetime import datetime, time, timedelta
+from django.db import transaction
+
+
 import random
 
 
@@ -200,6 +203,10 @@ def agregar_postulante(request, convocatoria_id):
 def agregar_postulante(request, convocatoria_id):
   convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
 
+  with transaction.atomic():
+    convocatoria.estadoConvocatoria = EstadoConvocatoria.EN_PROCESO
+    convocatoria.save()
+
   if request.method == "POST":
     nombre = request.POST.get("nombre")
     apellido_paterno = request.POST.get("apellidoPaterno")
@@ -351,6 +358,7 @@ def enviar_consolidado_pdf(request, convocatoria_id):
       postulante__convocatoria=convocatoria,
       postulante__estadoPostulante=EstadoPostulante.ACEPTADO
   ).select_related("postulante__persona")
+
 
   template_path = 'consolidado_pdf.html'
   context = {
@@ -535,9 +543,16 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
 
 @login_required
 def generar_informe_notas(request, convocatoria_id):
+  convocatoria = get_object_or_404(Convocatoria, id=convocatoria_id)
   postulantes = Postulante.objects.filter(convocatoria_id=convocatoria_id,
   estadoPostulante=EstadoPostulante.ACEPTADO)
   datos_postulantes = []
+
+  with transaction.atomic():
+    convocatoria.estadoConvocatoria = EstadoConvocatoria.FINALIZADO
+    convocatoria.save()
+
+  
   for postulante in postulantes:
     notas = NotaPostulante.objects.filter(postulante=postulante)
     nota_totales = []
