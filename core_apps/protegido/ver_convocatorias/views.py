@@ -528,7 +528,8 @@ def evaluar_clase_magistral(request, postulante_id, tipo):
       'hora_final': hora_final,
       'postulante_id': postulante_id,
       'convocatoria_id': convocatoria_id,
-      'tipo': tipo_bool
+      'tipo': tipo_bool,
+      'postulante': postulante,
   })
 
 
