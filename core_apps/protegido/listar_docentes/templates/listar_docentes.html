@@ -53,7 +53,13 @@
           <td>{{docente.apellidos}}</td>
           <td>{{docente.facultad}}</td>
           <td>{{docente.curso}}</td>
-          <td>{{docente.notaEvaluacion}}</td>
+          <td>
+            {% if docente.notaEvaluacion is not None %}
+              {{ docente.notaEvaluacion }}
+            {% else %}
+              --
+            {% endif %}
+         </td>
         </tr>
         {% endfor %}
       </tbody>

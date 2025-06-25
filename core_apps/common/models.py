@@ -310,7 +310,7 @@ class EvaluacionDocente(models.Model):
     Docente,
     on_delete=models.CASCADE
   )
-  notaEvaluacion = models.FloatField()
+  notaEvaluacion = models.FloatField(null=True, blank=True)
   cicloAcademico = models.CharField(max_length=10)
   cantidadAlumnos = models.CharField(max_length=64)
 
