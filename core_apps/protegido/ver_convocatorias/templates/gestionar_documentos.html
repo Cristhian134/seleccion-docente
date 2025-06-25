@@ -77,7 +77,9 @@
 
 
 .table__modal input[type="text"],
-.table__modal input[type="file"] {
+.table__modal input[type="file"],
+.table__modal input[type="email"],
+.table__modal select {
   width: 100%;
   border-radius: var(--b-radius-base);
   padding-block: 8px;
@@ -89,7 +91,8 @@
 }
 
 .table__modal input[type="text"]:focus,
-.table__modal input[type="file"]:focus {
+.table__modal input[type="file"]:focus,
+.table__modal select:focus {
   border-color: var(--c-primary);
   outline: none;
 }
@@ -231,7 +234,6 @@
       <form method="post" enctype="multipart/form-data" action="{% url 'agregar_postulante' convocatoria.id %}">
         {% csrf_token %}
         <h2 style="text-align: center; margin-bottom: 1em;">Postulante N° {{ postulantes|length|add:1 }} Subir Documentos</h2>
-
       <table class="table__modal">
         <thead>
           <tr>
@@ -272,6 +274,14 @@
             <br>Subir Documento
           </label>
           <input type="file" name="archivo" id="archivo" style="display: none;" required>
+
+          <div style="margin-top: 1em; display: none;">
+            <div id="preview-pdf-container" style="margin-top: 1em; display: none;">
+              <h4>Vista previa:</h4>
+              <iframe id="preview-pdf" width="100%" height="400px" style="border: none;"></iframe>
+            </div>
+          </div>
+
         </div>
 
         <div style="text-align: center; margin-top: 2em;">
@@ -317,6 +327,21 @@
     document.getElementById("modalAgregar").style.display = "none";
   }
 
+  document.getElementById("archivo").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    const previewContainer = document.getElementById("preview-pdf-container");
+    const iframe = document.getElementById("preview-pdf");
+
+    if (file && file.type === "application/pdf") {
+      const fileURL = URL.createObjectURL(file);
+      iframe.src = fileURL;
+      previewContainer.style.display = "block";
+    } else {
+      iframe.src = "";
+      previewContainer.style.display = "none";
+      alert("Por favor, seleccione un archivo PDF.");
+    }
+  });
 
   window.addEventListener("click", function (e) {
     const modalAgregar = document.getElementById("modalAgregar");
