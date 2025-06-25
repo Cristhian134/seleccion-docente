@@ -1,3 +1,4 @@
+from email.policy import default
 import dj_database_url
 from os import getenv, path
 from dotenv import load_dotenv
@@ -93,7 +94,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
   'default': dj_database_url.config(
-    default='postgresql://selecciondocente_backup_user:leYDk0UYX7Q2qzxieKTRm4UwT85WHx5m@dpg-d16b0v0dl3ps7396qak0-a/selecciondocente_backup',
+    default=getenv("POSTGRES_URL")
     conn_max_age=600
   )
 }
