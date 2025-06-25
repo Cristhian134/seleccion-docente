@@ -274,13 +274,21 @@ class Command(BaseCommand):
 
         if contador_nota_evaluacion < TOTAL_SECCIONES:
 
-          EvaluacionDocente.objects.create(
-            seccion_id=contador_nota_evaluacion,
-            docente=docente,
-            notaEvaluacion=round(random.uniform(8, 20), 2),
-            cicloAcademico=CICLO_ACADEMICO,
-            cantidadAlumnos=random.randint(25, 35),
-          )
+          if i == 0 or contador_nota_evaluacion == 10:
+            EvaluacionDocente.objects.create(
+              seccion_id=contador_nota_evaluacion,
+              docente=docente,
+              cicloAcademico=CICLO_ACADEMICO,
+              cantidadAlumnos=random.randint(25, 35),
+            )
+          else:
+            EvaluacionDocente.objects.create(
+              seccion_id=contador_nota_evaluacion,
+              docente=docente,
+              notaEvaluacion=round(random.uniform(8, 20), 2),
+              cicloAcademico=CICLO_ACADEMICO,
+              cantidadAlumnos=random.randint(25, 35),
+            )
 
         contador_nota_evaluacion += 1
 
