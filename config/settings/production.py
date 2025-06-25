@@ -94,7 +94,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
   'default': dj_database_url.config(
-    default=getenv("POSTGRES_URL")
+    default=getenv("POSTGRES_URL"),
     conn_max_age=600
   )
 }
