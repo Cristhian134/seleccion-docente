@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from reportlab.lib import colors
 from django.shortcuts import redirect
 from django.db.models import Q
+from django.db.models import F
 from reportlab.platypus import Table, TableStyle
 
 from core_apps.common.models import Curso, Docente, EvaluacionDocente
@@ -20,7 +21,7 @@ from .utils import formatear_docentes
 
 @login_required
 def listar_docentes_view(request):
-  cursos = Curso.objects.prefetch_related('seccion_set').all()
+  cursos = Curso.objects.prefetch_related('seccion_set').distinct("nombreCurso")
   codigo_curso = request.GET.get("cod_curso")
 
   evaluaciones = EvaluacionDocente.objects.select_related(
@@ -29,12 +30,35 @@ def listar_docentes_view(request):
   )
 
   if codigo_curso:
-    evaluaciones = evaluaciones.filter(
+    evaluaciones_filtradas = evaluaciones.filter(
       Q(seccion__curso__codigoCurso__icontains=codigo_curso) |
       Q(seccion__curso__nombreCurso__icontains=codigo_curso)
-    ).order_by('-notaEvaluacion')[:5]
+    )
+
+    if len(evaluaciones_filtradas) == 0:
+      return render(request, 'listar_docentes.html', {
+        "url_volver": "/home",
+        "docentes": [],
+        "cursos": cursos,
+        "mensaje": f'No hay docentes para la búsqueda de "{codigo_curso}"'
+      })
+
+    evaluaciones = list(evaluaciones_filtradas.order_by(F('notaEvaluacion').desc(nulls_last=True))[:5])
+    evaluaciones_aux = list(evaluaciones_filtradas.order_by('-notaEvaluacion')[:5])
+
+    if len(evaluaciones) > 2 and evaluaciones_aux[0].notaEvaluacion is None and evaluaciones_aux[0].docente.id != evaluaciones[len(evaluaciones) - 2].docente.id:
+      evaluaciones[len(evaluaciones) - 1] = evaluaciones_aux[0]
+
     docentes = formatear_docentes(evaluaciones)
     curso = Curso.objects.filter(codigoCurso=codigo_curso).first()
+
+    if len(evaluaciones) == 0:
+      return render(request, 'listar_docentes.html', {
+        "url_volver": "/home",
+        "docentes": [],
+        "cursos": cursos,
+        "mensaje": f'No hay docentes para la búsqueda de "{codigo_curso}"'
+      })
 
     titulo = None
     if curso:
@@ -51,7 +75,7 @@ def listar_docentes_view(request):
     "url_volver": "/home",
     "docentes": [],
     "cursos": cursos,
-    "mensaje": "Debe seleccionar un curso."
+    "mensaje": "Debe buscar un curso."
   })
 
 
@@ -65,8 +89,19 @@ def exportar_docentes_pdf(request):
   if not codigo_curso:
     return redirect('listar-docentes')
 
-  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso__icontains=codigo_curso)\
-                             .order_by('-notaEvaluacion')[:5]
+  evaluaciones_filtradas = evaluaciones.filter(
+    Q(seccion__curso__codigoCurso__icontains=codigo_curso) |
+    Q(seccion__curso__nombreCurso__icontains=codigo_curso)
+  )
+
+  if len(evaluaciones_filtradas) == 0:
+    return redirect(f'/listar-docentes/?cod_curso_display={codigo_curso}&cod_curso={codigo_curso}')
+
+  evaluaciones = list(evaluaciones_filtradas.order_by(F('notaEvaluacion').desc(nulls_last=True))[:5])
+  evaluaciones_aux = list(evaluaciones_filtradas.order_by('-notaEvaluacion')[:5])
+
+  if len(evaluaciones) > 2:
+    evaluaciones[len(evaluaciones) - 1] = evaluaciones_aux[0]
 
   docentes = formatear_docentes(evaluaciones)
 
@@ -82,10 +117,12 @@ def exportar_docentes_pdf(request):
 
   # Datos
   data = [["Cod", "Apellidos", "Nombres", "Facultad", "Curso", "Nota"]]
+
   for d in docentes:
     data.append([
-        d["id"], d["apellidos"], d["nombres"],
-        d["facultad"], d["curso"], d["notaEvaluacion"]
+      d["id"], d["apellidos"], d["nombres"],
+      d["facultad"], d["curso"],
+      "--" if d["notaEvaluacion"] is None else d["notaEvaluacion"]
     ])
 
   # Definir proporciones más amplias para Nombres, Facultad y Curso
@@ -124,8 +161,19 @@ def exportar_docentes_excel(request):
   if not codigo_curso:
     return redirect('listar-docentes')
 
-  evaluaciones = evaluaciones.filter(seccion__curso__codigoCurso__icontains=codigo_curso) \
-      .order_by('-notaEvaluacion')[:5]
+  evaluaciones_filtradas = evaluaciones.filter(
+    Q(seccion__curso__codigoCurso__icontains=codigo_curso) |
+    Q(seccion__curso__nombreCurso__icontains=codigo_curso)
+  )
+
+  if len(evaluaciones_filtradas) == 0:
+    return redirect(f'/listar-docentes/?cod_curso_display={codigo_curso}&cod_curso={codigo_curso}')
+
+  evaluaciones = list(evaluaciones_filtradas.order_by(F('notaEvaluacion').desc(nulls_last=True))[:5])
+  evaluaciones_aux = list(evaluaciones_filtradas.order_by('-notaEvaluacion')[:5])
+
+  if len(evaluaciones) > 2:
+    evaluaciones[len(evaluaciones) - 1] = evaluaciones_aux[0]
 
   docentes = formatear_docentes(evaluaciones)
 

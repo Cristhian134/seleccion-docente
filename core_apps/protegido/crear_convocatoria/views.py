@@ -29,6 +29,9 @@ def crear_convocatoria_interna_view(request):
     codigo = request.GET.get('cod_profesor', '').strip()
     sortear_tema = request.GET.get('sortear_tema') == 'true'
 
+    if not codigo:
+      return render(request, 'crear_convocatoria_interna.html', context)
+
     user = getattr(request, 'user', AnonymousUser())
     facultad = getattr(user, "facultad", None)
 
@@ -44,14 +47,15 @@ def crear_convocatoria_interna_view(request):
     if not codigo:
       context["error_busqueda"] = "Codigo no proporcionado"
     else:
-      profesor = Docente.objects.get(id=codigo)
 
-      if profesor:
+      try:
+        profesor = Docente.objects.get(id=codigo)
         data = convocatoria_externa_obtener_datos_profesor(codigo)
         context["data"] = data
         context["cod_profesor"] = codigo
-      else:
-        context["error_db"] = f"No se encontró un docente con el Codigo {codigo}"
+      except Docente.DoesNotExist:
+        context["error_db"] = f"No se encontró un docente con el código {codigo}"
+        return render(request, 'crear_convocatoria_interna.html', context)
 
     if sortear_tema:
       seccion_seleccionada = request.GET.get("curso_seleccionado")

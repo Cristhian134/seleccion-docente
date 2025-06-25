@@ -24,6 +24,44 @@
     <button type="submit" class="button--primary"><i class="fa fa-search" aria-hidden="true"></i>Buscar</button>
   </form>
 
+  <div id="toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #e74c3c; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1000;">
+    <span id="toast-message"></span>
+  </div>
+
+  {% if error_busqueda %}
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const messageBox = document.getElementById("toast-message");
+
+      messageBox.textContent = message;
+      toast.style.display = "block";
+
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+      showToast("{{ error_busqueda }}");
+  </script>
+  {% endif %}
+  
+  {% if error_db %}
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      const messageBox = document.getElementById("toast-message");
+
+      messageBox.textContent = message;
+      toast.style.display = "block";
+
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+    showToast("{{ error_db }}");
+  </script>
+  {% endif %}
+
   {% if data %}
   <div>
     <section class="seccion__datos_profesor">
@@ -123,46 +161,9 @@
       </label>
     </section>
 
-    <div id="toast" style="display: none; position: fixed; bottom: 20px; right: 20px; background-color: #e74c3c; color: white; padding: 12px 20px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1000;">
-      <span id="toast-message"></span>
-    </div>
-  
     <button type="submit" id="crearClaseMagistral" class="button--primary">Crear clase magistral</button>
   <div>
-
-  {% if error_busqueda %}
-  <script>
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      const messageBox = document.getElementById("toast-message");
-
-      messageBox.textContent = message;
-      toast.style.display = "block";
-
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 3000);
-    }
-      showToast("{{ error_busqueda }}");
-  </script>
-  {% endif %}
-  
-  {% if error_db %}
-  <script>
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      const messageBox = document.getElementById("toast-message");
-
-      messageBox.textContent = message;
-      toast.style.display = "block";
-
-      setTimeout(() => {
-        toast.style.display = "none";
-      }, 3000);
-    }
-    showToast("{{ error_db }}");
-  </script>
-  {% endif %} 
+ 
 
   <div id="modal_mensaje" class="modal">
     <div class="modal-content">
