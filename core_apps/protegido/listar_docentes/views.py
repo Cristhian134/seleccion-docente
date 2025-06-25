@@ -100,7 +100,7 @@ def exportar_docentes_pdf(request):
   evaluaciones = list(evaluaciones_filtradas.order_by(F('notaEvaluacion').desc(nulls_last=True))[:5])
   evaluaciones_aux = list(evaluaciones_filtradas.order_by('-notaEvaluacion')[:5])
 
-  if len(evaluaciones) > 2:
+  if len(evaluaciones) > 2 and evaluaciones_aux[0].notaEvaluacion is None and evaluaciones_aux[0].docente.id != evaluaciones[len(evaluaciones) - 2].docente.id:
     evaluaciones[len(evaluaciones) - 1] = evaluaciones_aux[0]
 
   docentes = formatear_docentes(evaluaciones)
@@ -172,7 +172,7 @@ def exportar_docentes_excel(request):
   evaluaciones = list(evaluaciones_filtradas.order_by(F('notaEvaluacion').desc(nulls_last=True))[:5])
   evaluaciones_aux = list(evaluaciones_filtradas.order_by('-notaEvaluacion')[:5])
 
-  if len(evaluaciones) > 2:
+  if len(evaluaciones) > 2 and evaluaciones_aux[0].notaEvaluacion is None and evaluaciones_aux[0].docente.id != evaluaciones[len(evaluaciones) - 2].docente.id:
     evaluaciones[len(evaluaciones) - 1] = evaluaciones_aux[0]
 
   docentes = formatear_docentes(evaluaciones)
